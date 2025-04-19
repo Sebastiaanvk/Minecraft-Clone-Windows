@@ -1,14 +1,14 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
-#include <glad/glad.h>
+#include <external/glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include "../include/renderer.hpp"
-#include "../include/input_handler.hpp"
-#include "../include/world.hpp"
-#include "../include/input_keys.hpp"
-#include "../include/camera.hpp"
+#include <render/renderer.hpp>
+#include <input/input_handler.hpp>
+#include <world/world.hpp>
+#include <input/input_keys.hpp>
+#include <camera.hpp>
 
 class Game {
 public:
@@ -17,7 +17,7 @@ public:
 private:
     Renderer renderer;
     Input_Handler input_handler;
-    Model model;
+    World world;
     Camera camera;
     void process_input();
 

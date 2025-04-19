@@ -3,8 +3,7 @@
     {
       "name": "windows-gcc-x86",
       "includePath": [
-        "${workspaceFolder}/**",
-//        "${workspaceFolder}/testing/gameStart/include",
+        "${workspaceFolder}/testing/gameStart/include",
         "C:/dev/libs/glfw-3.4/include"
       ],
       "compilerPath": "C:/MinGW/bin/gcc.exe",

@@ -1,12 +1,12 @@
 #ifndef CAMERA_HPP
 #define CAMERA_HPP
 
-#include "../include/input_handler.hpp"
-#include <glad/glad.h>
+#include <input/input_handler.hpp>
+#include <external/glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include <external/glm/glm.hpp>
+#include <external/glm/gtc/matrix_transform.hpp>
+#include <external/glm/gtc/type_ptr.hpp>
 
 class Camera{
 public:
@@ -36,4 +36,4 @@ private:
 };
 
 
-#endif #CAMERA_HPP
+#endif //CAMERA_HPP

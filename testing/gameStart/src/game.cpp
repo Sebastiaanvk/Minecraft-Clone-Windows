@@ -1,10 +1,10 @@
-#include "../include/game.hpp"
+#include <game.hpp>
 
 
 Game::Game(){
     renderer = Renderer();
     input_handler  =  Input_Handler();
-    model = Model();
+    world = World();
     camera = Camera();
     deltaTime = 0.0f;
     lastFrame = 0.0f;
@@ -33,8 +33,10 @@ void Game::run(){
         input_handler.update(renderer.getWindow());
 
         process_input();
-        
+
+        renderer.render(world,camera);
     }
+    glfwTerminate();
 }
 
 

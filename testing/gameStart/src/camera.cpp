@@ -1,4 +1,4 @@
-#include "../include/camera.hpp"
+#include <camera.hpp>
 
 
 Camera::Camera(){
@@ -15,6 +15,8 @@ bool Camera::init(){
     yaw = -90.0f;
     pitch = 0.0f;
     fov = 45.0f;
+
+    return true;
 }
 
 void Camera::rotate(float dx, float dy){
@@ -62,7 +64,8 @@ void Camera::move_right(float deltaTime){
 }
 
 glm::mat4 Camera::getViewMatrix(){
-    glm::lookAt(cameraPos,cameraFront+cameraPos, cameraUp);
+    glm::mat4 view = glm::lookAt(cameraPos,cameraFront+cameraPos, cameraUp);
+    return view;
 }
 
 float Camera::getFov(){

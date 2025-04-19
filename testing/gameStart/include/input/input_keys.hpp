@@ -15,4 +15,4 @@ enum Key{
 
 
 
-#endif INPUT_KEYS_HPP
+#endif //INPUT_KEYS_HPP

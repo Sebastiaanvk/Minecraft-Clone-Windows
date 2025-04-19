@@ -1,11 +1,11 @@
 #ifndef INPUT_HANDLER_HPP
 #define INPUT_HANDLER_HPP
 
-#include <glad/glad.h>
-#include "GLFW/glfw3.h"
+#include <external/glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <vector>
 #include <unordered_map>
-#include "../include/input_keys.hpp"
+#include <input/input_keys.hpp>
 
 
 
