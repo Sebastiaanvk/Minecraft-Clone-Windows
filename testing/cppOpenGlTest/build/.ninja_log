@@ -1,0 +1,5 @@
+# ninja log v6
+9	278	7667596511697776	CMakeFiles/executable.dir/src/newWorld.cpp.obj	f92f0f6fce82a3fc
+6	350	7667596511669603	CMakeFiles/executable.dir/src/main.cpp.obj	8481b288b98bd03e
+3	834	7667596511626541	CMakeFiles/executable.dir/src/glad.c.obj	9255ecf4d685d491
+836	964	7667596519947072	executable.exe	1f7429891caa1e1d

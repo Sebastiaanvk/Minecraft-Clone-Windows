@@ -1,9 +1,9 @@
 #ifndef MODEL_HPP
 #define MODEL_HPP
 
-class Model{
+class World{
 public:
-    Model();
+    World();
 
 };
 

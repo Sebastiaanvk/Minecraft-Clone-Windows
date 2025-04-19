@@ -1,0 +1,5 @@
+# ninja log v6
+4	1078	7667596860841709	CMakeFiles/executable.dir/src/glad.c.obj	239c86ca0a5e6967
+10	1570	7667596860927766	CMakeFiles/executable.dir/src/stb_image.cpp.obj	d5da2ffbf1e02f5b
+8	1660	7667596860911590	CMakeFiles/executable.dir/src/main.cpp.obj	69898af100d460e0
+1662	1804	7667596877413259	executable.exe	40b7f17a0ad4af2

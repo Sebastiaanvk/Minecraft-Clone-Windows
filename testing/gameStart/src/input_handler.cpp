@@ -1,66 +1,72 @@
 #include "../include/input_handler.hpp"
 
-void framebuffer_size_callback(GLFWwindow* , int width, int height);
-void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+
 
 Input_Handler::Input_Handler(){
+    toGLFWkey[Key::ESCAPE] = GLFW_KEY_ESCAPE;
+    toGLFWkey[Key::FORWARD] = GLFW_KEY_W;
+    toGLFWkey[Key::BACKWARD] = GLFW_KEY_S;
+    toGLFWkey[Key::LEFT] = GLFW_KEY_A;
+    toGLFWkey[Key::RIGHT] = GLFW_KEY_D;
+    toGLFWkey[Key::UP] = GLFW_KEY_SPACE;
+    toGLFWkey[Key::DOWN] = GLFW_KEY_LEFT_SHIFT;
 
+    prev_pressed = {};
+    curr_pressed = {};
+    for(int i = 0; i<Key::KEY_COUNT; i++){ // Technically unnecessary, but I wanted to prevent bugs where the entry of the map is read
+        Key k = static_cast<Key>(i);
+        prev_pressed[k] = false;
+        curr_pressed[k] = false;
+    }
 }
 
-bool Input_Handler::set_up_callbacks(GLFWwindow* window){
-
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);  
-    glfwSetCursorPosCallback(window, mouse_callback);  
+bool Input_Handler::init(GLFWwindow* window){
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
-    glfwSetScrollCallback(window, scroll_callback);
-
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+    previousX = ((double)width)/2;
+    previousY = ((double)height)/2;
+    glfwSetCursorPos(window, previousX , previousY);
     return true;
 }
 
 
 
-void framebuffer_size_callback(GLFWwindow* , int width, int height)
-{
-    glViewport(0, 0, width, height);
-} 
-
-void mouse_callback(GLFWwindow* window, double xpos, double ypos){
-//    std::cout << "Mouse moved!\n";
-    if (firstMouse) // initially set to true
-    {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
+void Input_Handler::update(GLFWwindow* window){
+    for(int i = 0; i<Key::KEY_COUNT; i++){
+        Key k = static_cast<Key>(i);
+        prev_pressed[k] = curr_pressed[k];
+        curr_pressed[k] = (glfwGetKey(window, toGLFWkey[k]) == GLFW_PRESS);
     }
 
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // reversed since y-coordinates range from bottom to top
-    lastX = xpos;
-    lastY = ypos;
 
-    const float sensitivity = 0.1f;
-    xoffset *= sensitivity;
-    yoffset *= sensitivity;
+    double currentX,currentY; 
+    glfwGetCursorPos(window, &currentX, &currentY);
+    dx = currentX - previousX;
+    dy = currentY - previousY ;
 
-    yaw   += xoffset;
-    pitch += yoffset;  
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
 
-    if(pitch > 89.0f)
-        pitch =  89.0f;
-    if(pitch < -89.0f)
-        pitch = -89.0f;
-
-    glm::vec3 direction;
-    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    direction.y = sin(glm::radians(pitch));
-    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    cameraFront = glm::normalize(direction);
+    glfwSetCursorPos(window, ((double)width)/2, ((double)height)/2);
+    
 }
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset){
-    fov -= (float)yoffset;
-    if (fov < 1.0f)
-        fov = 1.0f;
-    if (fov > 45.0f)
-        fov = 45.0f; 
+bool Input_Handler::key_down(Key k){
+    return curr_pressed[k];
+}
+
+bool Input_Handler::key_pressed(Key k){
+    return curr_pressed[k] && !(prev_pressed[k]);
+}
+
+bool Input_Handler::key_released(Key k){
+    return prev_pressed[k] && !(curr_pressed[k]);
+}
+
+
+double Input_Handler::getDX(){
+    return dx;
+}
+double Input_Handler::getDY(){
+    return dy;
 }

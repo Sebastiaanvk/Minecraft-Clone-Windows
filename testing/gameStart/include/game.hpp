@@ -6,7 +6,9 @@
 #include <iostream>
 #include "../include/renderer.hpp"
 #include "../include/input_handler.hpp"
-#include "../include/model.hpp"
+#include "../include/world.hpp"
+#include "../include/input_keys.hpp"
+#include "../include/camera.hpp"
 
 class Game {
 public:
@@ -16,6 +18,11 @@ private:
     Renderer renderer;
     Input_Handler input_handler;
     Model model;
+    Camera camera;
+    void process_input();
+
+    float deltaTime;
+    float lastFrame;
 };
 
 
