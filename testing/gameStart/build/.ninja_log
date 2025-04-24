@@ -59,3 +59,11 @@
 12	2629	7670418552535664	CMakeFiles/executable.dir/src/game.cpp.obj	cd1460bc8abbfa05
 22	5283	7670418552631079	CMakeFiles/executable.dir/src/render/renderer.cpp.obj	92075dca7fca6c3a
 5283	5537	7670418605200892	executable.exe	fff86799402c83d8
+25	1769	7672012527693420	CMakeFiles/executable.dir/src/camera.cpp.obj	9c9294769d33984
+42	3666	7672012527961956	CMakeFiles/executable.dir/src/main.cpp.obj	f5944a18fa0b3871
+33	3843	7672012527834941	CMakeFiles/executable.dir/src/game.cpp.obj	cd1460bc8abbfa05
+46	7286	7672012528002377	CMakeFiles/executable.dir/src/render/renderer.cpp.obj	92075dca7fca6c3a
+35	1400	7672013035569908	CMakeFiles/executable.dir/src/input/input_handler.cpp.obj	55201bfb1f142b76
+1401	2119	7672013049217782	executable.exe	fff86799402c83d8
+39	1410	7672013324266809	CMakeFiles/executable.dir/src/input/input_handler.cpp.obj	55201bfb1f142b76
+1411	1766	7672013338046389	executable.exe	fff86799402c83d8
