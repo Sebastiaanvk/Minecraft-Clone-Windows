@@ -63,6 +63,16 @@ void Camera::move_right(float deltaTime){
 
 }
 
+void Camera::move_up(float deltaTime){
+    float delta = deltaTime * camera_speed;
+    cameraPos += glm::vec3(0.0f,1.0f,0.0f) * delta;
+}
+
+void Camera::move_down(float deltaTime){
+    float delta = deltaTime * camera_speed;
+    cameraPos -= glm::vec3(0.0f,1.0f,0.0f) * delta;
+}
+
 glm::mat4 Camera::getViewMatrix(){
     glm::mat4 view = glm::lookAt(cameraPos,cameraFront+cameraPos, cameraUp);
     return view;

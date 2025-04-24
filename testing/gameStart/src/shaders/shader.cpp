@@ -1,35 +1,9 @@
-#ifndef SHADER_H
-#define SHADER_H
+#include <shaders/shader.h>
 
-#include <glad/glad.h> // include glad to get all the required OpenGL headers
-//#include <GLFW/glfw3.h>
 
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-  
-
-class Shader
-{
-public:
-    // the program ID
-    unsigned int ID;
-  
-    // constructor reads and builds the shader
-    Shader(const char* vertexPath, const char* fragmentPath);
-    // use/activate the shader
-    void use();
-    // utility uniform functions
-    void setBool(const std::string &name, bool value) const;  
-    void setInt(const std::string &name, int value) const;   
-    void setFloat(const std::string &name, float value) const;
-    void setMat4(const std::string& name, const glm::mat4& model);
-};
-
+Shader::Shader(){
+    
+}
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
@@ -134,5 +108,3 @@ void Shader::setMat4(const std::string &name, const glm::mat4& model){
         unsigned int modelLoc = glGetUniformLocation(ID, name.c_str());
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 }
-    
-#endif

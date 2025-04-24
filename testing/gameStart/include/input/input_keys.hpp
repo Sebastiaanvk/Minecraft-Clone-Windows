@@ -7,8 +7,8 @@ enum Key{
     BACKWARD,
     LEFT,
     RIGHT,
-    UP,
-    DOWN,
+    SPACE,
+    LEFT_SHIFT,
     KEY_COUNT
 };
 

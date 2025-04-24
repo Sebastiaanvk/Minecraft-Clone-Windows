@@ -1,7 +1,7 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
-#include <external/glad/glad.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <render/renderer.hpp>
@@ -9,6 +9,8 @@
 #include <world/world.hpp>
 #include <input/input_keys.hpp>
 #include <camera.hpp>
+#include <thread>
+#include <chrono>
 
 class Game {
 public:

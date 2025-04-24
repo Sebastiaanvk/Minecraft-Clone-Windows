@@ -2,7 +2,7 @@
 #define CAMERA_HPP
 
 #include <input/input_handler.hpp>
-#include <external/glad/glad.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <external/glm/glm.hpp>
 #include <external/glm/gtc/matrix_transform.hpp>
@@ -17,6 +17,8 @@ public:
     void move_backward(float deltaTime);
     void move_left(float deltaTime);
     void move_right(float deltaTime);
+    void move_up(float deltatime);
+    void move_down(float deltatime);
 
     glm::mat4 getViewMatrix();
 

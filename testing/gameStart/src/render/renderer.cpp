@@ -1,5 +1,62 @@
 #include <render/renderer.hpp>
 
+
+//This will get Fixed!!!
+// just want to render some cubes for testing!!!
+//cube Vertices
+    float vertices[] = {
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+
+     0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+};
+
+float vertexSide[] = {
+    0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,
+    1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,
+    2.0f,2.0f,2.0f,2.0f,2.0f,2.0f,
+    3.0f,3.0f,3.0f,3.0f,3.0f,3.0f,
+    4.0f,4.0f,4.0f,4.0f,4.0f,4.0f,
+    5.0f,5.0f,5.0f,5.0f,5.0f,5.0f,
+    6.0f,6.0f,6.0f,6.0f,6.0f,6.0f
+};
 Renderer::Renderer(){
 
 }
@@ -9,6 +66,36 @@ void framebuffer_size_callback(GLFWwindow* , int width, int height)
 {
     glViewport(0, 0, width, height);
 } 
+
+void Renderer::setUpBuffers(){
+
+
+    // Vertex Array Object
+    glGenVertexArrays(1, &VAO);  
+    
+    glBindVertexArray(VAO);
+
+
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    
+    
+    //  Vertex attributes:
+    // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    // texture attribute
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3* sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glGenBuffers(1, &VBO2);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexSide), vertexSide, GL_STATIC_DRAW);
+    // side attribute
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)(0));
+    glEnableVertexAttribArray(2);
+}
 
 bool Renderer::init(int width, int height){
     glfwInit();
@@ -22,6 +109,7 @@ bool Renderer::init(int width, int height){
         glfwTerminate();
         return false;
     }
+    glfwMakeContextCurrent(window);
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
@@ -32,9 +120,45 @@ bool Renderer::init(int width, int height){
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);  
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
 
+
+//  Shaders:
+     shaderprogram = Shader("../include/shaders/shader.vs","../include/shaders/shader.fs");
+    
+//    stbi_set_flip_vertically_on_load(true);  
+
+    unsigned int textureAtlas;
+    glGenTextures(1, &textureAtlas);  
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureAtlas);  
+
+    // set the texture wrapping/filtering options (on the currently bound texture object)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    int  nrChannels;
+    unsigned char *data = stbi_load("../assets/blockAtlas.png", &atlasWidth, &atlasHeight, &nrChannels, 0); 
+    if(data){
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, atlasWidth, atlasHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    } else {
+        std::cout << "Failed to load texture" << std::endl;
+        return false;
+    }
+    stbi_image_free(data);
+
+    shaderprogram.use();
+    shaderprogram.setInt("textureAtlas",0);
+
+    glEnable(GL_DEPTH_TEST);  
+
+    std::ifstream f("../assets/blockAtlasJson.json");
+    jsonAtlasData = nlohmann::json::parse(f);
+
 //Maybe add the option to scroll with a callback?
 
-//TODO Set up all the vaos, vbos, what have you.
+    setUpBuffers();
 
 
     return true;
@@ -44,45 +168,58 @@ GLFWwindow* Renderer::getWindow(){
     return window;
 }
 
+glm::vec2 jsonGet(const nlohmann::json& data, const std::string& textureName, int atlasWidth, int atlasHeight){
+    float xLoc = ((float)data["frames"][textureName]["frame"]["x"])/((float)atlasWidth);
+    float yLoc = ((float)data["frames"][textureName]["frame"]["y"])/((float)atlasHeight); 
+    return {xLoc, yLoc};
+}
+
 void Renderer::render(World& world, Camera& camera){
-    /*
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-        glBindVertexArray(VAO);
+    glBindVertexArray(VAO);
 
-        glm::mat4 view;
-        view = camera.getViewMatrix();
+    glm::mat4 view;
+    view = camera.getViewMatrix();
 
-        unsigned int viewLoc = glGetUniformLocation(shaderprogram.ID, "view");
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+    unsigned int viewLoc = glGetUniformLocation(shaderprogram.ID, "view");
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
-        glm::mat4 projection;
-        projection = glm::perspective(glm::radians(fov),  (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+    
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+    
+    glm::mat4 projection;
+    projection = glm::perspective(glm::radians(camera.getFov()),  (float)width / (float)height, 0.1f, 100.0f);
 
-        unsigned int projectionLoc = glGetUniformLocation(shaderprogram.ID, "projection");
-        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+    unsigned int projectionLoc = glGetUniformLocation(shaderprogram.ID, "projection");
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-        for(unsigned int i = 0; i < 10; i++)
-            {
-                unsigned int textureSizeLoc = glGetUniformLocation(shaderprogram.ID, "textureSize");
-                glUniform2f(textureSizeLoc,(float)16 / (float)atlasWidth,(float)16 / (float)atlasHeight);
+    std::queue<Renderable>  renQ = world.toRenderableQueue();
+    //This while loop is hella sketchy. Will change later!!!!
+    while(!renQ.empty())
+        {
+            Renderable ren = renQ.front();
+            renQ.pop();
 
-                unsigned int offsetLoc = glGetUniformLocation(shaderprogram.ID, "textureOffset");
-                glUniform2fv(offsetLoc, 6, glm::value_ptr(textureOffsets[textureTypes[i]][0]));
+            unsigned int textureSizeLoc = glGetUniformLocation(shaderprogram.ID, "textureSize");
+            glUniform2f(textureSizeLoc,(float)16 / (float)atlasWidth,(float)16 / (float)atlasHeight);
 
-                glm::mat4 model = glm::mat4(1.0f);
-                model = glm::translate(model, cubePositions[i]);
-                float angle = 20.0f * i; 
-                model = glm::rotate(model, glm::radians(angle)+(float)glfwGetTime() * glm::radians(rots[i]), glm::vec3(1.0f, 0.3f, 0.5f));
-                shaderprogram.setMat4("model", model);
+            
+            glm::vec2 textureOffsets[6] = {jsonGet(jsonAtlasData, ren.sideTexture,atlasWidth,atlasHeight),jsonGet(jsonAtlasData, ren.sideTexture,atlasWidth,atlasHeight),jsonGet(jsonAtlasData, ren.sideTexture,atlasWidth,atlasHeight),jsonGet(jsonAtlasData, ren.sideTexture,atlasWidth,atlasHeight),jsonGet(jsonAtlasData, ren.topTexture,atlasWidth,atlasHeight),jsonGet(jsonAtlasData, ren.botTexture,atlasWidth,atlasHeight)};
 
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-            }
+            unsigned int offsetLoc = glGetUniformLocation(shaderprogram.ID, "textureOffset");
+            glUniform2fv(offsetLoc, 6, glm::value_ptr(textureOffsets[0]));
 
-        glfwSwapBuffers(window);
-        glfwPollEvents();    
-    */
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(ren.x,ren.y,ren.z) );
+            shaderprogram.setMat4("model", model);
+            
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+
+    glfwSwapBuffers(window);
 
 }

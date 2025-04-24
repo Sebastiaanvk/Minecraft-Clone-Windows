@@ -1,11 +1,12 @@
 #ifndef INPUT_HANDLER_HPP
 #define INPUT_HANDLER_HPP
 
-#include <external/glad/glad.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <vector>
 #include <unordered_map>
 #include <input/input_keys.hpp>
+#include <iostream>
 
 
 
@@ -24,8 +25,10 @@ public:
 
 private:
     typedef int GLFWkey;
-    double previousX, previousY;
+    static double previousX, previousY;
+    static double tempDx, tempDy;
     double dx,dy;
+    static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
     double scroll_dx, scroll_dy; 
     std::unordered_map<Key,bool> prev_pressed; // All of these could be vectors or arrays, but I really dont feel like casting all the time and making the code ugly
     std::unordered_map<Key,bool> curr_pressed;

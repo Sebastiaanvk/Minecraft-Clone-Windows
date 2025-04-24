@@ -15,7 +15,7 @@ link_directories(${GLFW_ROOT}/lib)
 
 # add_definitions(-DGLAD_GLAPI_EXPORT)
 
-file(GLOB SOURCES "src/*.cpp" "src/*.c" "src/external/*.cpp" "src/external/*.c" "src/input/*.cpp" "src/input/*.c" "src/render/*.cpp" "src/render/*.c" "src/world/*.cpp" "src/world/*.c")
+file(GLOB SOURCES "src/*.cpp" "src/*.c" "src/external/*.cpp" "src/external/*.c" "src/input/*.cpp" "src/input/*.c" "src/render/*.cpp" "src/render/*.c" "src/world/*.cpp" "src/world/*.c" "src/shaders/*.cpp")
 add_executable(executable ${SOURCES})
 
 
