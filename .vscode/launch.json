@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/sebas/Documents/GitHub/Minecraft-Clone-Windows/testing/LearnOpenGl/CameraChapter/src",
-      "program": "c:/Users/sebas/Documents/GitHub/Minecraft-Clone-Windows/testing/LearnOpenGl/CameraChapter/build/executable.exe",
+      "cwd": "c:/Users/sebas/Documents/GitHub/Minecraft-Clone-Windows/testing/gameStart/src/input",
+      "program": "c:/Users/sebas/Documents/GitHub/Minecraft-Clone-Windows/testing/gameStart/src/input/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

@@ -1,0 +1,12 @@
+# ninja log v6
+53	826	7672298779684372	CMakeFiles/executable.dir/src/world/block.cpp.obj	c30211a5e75108ff
+60	1618	7672298779750394	CMakeFiles/executable.dir/src/world/world.cpp.obj	81b6866057451f18
+28	2228	7672298779397602	CMakeFiles/executable.dir/src/input/input_handler.cpp.obj	b5df8bd6b52c3868
+47	2293	7672298779577731	CMakeFiles/executable.dir/src/shaders/shader.cpp.obj	9b629d8aecfb4f26
+5	2552	7672298779180617	CMakeFiles/executable.dir/src/camera.cpp.obj	291fd12682525de2
+12	3132	7672298779265541	CMakeFiles/executable.dir/src/external/stb_image.cpp.obj	9edfa505dad211bb
+35	4257	7672298779497060	CMakeFiles/executable.dir/src/main.cpp.obj	cdd342ab6fddfc81
+17	4489	7672298779298307	CMakeFiles/executable.dir/src/game.cpp.obj	fd84ab077814ef07
+23	4824	7672298779371849	CMakeFiles/executable.dir/src/glad.c.obj	de3111b13e6702f2
+40	7956	7672298779556588	CMakeFiles/executable.dir/src/render/renderer.cpp.obj	293100888542597e
+7956	8374	7672298858698802	executable.exe	fff86799402c83d8
