@@ -26,8 +26,8 @@ World::World(){
         }
     }
 
-    chunks[{0,0}] = Chunk(blockList);
-    chunks[{2,0}] = Chunk(blockList);
+    chunks[{0,0}] = Chunk(blockList,{0,0});
+    chunks[{2,0}] = Chunk(blockList,{2,0});
 
 
 }

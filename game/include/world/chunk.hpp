@@ -30,10 +30,10 @@ private:
     std::array<BlockID,CHUNKSIZE> chunk;
     LocInt chunkLoc;
     bool dirty;
+//    bool updated;
     RenderableChunkMesh mesh;
     bool blockIsSolid(const LocInt& loc);
 };
-
 
 
 

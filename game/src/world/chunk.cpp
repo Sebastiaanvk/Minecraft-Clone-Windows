@@ -2,6 +2,8 @@
 
 
 Chunk::Chunk(const Loc2& loc){
+//    updated = true;
+    dirty = true;
     chunkLoc = {MAXCHUNKX*loc.x,0,MAXCHUNKY*loc.z};
     for(int i=0; i<CHUNKSIZE; i++){
         chunk[i] = BlockID::Air;
@@ -9,11 +11,15 @@ Chunk::Chunk(const Loc2& loc){
 }
 
 Chunk::Chunk(std::array<BlockID,CHUNKSIZE>& chunkInput, const Loc2& loc){
+//    updated = true;
+    dirty = true;
     chunkLoc = {MAXCHUNKX*loc.x,0,MAXCHUNKY*loc.z};
     chunk = chunkInput;
 }
 
 Chunk::Chunk(std::vector<std::pair<LocInt,BlockID>> blockSet, const Loc2& loc){
+//    updated = true;
+    dirty = true;
     chunkLoc = {MAXCHUNKX*loc.x,0,MAXCHUNKY*loc.z};
     for(int i=0; i<CHUNKSIZE; i++){
         chunk[i] = BlockID::Air;
@@ -50,6 +56,7 @@ bool Chunk::blockIsSolid(const LocInt& loc){
 
 void Chunk::update_mesh(){
     mesh = RenderableChunkMesh();
+    mesh.updated =true;
     for(int x=0; x<MAXCHUNKX; x++){ for(int y=0; y<MAXCHUNKY; y++){ for(int z=0; z< MAXCHUNKZ; z++){
         LocInt loc = {x,y,z};
         for(int i=0; i<6;i++){
@@ -74,6 +81,8 @@ void Chunk::update_mesh(){
 RenderableChunkMesh Chunk::getMesh(){
     if(dirty){
         update_mesh();
+    } else {
+        mesh.updated = false;
     }
     return mesh;
 }

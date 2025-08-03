@@ -5,7 +5,8 @@
 #include <string>
 #include <blockRegistry.hpp>
 
-enum FaceType  {Side,Side,Top,Bot,Side,Side};
+// enum FaceType  {Side,Side,Top,Bot,Side,Side};
+enum FaceType {Side, Top, Bot};
 
 struct ChunkMeshElt{
     LocInt corner0;
@@ -17,6 +18,7 @@ struct ChunkMeshElt{
 };
 
 struct RenderableChunkMesh{
+    bool updated;
     std::vector<ChunkMeshElt> mesh;
 };
 
