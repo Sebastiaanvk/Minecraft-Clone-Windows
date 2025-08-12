@@ -52,7 +52,7 @@ rule CUSTOM_COMMAND
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = C:\msys64\mingw64\bin\cmake.exe --regenerate-during-build -SC:\Users\sebas\Documents\GitHub\Minecraft-Clone-Windows\game -BC:\Users\sebas\Documents\GitHub\Minecraft-Clone-Windows\game\build
+  command = C:\msys64\mingw64\bin\cmake.exe --regenerate-during-build -SC:\Users\sebas\Documents\GitHub\Minecraft-Clone-Windows -BC:\Users\sebas\Documents\GitHub\Minecraft-Clone-Windows\build
   description = Re-running CMake...
   generator = 1
 

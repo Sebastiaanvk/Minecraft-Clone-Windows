@@ -27,15 +27,24 @@ World::World(){
     }
 
     chunks[{0,0}] = Chunk(blockList,{0,0});
-    chunks[{2,0}] = Chunk(blockList,{2,0});
+    chunks[{32,0}] = Chunk(blockList,{32,0});
 
 
 }
 
-std::queue<RenderableBlock> World::toRenderableQueue(){
-    std::queue<RenderableBlock> blockQueue;
-    for(auto b : blocks){
-        blockQueue.push(b.toRenderable());
+
+std::queue<std::shared_ptr<RenderableChunkMesh>> World::toRenderableChunkQueue(){
+    std::queue<std::shared_ptr<RenderableChunkMesh>> chunkQueue;
+    for(auto& c : chunks){
+        chunkQueue.push(c.second.getMeshPtr());
     }
-    return blockQueue;
+    return chunkQueue;
 }
+
+// std::queue<RenderableBlock> World::toRenderableQueue(){
+//     std::queue<RenderableBlock> blockQueue;
+//     for(auto b : blocks){
+//         blockQueue.push(b.toRenderable());
+//     }
+//     return blockQueue;
+// }

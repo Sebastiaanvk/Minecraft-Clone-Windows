@@ -1,12 +1,19 @@
 #ifndef LOC_H
 #define LOC_H
 
+#include <utility>
+
 struct Loc2{
     int x;
     int z;
 
-    bool operator==(const Loc2& loc2) const {
+    inline bool operator==(const Loc2& loc2) const {
         return x==loc2.x && z==loc2.z;
+    }
+    inline bool operator<(const Loc2& loc2) const {
+        if(x!=loc2.x)
+            return x<loc2.x;
+        return  z<loc2.z;
     }
 };
 
@@ -31,7 +38,7 @@ struct LocInt{
     int y;
     int z;
 
-    bool operator==(const LocInt& loc2) const {
+    inline bool operator==(const LocInt& loc2) const {
         return x==loc2.x && y==loc2.y && z==loc2.z;
     }
 };
@@ -61,7 +68,7 @@ struct LocFloat{
     float y;
     float z;
 
-    bool operator==(const LocFloat& loc2) const {
+    inline bool operator==(const LocFloat& loc2) const {
         return x==loc2.x && y==loc2.y && z==loc2.z;
     }
 };
@@ -85,25 +92,25 @@ namespace std {
     };
 }
 
-const LocInt dirs[] = {{1,0,0},{-1,0,0},{0,1,0},{0,-1,0},{0,0,1},{0,0,-1}};
+inline const LocInt dirs[] = {{1,0,0},{-1,0,0},{0,1,0},{0,-1,0},{0,0,1},{0,0,-1}};
 
-LocInt operator+(const LocInt& loc1, const LocInt& loc2){
+inline LocInt operator+(const LocInt& loc1, const LocInt& loc2){
     return {loc1.x+loc2.x, loc1.y+loc2.y, loc1.z+loc2.z};
 }
 
-LocFloat operator+(const LocInt& loc1, const LocFloat& loc2){
+inline LocFloat operator+(const LocInt& loc1, const LocFloat& loc2){
     return {loc1.x+loc2.x, loc1.y+loc2.y, loc1.z+loc2.z};
 }
 
-LocFloat operator+(const LocFloat& loc1, const LocInt& loc2){
+inline LocFloat operator+(const LocFloat& loc1, const LocInt& loc2){
     return {loc1.x+loc2.x, loc1.y+loc2.y, loc1.z+loc2.z};
 }
 
-LocFloat operator+(const LocFloat& loc1, const LocFloat& loc2){
+inline LocFloat operator+(const LocFloat& loc1, const LocFloat& loc2){
     return {loc1.x+loc2.x, loc1.y+loc2.y, loc1.z+loc2.z};
 }
 
-
+typedef Loc2 ChunkID;
 
 
 #endif //LOC_H

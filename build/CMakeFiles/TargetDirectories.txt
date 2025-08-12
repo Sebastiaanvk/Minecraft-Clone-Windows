@@ -1,3 +1,3 @@
-C:/Users/sebas/Documents/GitHub/Minecraft-Clone-Windows/game/build/CMakeFiles/executable.dir
-C:/Users/sebas/Documents/GitHub/Minecraft-Clone-Windows/game/build/CMakeFiles/edit_cache.dir
-C:/Users/sebas/Documents/GitHub/Minecraft-Clone-Windows/game/build/CMakeFiles/rebuild_cache.dir
+C:/Users/sebas/Documents/GitHub/Minecraft-Clone-Windows/build/CMakeFiles/executable.dir
+C:/Users/sebas/Documents/GitHub/Minecraft-Clone-Windows/build/CMakeFiles/edit_cache.dir
+C:/Users/sebas/Documents/GitHub/Minecraft-Clone-Windows/build/CMakeFiles/rebuild_cache.dir

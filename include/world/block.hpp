@@ -1,4 +1,9 @@
+#ifndef BLOCK_HPP
+#define BLOCK_HPP
+
+
 #include <render/renderable.hpp>
+
 
 
 
@@ -11,3 +16,5 @@ private:
     int x,y,z;
     BlockID type;
 };
+
+#endif //BLOCK_HPP

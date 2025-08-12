@@ -2,31 +2,15 @@
 #include <blockRegistry.hpp>
 
 
-
-
-void BlockRegistry::init(){
-    registry[BlockID::Air] = {
-        false
-    };
-    registry[BlockID::Dirt] = {
-        true
-    };
-    registry[BlockID::Gravel] = {
-        true
-    };
-    registry[BlockID::Stone] = {
-        true
-    };
-    registry[BlockID::Grass_Dirt] = {
-        true
-    };
-    registry[BlockID::Bedrock] = {
-        true
-    };
-}
-
 bool BlockRegistry::is_solid(BlockID id){
     return registry[id].solid;
 }
 
 
+std::string BlockRegistry::getTextureName(const BlockID id, const FaceType faceType){
+    switch(faceType){
+        case Side: return std::string(registry[id].textureNameSide);
+        case Top: return std::string(registry[id].textureNameTop);
+        default: return std::string(registry[id].textureNameBottom);
+    }
+}

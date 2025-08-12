@@ -1,65 +1,10 @@
 #include <render/renderer.hpp>
 
 
-//This will get Fixed!!!
-// just want to render some cubes for testing!!!
-//cube Vertices
-    float vertices[] = {
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-
-     0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-};
-
-float vertexSide[] = {
-    0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,
-    1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,
-    2.0f,2.0f,2.0f,2.0f,2.0f,2.0f,
-    3.0f,3.0f,3.0f,3.0f,3.0f,3.0f,
-    4.0f,4.0f,4.0f,4.0f,4.0f,4.0f,
-    5.0f,5.0f,5.0f,5.0f,5.0f,5.0f,
-    6.0f,6.0f,6.0f,6.0f,6.0f,6.0f
-};
 Renderer::Renderer(){
 
 }
+
 
 
 void framebuffer_size_callback(GLFWwindow* , int width, int height)
@@ -67,34 +12,51 @@ void framebuffer_size_callback(GLFWwindow* , int width, int height)
     glViewport(0, 0, width, height);
 } 
 
-void Renderer::setUpBuffers(){
+glm::vec2 jsonGet(const nlohmann::json& data, const std::string& textureName, int atlasWidth, int atlasHeight){
+    float xLoc = ((float)data["frames"][textureName]["frame"]["x"])/((float)atlasWidth);
+    float yLoc = ((float)data["frames"][textureName]["frame"]["y"])/((float)atlasHeight); 
+    return {xLoc, yLoc};
+}
 
+std::vector<float> Renderer::updateVBOVector(const RenderableChunkMesh& worldMesh){
+    std::vector<float> vertices;
+    // the face has nubmered corners starting in the bottom left corner and going counter clockwise.
+    // The corners that correspond to the two triangles that make up the face.
+    const int cornerOrder[6] = {0,1,3,1,2,3};
+    // The uv diffs that correspond the the four corners of the face.
+    const std::pair<int,int> uvDiff[] = {{0,0},{1,0},{1,1},{0,1}};
+    for( auto face: worldMesh.mesh){
+        // Triangles counter-clockwise
+        glm::vec2 uvCoord = jsonGet(jsonAtlasData, BlockRegistry::getTextureName(face.blockType,face.faceType), atlasWidth, atlasHeight);
+        for(int i=0;i<6;i++){
+            int corner = cornerOrder[i];
+            vertices.push_back(face.corners[i].x);
+            vertices.push_back(face.corners[i].y);
+            vertices.push_back(-face.corners[i].z);
+            vertices.push_back(uvCoord.x+uvDiff[corner].first*textureSizeWidth);
+            vertices.push_back(uvCoord.y+uvDiff[corner].second*textureSizeHeight);
+        }
+    }
+    return vertices;
+}
 
-    // Vertex Array Object
-    glGenVertexArrays(1, &VAO);  
-    
-    glBindVertexArray(VAO);
+RenderMesh Renderer::createRenderMesh(const RenderableChunkMesh& worldMesh){
+    RenderMesh renderMesh;
+    glGenVertexArrays(1, &renderMesh.VAO);
+    glBindVertexArray(renderMesh.VAO);
 
-
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    
-    
-    //  Vertex attributes:
-    // position attribute
+    glGenBuffers(1, &renderMesh.VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, renderMesh.VBO);
+    std::vector<float> vertices = updateVBOVector(worldMesh);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices.data(), GL_STATIC_DRAW);
+    renderMesh.nrVertices = worldMesh.mesh.size()*6;
+    // Position attribute:
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     // texture attribute
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3* sizeof(float)));
     glEnableVertexAttribArray(1);
-
-    glGenBuffers(1, &VBO2);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexSide), vertexSide, GL_STATIC_DRAW);
-    // side attribute
-    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)(0));
-    glEnableVertexAttribArray(2);
+    return renderMesh;
 }
 
 bool Renderer::init(int width, int height){
@@ -122,7 +84,7 @@ bool Renderer::init(int width, int height){
 
 
 //  Shaders:
-     shaderprogram = Shader("../include/shaders/shader.vs","../include/shaders/shader.fs");
+     shaderprogram = Shader("../include/shaders/chunkShader.vs","../include/shaders/chunkShader.fs");
     
 //    stbi_set_flip_vertically_on_load(true);  
 
@@ -139,6 +101,13 @@ bool Renderer::init(int width, int height){
 
     int  nrChannels;
     unsigned char *data = stbi_load("../assets/blockAtlas.png", &atlasWidth, &atlasHeight, &nrChannels, 0); 
+
+    // The atlasWidth and atlasHeight give the number of pixels in the atlas.
+    // textureSizeWidth gives the portion of the image that belongs to a single texture.
+    textureSizeWidth = (float)16/(float)atlasWidth;
+    textureSizeHeight = (float)16/(float)atlasHeight;
+
+
     if(data){
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, atlasWidth, atlasHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -156,10 +125,6 @@ bool Renderer::init(int width, int height){
     std::ifstream f("../assets/blockAtlasJson.json");
     jsonAtlasData = nlohmann::json::parse(f);
 
-//Maybe add the option to scroll with a callback?
-
-    setUpBuffers();
-
 
     return true;
 }
@@ -168,18 +133,12 @@ GLFWwindow* Renderer::getWindow(){
     return window;
 }
 
-glm::vec2 jsonGet(const nlohmann::json& data, const std::string& textureName, int atlasWidth, int atlasHeight){
-    float xLoc = ((float)data["frames"][textureName]["frame"]["x"])/((float)atlasWidth);
-    float yLoc = ((float)data["frames"][textureName]["frame"]["y"])/((float)atlasHeight); 
-    return {xLoc, yLoc};
-}
+
 
 void Renderer::render(World& world, Camera& camera){
+
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
-    glBindVertexArray(VAO);
 
     glm::mat4 view;
     view = camera.getViewMatrix();
@@ -197,29 +156,26 @@ void Renderer::render(World& world, Camera& camera){
     unsigned int projectionLoc = glGetUniformLocation(shaderprogram.ID, "projection");
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-    std::queue<RenderableBlock>  renQ = world.toRenderableQueue();
-    //This while loop is hella sketchy. Will change later!!!!
-    while(!renQ.empty())
-        {
-            RenderableBlock ren = renQ.front();
-            renQ.pop();
 
-            unsigned int textureSizeLoc = glGetUniformLocation(shaderprogram.ID, "textureSize");
-            glUniform2f(textureSizeLoc,(float)16 / (float)atlasWidth,(float)16 / (float)atlasHeight);
+    std::queue<std::shared_ptr<RenderableChunkMesh>> chunkQueue = world.toRenderableChunkQueue();
+    while(!chunkQueue.empty()){
+        std::shared_ptr<RenderableChunkMesh> chunkPtr = chunkQueue.front();
+        chunkQueue.pop();
+        ChunkID chunkID = chunkPtr->chunkId;
+        if(chunkMeshes.count(chunkID)==0){
+            chunkMeshes[chunkID] = createRenderMesh(*chunkPtr);
+        } else if(chunkPtr->updated){
+            std::vector<float> vertices = updateVBOVector(*chunkPtr);
+            chunkMeshes[chunkID].nrVertices = 6*chunkPtr->mesh.size();
+            glBindVertexArray(chunkMeshes[chunkID].VAO);
+            glBindBuffer(GL_ARRAY_BUFFER,chunkMeshes[chunkID].VBO);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices.data());
 
-            
-            glm::vec2 textureOffsets[6] = {jsonGet(jsonAtlasData, ren.sideTexture,atlasWidth,atlasHeight),jsonGet(jsonAtlasData, ren.sideTexture,atlasWidth,atlasHeight),jsonGet(jsonAtlasData, ren.sideTexture,atlasWidth,atlasHeight),jsonGet(jsonAtlasData, ren.sideTexture,atlasWidth,atlasHeight),jsonGet(jsonAtlasData, ren.topTexture,atlasWidth,atlasHeight),jsonGet(jsonAtlasData, ren.botTexture,atlasWidth,atlasHeight)};
-
-            unsigned int offsetLoc = glGetUniformLocation(shaderprogram.ID, "textureOffset");
-            glUniform2fv(offsetLoc, 6, glm::value_ptr(textureOffsets[0]));
-
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(ren.x,ren.y,ren.z) );
-            shaderprogram.setMat4("model", model);
-            
-            glDrawArrays(GL_TRIANGLES, 0, 36);
+            chunkPtr->updated = false;
+        } else {
+            glBindVertexArray(chunkMeshes[chunkID].VAO);
         }
 
-    glfwSwapBuffers(window);
-
+        glDrawArrays(GL_TRIANGLES, 0, chunkMeshes[chunkID].nrVertices);
+    }
 }

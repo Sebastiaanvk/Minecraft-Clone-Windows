@@ -1,8 +1,12 @@
 #include <world/chunk.hpp>
 
+Chunk::Chunk(){
 
-Chunk::Chunk(const Loc2& loc){
+}
+
+Chunk::Chunk(const ChunkID& loc){
 //    updated = true;
+    meshPtr = std::make_shared<RenderableChunkMesh>();
     dirty = true;
     chunkLoc = {MAXCHUNKX*loc.x,0,MAXCHUNKY*loc.z};
     for(int i=0; i<CHUNKSIZE; i++){
@@ -10,15 +14,17 @@ Chunk::Chunk(const Loc2& loc){
     }
 }
 
-Chunk::Chunk(std::array<BlockID,CHUNKSIZE>& chunkInput, const Loc2& loc){
+Chunk::Chunk(std::array<BlockID,CHUNKSIZE>& chunkInput, const ChunkID& loc){
 //    updated = true;
+    meshPtr = std::make_shared<RenderableChunkMesh>();
     dirty = true;
     chunkLoc = {MAXCHUNKX*loc.x,0,MAXCHUNKY*loc.z};
     chunk = chunkInput;
 }
 
-Chunk::Chunk(std::vector<std::pair<LocInt,BlockID>> blockSet, const Loc2& loc){
+Chunk::Chunk(std::vector<std::pair<LocInt,BlockID>> blockSet, const ChunkID& loc){
 //    updated = true;
+    meshPtr = std::make_shared<RenderableChunkMesh>();
     dirty = true;
     chunkLoc = {MAXCHUNKX*loc.x,0,MAXCHUNKY*loc.z};
     for(int i=0; i<CHUNKSIZE; i++){
@@ -29,22 +35,13 @@ Chunk::Chunk(std::vector<std::pair<LocInt,BlockID>> blockSet, const Loc2& loc){
     }
 }
 
-
-const std::vector<std::vector<LocInt>> blockSides = {
-    {{0,0,0},{1,0,0},{1,1,0},{0,1,0}},
-    {{0,0,1},{0,1,1},{1,1,0},{1,0,1}},
-    {{0,0,0},{0,0,1},{1,0,1},{1,0,0}},
-    {{0,1,0},{1,1,0},{1,1,1},{0,1,1}},
-    {{0,0,0},{0,1,0},{0,1,1},{0,0,1}},
-    {{1,0,0},{1,0,1},{1,1,1},{1,1,0}},
-};
-
 BlockID Chunk::getBlockId(const LocInt& loc){
     return chunk[ loc.y*MAXCHUNKX*MAXCHUNKZ + loc.z*MAXCHUNKX + loc.x];
 }
 
 void Chunk::setBlockId(const LocInt& loc,BlockID id){
     chunk[loc.y*MAXCHUNKX*MAXCHUNKZ + loc.z*MAXCHUNKX + loc.x] = id;
+    dirty = true;
 }
 
 bool Chunk::blockIsSolid(const LocInt& loc){
@@ -54,22 +51,34 @@ bool Chunk::blockIsSolid(const LocInt& loc){
     return BlockRegistry::is_solid( getBlockId(loc) );
 }
 
+//The corners are counter-clockwise ( WAIT ARE THEY????)
+const std::vector<std::vector<LocInt>> blockSides = {
+    {{0,0,0},{1,0,0},{1,1,0},{0,1,0}},
+    {{0,0,1},{0,1,1},{1,1,0},{1,0,1}},
+    {{0,0,0},{0,0,1},{1,0,1},{1,0,0}},
+    {{0,1,0},{1,1,0},{1,1,1},{0,1,1}},
+    {{0,0,0},{0,1,0},{0,1,1},{0,0,1}},
+    {{1,0,0},{1,0,1},{1,1,1},{1,1,0}},
+};
+
 void Chunk::update_mesh(){
-    mesh = RenderableChunkMesh();
-    mesh.updated =true;
+    meshPtr->updated =true;
+    meshPtr->mesh = {};
     for(int x=0; x<MAXCHUNKX; x++){ for(int y=0; y<MAXCHUNKY; y++){ for(int z=0; z< MAXCHUNKZ; z++){
         LocInt loc = {x,y,z};
         for(int i=0; i<6;i++){
             LocInt dir = dirs[i];
             if(!blockIsSolid(loc+dir)){
                 ChunkMeshElt meshElt;
-                meshElt.corner0 = chunkLoc + blockSides[i][0];
-                meshElt.corner1 = chunkLoc + blockSides[i][1];
-                meshElt.corner2 = chunkLoc + blockSides[i][2];
-                meshElt.corner3 = chunkLoc + blockSides[i][3];
+                meshElt.corners[0] = chunkLoc + blockSides[i][0];
+                meshElt.corners[1] = chunkLoc + blockSides[i][1];
+                meshElt.corners[2] = chunkLoc + blockSides[i][2];
+                meshElt.corners[3] = chunkLoc + blockSides[i][3];
 
                 meshElt.blockType = getBlockId(loc+dir);
-                meshElt.faceType = static_cast<FaceType>(i);
+                meshElt.faceType = faceTypeArr[i];
+
+                meshPtr->mesh.push_back(meshElt);
             }
         }
     }}}
@@ -78,13 +87,11 @@ void Chunk::update_mesh(){
 
 
 
-RenderableChunkMesh Chunk::getMesh(){
+std::shared_ptr<RenderableChunkMesh> Chunk::getMeshPtr(){
     if(dirty){
         update_mesh();
-    } else {
-        mesh.updated = false;
-    }
-    return mesh;
+    } 
+    return meshPtr;
 }
 
 

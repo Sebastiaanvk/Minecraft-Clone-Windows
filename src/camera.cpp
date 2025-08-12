@@ -74,7 +74,16 @@ void Camera::move_down(float deltaTime){
 }
 
 glm::mat4 Camera::getViewMatrix(){
-    glm::mat4 view = glm::lookAt(cameraPos,cameraFront+cameraPos, cameraUp);
+    // This flipZ matrix is from chatgpt
+    // Double check whether it works correctly!
+    // glm::mat4 flipZ = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f,1.0f, -1.0f));
+    // Maybe we dont even need to flip the z!
+    glm::vec3 cameraPosZFlip = glm::vec3(cameraPos.x,cameraPos.y,-cameraPos.z);
+    glm::vec3 cameraFrontZFlip = glm::vec3(cameraFront.x,cameraFront.y,-cameraFront.z);
+    glm::vec3 cameraUpZFlip = glm::vec3(cameraUp.x,cameraUp.y,cameraUp.z);
+
+    glm::mat4 view = glm::lookAt(cameraPosZFlip,cameraFrontZFlip+cameraPosZFlip, cameraUpZFlip);
+
     return view;
 }
 
