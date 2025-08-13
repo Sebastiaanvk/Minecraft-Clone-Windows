@@ -1,8 +1,10 @@
 Navigate to build folder.
 
 Cmake: run the cmake with: cmake .. -G "Ninja"
+Or for debugging:  cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Debug
 
-ninja: compile the code with the command ninja
+After moving back to the main folder.
+ninja: compile the code with the command ninja -C build
 
 Run the executable with ./build/executable
 

@@ -26,6 +26,7 @@ std::vector<float> Renderer::updateVBOVector(const RenderableChunkMesh& worldMes
     // The uv diffs that correspond the the four corners of the face.
     const std::pair<int,int> uvDiff[] = {{0,0},{1,0},{1,1},{0,1}};
     for( auto face: worldMesh.mesh){
+        // std::cout << face.blockType << std::endl;
         // Triangles counter-clockwise
         glm::vec2 uvCoord = jsonGet(jsonAtlasData, BlockRegistry::getTextureName(face.blockType,face.faceType), atlasWidth, atlasHeight);
         for(int i=0;i<6;i++){
@@ -64,7 +65,7 @@ bool Renderer::init(int width, int height){
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    window = glfwCreateWindow(width,height,  "LearnOpenGL", NULL, NULL);
+    window = glfwCreateWindow(width,height,  "Minecraft Clone", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -84,7 +85,8 @@ bool Renderer::init(int width, int height){
 
 
 //  Shaders:
-     shaderprogram = Shader("../include/shaders/chunkShader.vs","../include/shaders/chunkShader.fs");
+     shaderprogram = Shader("include/shaders/chunkShader.vs","include/shaders/chunkShader.fs");
+    //  shaderprogram = Shader("../include/shaders/chunkShader.vs","../include/shaders/chunkShader.fs");
     
 //    stbi_set_flip_vertically_on_load(true);  
 
@@ -100,7 +102,7 @@ bool Renderer::init(int width, int height){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     int  nrChannels;
-    unsigned char *data = stbi_load("../assets/blockAtlas.png", &atlasWidth, &atlasHeight, &nrChannels, 0); 
+    unsigned char *data = stbi_load("assets/blockAtlas.png", &atlasWidth, &atlasHeight, &nrChannels, 0); 
 
     // The atlasWidth and atlasHeight give the number of pixels in the atlas.
     // textureSizeWidth gives the portion of the image that belongs to a single texture.
@@ -122,7 +124,7 @@ bool Renderer::init(int width, int height){
 
     glEnable(GL_DEPTH_TEST);  
 
-    std::ifstream f("../assets/blockAtlasJson.json");
+    std::ifstream f("assets/blockAtlasJson.json");
     jsonAtlasData = nlohmann::json::parse(f);
 
 
@@ -178,4 +180,6 @@ void Renderer::render(World& world, Camera& camera){
 
         glDrawArrays(GL_TRIANGLES, 0, chunkMeshes[chunkID].nrVertices);
     }
+
+    glfwSwapBuffers(window);
 }

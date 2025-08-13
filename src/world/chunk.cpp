@@ -66,19 +66,21 @@ void Chunk::update_mesh(){
     meshPtr->mesh = {};
     for(int x=0; x<MAXCHUNKX; x++){ for(int y=0; y<MAXCHUNKY; y++){ for(int z=0; z< MAXCHUNKZ; z++){
         LocInt loc = {x,y,z};
-        for(int i=0; i<6;i++){
-            LocInt dir = dirs[i];
-            if(!blockIsSolid(loc+dir)){
-                ChunkMeshElt meshElt;
-                meshElt.corners[0] = chunkLoc + blockSides[i][0];
-                meshElt.corners[1] = chunkLoc + blockSides[i][1];
-                meshElt.corners[2] = chunkLoc + blockSides[i][2];
-                meshElt.corners[3] = chunkLoc + blockSides[i][3];
+        if(blockIsSolid(loc)){
+            for(int i=0; i<6;i++){
+                LocInt dir = dirs[i];
+                if(!blockIsSolid(loc+dir)){
+                    ChunkMeshElt meshElt;
+                    meshElt.corners[0] = chunkLoc + blockSides[i][0];
+                    meshElt.corners[1] = chunkLoc + blockSides[i][1];
+                    meshElt.corners[2] = chunkLoc + blockSides[i][2];
+                    meshElt.corners[3] = chunkLoc + blockSides[i][3];
 
-                meshElt.blockType = getBlockId(loc+dir);
-                meshElt.faceType = faceTypeArr[i];
+                    meshElt.blockType = getBlockId(loc);
+                    meshElt.faceType = faceTypeArr[i];
 
-                meshPtr->mesh.push_back(meshElt);
+                    meshPtr->mesh.push_back(meshElt);
+                }
             }
         }
     }}}

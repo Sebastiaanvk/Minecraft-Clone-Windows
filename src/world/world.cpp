@@ -18,8 +18,8 @@ World::World(){
     std::vector<std::pair<LocInt, BlockID>> blockList;
     for(int x=0; x<40; x++){
         for(int z=0; z<40; z++){
-            for(int y=50; y<150; y++){
-                LocInt loc = { x,0,z};
+            for(int y=0; y<200; y++){
+                LocInt loc = { x,y,z};
                 BlockID id = BlockID::Dirt;
                 blockList.push_back({loc,id});
             }
@@ -28,6 +28,8 @@ World::World(){
 
     chunks[{0,0}] = Chunk(blockList,{0,0});
     chunks[{32,0}] = Chunk(blockList,{32,0});
+    chunks[{-32,0}] = Chunk(blockList,{-32,0});
+
 
 
 }
