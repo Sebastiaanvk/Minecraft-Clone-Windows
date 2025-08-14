@@ -19,6 +19,7 @@ public:
     void move_right(float deltaTime);
     void move_up(float deltatime);
     void move_down(float deltatime);
+    std::string cameraStatsAsString();
 
     glm::mat4 getViewMatrix();
 

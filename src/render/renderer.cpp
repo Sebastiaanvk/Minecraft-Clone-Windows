@@ -1,5 +1,10 @@
 #include <render/renderer.hpp>
 
+unsigned int testVAO;
+unsigned int testVBO;
+
+
+
 
 Renderer::Renderer(){
 
@@ -24,16 +29,16 @@ std::vector<float> Renderer::updateVBOVector(const RenderableChunkMesh& worldMes
     // The corners that correspond to the two triangles that make up the face.
     const int cornerOrder[6] = {0,1,3,1,2,3};
     // The uv diffs that correspond the the four corners of the face.
-    const std::pair<int,int> uvDiff[] = {{0,0},{1,0},{1,1},{0,1}};
+    const std::pair<int,int> uvDiff[] = {{0,1},{1,1},{1,0},{0,0}};
     for( auto face: worldMesh.mesh){
         // std::cout << face.blockType << std::endl;
         // Triangles counter-clockwise
         glm::vec2 uvCoord = jsonGet(jsonAtlasData, BlockRegistry::getTextureName(face.blockType,face.faceType), atlasWidth, atlasHeight);
         for(int i=0;i<6;i++){
             int corner = cornerOrder[i];
-            vertices.push_back(face.corners[i].x);
-            vertices.push_back(face.corners[i].y);
-            vertices.push_back(-face.corners[i].z);
+            vertices.push_back(face.corners[corner].x);
+            vertices.push_back(face.corners[corner].y);
+            vertices.push_back(-face.corners[corner].z);
             vertices.push_back(uvCoord.x+uvDiff[corner].first*textureSizeWidth);
             vertices.push_back(uvCoord.y+uvDiff[corner].second*textureSizeHeight);
         }
@@ -49,7 +54,7 @@ RenderMesh Renderer::createRenderMesh(const RenderableChunkMesh& worldMesh){
     glGenBuffers(1, &renderMesh.VBO);
     glBindBuffer(GL_ARRAY_BUFFER, renderMesh.VBO);
     std::vector<float> vertices = updateVBOVector(worldMesh);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(float), vertices.data(), GL_STATIC_DRAW);
     renderMesh.nrVertices = worldMesh.mesh.size()*6;
     // Position attribute:
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
@@ -58,6 +63,34 @@ RenderMesh Renderer::createRenderMesh(const RenderableChunkMesh& worldMesh){
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3* sizeof(float)));
     glEnableVertexAttribArray(1);
     return renderMesh;
+}
+
+// This is just for testing, delete later!
+void setupTestMeshes( int atlasWidth, int atlasHeight){
+    glGenVertexArrays(1,&testVAO);
+    glBindVertexArray(testVAO);
+
+    glGenBuffers(1,&testVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, testVBO);
+
+    float atlasRatio = (float) atlasHeight/atlasWidth;
+    
+    float testVertices [] = {
+        -5,5-10*atlasRatio,-5,0,1,
+        5,5,-5,1,0,
+        -5,5,-5,0,0,
+        5,5,-5,1,0,
+        -5,5-10*atlasRatio,-5,0,1,
+        5,5-10*atlasRatio,-5,1,1
+    };
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(testVertices), testVertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3*sizeof(float)));
+    glEnableVertexAttribArray(1);
+
 }
 
 bool Renderer::init(int width, int height){
@@ -103,6 +136,7 @@ bool Renderer::init(int width, int height){
 
     int  nrChannels;
     unsigned char *data = stbi_load("assets/blockAtlas.png", &atlasWidth, &atlasHeight, &nrChannels, 0); 
+    std::cout << "atlasWidth: " << atlasWidth << ", atlasHeight: " << atlasHeight << std::endl;
 
     // The atlasWidth and atlasHeight give the number of pixels in the atlas.
     // textureSizeWidth gives the portion of the image that belongs to a single texture.
@@ -123,9 +157,12 @@ bool Renderer::init(int width, int height){
     shaderprogram.setInt("textureAtlas",0);
 
     glEnable(GL_DEPTH_TEST);  
+    glEnable(GL_CULL_FACE);
 
     std::ifstream f("assets/blockAtlasJson.json");
     jsonAtlasData = nlohmann::json::parse(f);
+
+    setupTestMeshes(atlasWidth, atlasHeight);
 
 
     return true;
@@ -134,6 +171,9 @@ bool Renderer::init(int width, int height){
 GLFWwindow* Renderer::getWindow(){
     return window;
 }
+
+
+
 
 
 
@@ -158,7 +198,6 @@ void Renderer::render(World& world, Camera& camera){
     unsigned int projectionLoc = glGetUniformLocation(shaderprogram.ID, "projection");
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-
     std::queue<std::shared_ptr<RenderableChunkMesh>> chunkQueue = world.toRenderableChunkQueue();
     while(!chunkQueue.empty()){
         std::shared_ptr<RenderableChunkMesh> chunkPtr = chunkQueue.front();
@@ -171,7 +210,7 @@ void Renderer::render(World& world, Camera& camera){
             chunkMeshes[chunkID].nrVertices = 6*chunkPtr->mesh.size();
             glBindVertexArray(chunkMeshes[chunkID].VAO);
             glBindBuffer(GL_ARRAY_BUFFER,chunkMeshes[chunkID].VBO);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices.data());
+            glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size()*sizeof(float), vertices.data());
 
             chunkPtr->updated = false;
         } else {
@@ -180,6 +219,10 @@ void Renderer::render(World& world, Camera& camera){
 
         glDrawArrays(GL_TRIANGLES, 0, chunkMeshes[chunkID].nrVertices);
     }
+
+    glBindVertexArray(testVAO);
+    glDrawArrays(GL_TRIANGLES,0,6);
+
 
     glfwSwapBuffers(window);
 }

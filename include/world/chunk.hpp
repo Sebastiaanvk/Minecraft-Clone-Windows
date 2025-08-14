@@ -26,6 +26,7 @@ class Chunk{
     std::shared_ptr<RenderableChunkMesh> getMeshPtr();
     BlockID getBlockId(const LocInt& loc);
     void setBlockId(const LocInt& loc,BlockID id);
+    bool isDirty();
 
 private:
     std::array<BlockID,CHUNKSIZE> chunk;

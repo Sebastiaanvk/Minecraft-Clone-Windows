@@ -3,6 +3,9 @@ Navigate to build folder.
 Cmake: run the cmake with: cmake .. -G "Ninja"
 Or for debugging:  cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Debug
 
+Or if you're in the main folder:
+cmake -B build -G "Ninja"
+
 After moving back to the main folder.
 ninja: compile the code with the command ninja -C build
 

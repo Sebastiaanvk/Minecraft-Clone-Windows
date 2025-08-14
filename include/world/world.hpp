@@ -10,6 +10,7 @@
 #include <set>
 #include <unordered_map>
 #include <memory>
+#include <iostream>
 
 class World{
 public:
@@ -21,6 +22,7 @@ public:
 private:
     std::vector<Block> blocks;
     std::unordered_map<ChunkID, Chunk> chunks;
+    std::shared_ptr<RenderableChunkMesh> testMeshPtr;
 };
 
 #endif //MODEL_HPP

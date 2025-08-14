@@ -42,6 +42,7 @@ void Game::run(){
 
         renderer.render(world,camera);
 
+        // std::cout<< camera.cameraStatsAsString() << std::endl;
 
     }
     glfwTerminate();
@@ -74,6 +75,6 @@ void Game::process_input(){
     if(input_handler.key_down(Key::LEFT_SHIFT)){
         camera.move_down(deltaTime);
     }
-    std::cout << "dx: " << input_handler.getDX() << " dy: " << input_handler.getDY() << "\n";
+    // std::cout << "dx: " << input_handler.getDX() << " dy: " << input_handler.getDY() << "\n";
     camera.rotate(input_handler.getDX(),input_handler.getDY());
 }
