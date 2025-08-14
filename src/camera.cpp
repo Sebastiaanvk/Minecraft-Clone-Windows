@@ -41,13 +41,15 @@ void Camera::rotate(float dx, float dy){
 
 void Camera::move_forward(float deltaTime){
     float delta = deltaTime * camera_speed;
-    cameraPos += delta*cameraFront;
+    glm::vec3 horDir = glm::normalize(glm::vec3(cameraFront.x,0,cameraFront.z));
+    cameraPos += delta*horDir;
 
 }
 
 void Camera::move_backward(float deltaTime){
     float delta = deltaTime * camera_speed;
-    cameraPos -= delta*cameraFront;
+    glm::vec3 horDir = glm::normalize(glm::vec3(cameraFront.x,0,cameraFront.z));
+    cameraPos -= delta*horDir;
 
 }
 

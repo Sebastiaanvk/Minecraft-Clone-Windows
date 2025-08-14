@@ -50,7 +50,6 @@ World::World(){
 std::queue<std::shared_ptr<RenderableChunkMesh>> World::toRenderableChunkQueue(){
     std::queue<std::shared_ptr<RenderableChunkMesh>> chunkQueue;
     for(auto& c : chunks){
-        std::cout << c.first.x << ", " << c.first.z << std::endl;
         if(c.second.isDirty()){
             c.second.update_mesh();
         }

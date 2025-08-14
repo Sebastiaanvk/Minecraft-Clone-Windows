@@ -205,6 +205,7 @@ void Renderer::render(World& world, Camera& camera){
         ChunkID chunkID = chunkPtr->chunkId;
         if(chunkMeshes.count(chunkID)==0){
             chunkMeshes[chunkID] = createRenderMesh(*chunkPtr);
+            glBindVertexArray(chunkMeshes[chunkID].VAO);
         } else if(chunkPtr->updated){
             std::vector<float> vertices = updateVBOVector(*chunkPtr);
             chunkMeshes[chunkID].nrVertices = 6*chunkPtr->mesh.size();
