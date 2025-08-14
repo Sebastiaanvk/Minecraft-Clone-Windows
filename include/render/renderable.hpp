@@ -14,6 +14,9 @@ struct ChunkMeshElt{
     LocInt corners[4];
     BlockID  blockType;
     FaceType faceType;
+    //Chatgpt suggested this datatype:
+    uint8_t tint[3];
+    uint8_t padding;
 };
 
 struct RenderableChunkMesh{

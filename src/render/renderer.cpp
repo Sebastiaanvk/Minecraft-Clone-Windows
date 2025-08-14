@@ -23,8 +23,9 @@ glm::vec2 jsonGet(const nlohmann::json& data, const std::string& textureName, in
     return {xLoc, yLoc};
 }
 
-std::vector<float> Renderer::updateVBOVector(const RenderableChunkMesh& worldMesh){
-    std::vector<float> vertices;
+
+std::vector<Renderer::chunkVBOElt> Renderer::updateVBOVector(const RenderableChunkMesh& worldMesh){
+    std::vector<chunkVBOElt> vertices;
     // the face has nubmered corners starting in the bottom left corner and going counter clockwise.
     // The corners that correspond to the two triangles that make up the face.
     const int cornerOrder[6] = {0,1,3,1,2,3};
@@ -35,14 +36,24 @@ std::vector<float> Renderer::updateVBOVector(const RenderableChunkMesh& worldMes
         // Triangles counter-clockwise
         glm::vec2 uvCoord = jsonGet(jsonAtlasData, BlockRegistry::getTextureName(face.blockType,face.faceType), atlasWidth, atlasHeight);
         for(int i=0;i<6;i++){
+            chunkVBOElt vboElt;
             int corner = cornerOrder[i];
-            vertices.push_back(face.corners[corner].x);
-            vertices.push_back(face.corners[corner].y);
-            vertices.push_back(-face.corners[corner].z);
-            vertices.push_back(uvCoord.x+uvDiff[corner].first*textureSizeWidth);
-            vertices.push_back(uvCoord.y+uvDiff[corner].second*textureSizeHeight);
+
+           vboElt.pos[0] = face.corners[corner].x;
+           vboElt.pos[1] = face.corners[corner].y;
+           vboElt.pos[2] = -face.corners[corner].z;
+           vboElt.uv[0] = uvCoord.x+uvDiff[corner].first*textureSizeWidth;
+           vboElt.uv[1] = uvCoord.y+uvDiff[corner].second*textureSizeHeight;
+           vboElt.tint[0] = face.tint[0];
+           vboElt.tint[1] = face.tint[1];
+           vboElt.tint[2] = face.tint[2];
+           vboElt.tint[3] = 255;
+
+            vertices.push_back(vboElt);
         }
     }
+
+
     return vertices;
 }
 
@@ -53,45 +64,48 @@ RenderMesh Renderer::createRenderMesh(const RenderableChunkMesh& worldMesh){
 
     glGenBuffers(1, &renderMesh.VBO);
     glBindBuffer(GL_ARRAY_BUFFER, renderMesh.VBO);
-    std::vector<float> vertices = updateVBOVector(worldMesh);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(float), vertices.data(), GL_STATIC_DRAW);
+    std::vector<chunkVBOElt> vertices = updateVBOVector(worldMesh);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(chunkVBOElt), vertices.data(), GL_STATIC_DRAW);
     renderMesh.nrVertices = worldMesh.mesh.size()*6;
     // Position attribute:
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(chunkVBOElt), (void*)offsetof(chunkVBOElt, pos));
     glEnableVertexAttribArray(0);
     // texture attribute
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3* sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(chunkVBOElt), (void*)offsetof(chunkVBOElt, uv));
     glEnableVertexAttribArray(1);
+    // tint attribute
+    glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(chunkVBOElt), (void*)offsetof(chunkVBOElt, tint));
+    glEnableVertexAttribArray(2);
     return renderMesh;
 }
 
 // This is just for testing, delete later!
-void setupTestMeshes( int atlasWidth, int atlasHeight){
-    glGenVertexArrays(1,&testVAO);
-    glBindVertexArray(testVAO);
+// void Renderer::setupTestMeshes( int atlasWidth, int atlasHeight){
+//     glGenVertexArrays(1,&testVAO);
+//     glBindVertexArray(testVAO);
 
-    glGenBuffers(1,&testVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, testVBO);
+//     glGenBuffers(1,&testVBO);
+//     glBindBuffer(GL_ARRAY_BUFFER, testVBO);
 
-    float atlasRatio = (float) atlasHeight/atlasWidth;
+//     float atlasRatio = (float) atlasHeight/atlasWidth;
     
-    float testVertices [] = {
-        -5,5-10*atlasRatio,-5,0,1,
-        5,5,-5,1,0,
-        -5,5,-5,0,0,
-        5,5,-5,1,0,
-        -5,5-10*atlasRatio,-5,0,1,
-        5,5-10*atlasRatio,-5,1,1
-    };
+//     chunkVBOElt testVertices [] = {
+//         {-5,5-10*atlasRatio,-5,0,1,255,255,255,255},
+//         {5,5,-5,1,0,255,255,255,255},
+//         {-5,5,-5,0,0,255,255,255,255},
+//         {5,5,-5,1,0,255,255,255,255},
+//         {-5,5-10*atlasRatio,-5,0,1,255,255,255,255},
+//         {5,5-10*atlasRatio,-5,1,1,255,255,255,255}
+//     };
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(testVertices), testVertices, GL_STATIC_DRAW);
+//     glBufferData(GL_ARRAY_BUFFER, sizeof(testVertices), testVertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3*sizeof(float)));
-    glEnableVertexAttribArray(1);
+//     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+//     glEnableVertexAttribArray(0);
+//     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3*sizeof(float)));
+//     glEnableVertexAttribArray(1);
 
-}
+// }
 
 bool Renderer::init(int width, int height){
     glfwInit();
@@ -162,7 +176,7 @@ bool Renderer::init(int width, int height){
     std::ifstream f("assets/blockAtlasJson.json");
     jsonAtlasData = nlohmann::json::parse(f);
 
-    setupTestMeshes(atlasWidth, atlasHeight);
+    // setupTestMeshes(atlasWidth, atlasHeight);
 
 
     return true;
@@ -207,11 +221,11 @@ void Renderer::render(World& world, Camera& camera){
             chunkMeshes[chunkID] = createRenderMesh(*chunkPtr);
             glBindVertexArray(chunkMeshes[chunkID].VAO);
         } else if(chunkPtr->updated){
-            std::vector<float> vertices = updateVBOVector(*chunkPtr);
+            std::vector<chunkVBOElt> vertices = updateVBOVector(*chunkPtr);
             chunkMeshes[chunkID].nrVertices = 6*chunkPtr->mesh.size();
             glBindVertexArray(chunkMeshes[chunkID].VAO);
             glBindBuffer(GL_ARRAY_BUFFER,chunkMeshes[chunkID].VBO);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size()*sizeof(float), vertices.data());
+            glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size()*sizeof(chunkVBOElt), vertices.data());
 
             chunkPtr->updated = false;
         } else {
@@ -221,8 +235,8 @@ void Renderer::render(World& world, Camera& camera){
         glDrawArrays(GL_TRIANGLES, 0, chunkMeshes[chunkID].nrVertices);
     }
 
-    glBindVertexArray(testVAO);
-    glDrawArrays(GL_TRIANGLES,0,6);
+    // glBindVertexArray(testVAO);
+    // glDrawArrays(GL_TRIANGLES,0,6);
 
 
     glfwSwapBuffers(window);

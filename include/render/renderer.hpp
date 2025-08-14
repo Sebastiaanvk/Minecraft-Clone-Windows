@@ -34,6 +34,13 @@ public:
 
     void render(World& world, Camera& camera);
 private:
+// Chatgpt suggested using a struct for the data of the vbo.
+    struct chunkVBOElt{
+        glm::vec3 pos;
+        glm::vec2 uv;
+        uint8_t tint[4];
+    };
+
     GLFWwindow* window;
     nlohmann::json jsonAtlasData;
     Shader shaderprogram;
@@ -41,9 +48,10 @@ private:
     int atlasHeight;
     float textureSizeHeight;
     float textureSizeWidth;
-    std::vector<float> updateVBOVector(const RenderableChunkMesh& worldMesh);
+    std::vector<chunkVBOElt> updateVBOVector(const RenderableChunkMesh& worldMesh);
     RenderMesh createRenderMesh(const RenderableChunkMesh& worldMesh);
     std::map<ChunkID,RenderMesh> chunkMeshes;
+    // void setupTestMeshes( int atlasWidth, int atlasHeight);
 };
 
 

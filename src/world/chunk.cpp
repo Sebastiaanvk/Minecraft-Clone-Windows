@@ -15,14 +15,14 @@ Chunk::Chunk(const ChunkID& loc){
     }
 }
 
-Chunk::Chunk(std::array<BlockID,CHUNKSIZE>& chunkInput, const ChunkID& loc){
-//    updated = true;
-    meshPtr = std::make_shared<RenderableChunkMesh>();
-    meshPtr->chunkId = loc;
-    dirty = true;
-    chunkLoc = {loc.x,0,loc.z};
-    chunk = chunkInput;
-}
+// Chunk::Chunk(std::array<BlockID,CHUNKSIZE>& chunkInput, const ChunkID& loc){
+// //    updated = true;
+//     meshPtr = std::make_shared<RenderableChunkMesh>();
+//     meshPtr->chunkId = loc;
+//     dirty = true;
+//     chunkLoc = {loc.x,0,loc.z};
+//     chunk = chunkInput;
+// }
 
 Chunk::Chunk(std::vector<std::pair<LocInt,BlockID>> blockSet, const ChunkID& loc){
 //    updated = true;
@@ -86,6 +86,14 @@ void Chunk::update_mesh(){
 
                     meshElt.blockType = getBlockId(loc);
                     meshElt.faceType = faceTypeArr[i];
+                    
+                    //Fix this for general cases!!!!
+                    // Also the color was kind of arbitrary
+                    if(meshElt.faceType==FaceType::Top && meshElt.blockType==BlockID::Grass_Dirt){
+                        meshElt.tint[0] = 190,meshElt.tint[1] = 255,meshElt.tint[2] = 120;
+                    } else {
+                        meshElt.tint[0] = 255,meshElt.tint[1] = 255,meshElt.tint[2] = 255;
+                    }
 
                     meshPtr->mesh.push_back(meshElt);
                 }

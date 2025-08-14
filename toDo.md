@@ -3,7 +3,13 @@
 
 Camera movement, w en s bewegen in horizontaal vlak(Done)
 
-Chunk Id niet als absolute locatie, maar als chunks tellen
+Fix grass colour.(Done)
+
+Chunk Id niet als absolute locatie, maar als chunks tellen.(Is dit beter?)
+
+
+Chunk generation.
+
 
 
 

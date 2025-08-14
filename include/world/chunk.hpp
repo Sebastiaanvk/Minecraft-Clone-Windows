@@ -19,7 +19,7 @@ class Chunk{
     public:
     Chunk();
     Chunk(const ChunkID& loc);
-    Chunk(std::array<BlockID,CHUNKSIZE>& chunkInput, const ChunkID& loc);
+    // Chunk(std::array<BlockID,CHUNKSIZE>& chunkInput, const ChunkID& loc);
     Chunk(std::vector<std::pair<LocInt,BlockID>> blockSet, const ChunkID& loc);
 
     void update_mesh();
