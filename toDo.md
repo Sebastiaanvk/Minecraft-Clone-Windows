@@ -1,22 +1,15 @@
 # Todo list
 
 
-Camera movement, w en s bewegen in horizontaal vlak(Done)
-
-Fix grass colour.(Done)
-
-Chunk Id niet als absolute locatie, maar als chunks tellen.(Is dit beter?)
-
+blocken vernietigen en toevoegen.
 
 Chunk generation.
 
+textures aan de onderkant en naast andere chunks niet renderen.
 
-
-
-World Generation
+Frame rate vast zetten of de game ticks alleen in vaste intervallen.
 
 User interface fixen. (IMGui?)
-
 
 See through shizzle
 

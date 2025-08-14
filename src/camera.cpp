@@ -6,9 +6,9 @@ Camera::Camera(){
 }
 
 bool Camera::init(){
-    camera_speed = 2.5f;
+    camera_speed = 10.0f;
 
-    cameraPos   = glm::vec3(0.0f, 0.0f,  0.0f);
+    cameraPos   = glm::vec3(0.0f, 128.0f,  0.0f);
     cameraUp = glm::vec3(0.0f, 1.0f,  0.0f);
 
     yaw = 90.0f;

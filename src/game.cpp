@@ -4,7 +4,11 @@
 Game::Game(){
     renderer = Renderer();
     input_handler  =  Input_Handler();
-    world = World();
+
+    unsigned int seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::mt19937 generator(seed); // Mersenne Twister engine
+    std::cout << "Seed: "<< seed << std::endl;
+    world = World(seed);
     camera = Camera();
     deltaTime = 0.0f;
     lastFrame = 0.0f;
@@ -14,7 +18,7 @@ Game::Game(){
 
 void Game::run(){
 
-    if(!renderer.init(1600,1200)){
+    if(!renderer.init(2200,2000)){
         return;
     }
     glfwSwapInterval(1); // Enables VSync

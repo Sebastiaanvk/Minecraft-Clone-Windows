@@ -11,6 +11,7 @@
 #include <camera.hpp>
 #include <thread>
 #include <chrono>
+#include <random>
 
 class Game {
 public:

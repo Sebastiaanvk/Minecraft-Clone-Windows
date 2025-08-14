@@ -25,7 +25,6 @@ Chunk::Chunk(const ChunkID& loc){
 // }
 
 Chunk::Chunk(std::vector<std::pair<LocInt,BlockID>> blockSet, const ChunkID& loc){
-//    updated = true;
     meshPtr = std::make_shared<RenderableChunkMesh>();
     dirty = true;
     meshPtr->chunkId = loc;
@@ -36,6 +35,31 @@ Chunk::Chunk(std::vector<std::pair<LocInt,BlockID>> blockSet, const ChunkID& loc
     for(auto& b : blockSet){
         setBlockId(b.first, b.second);
     }
+}
+
+
+
+Chunk::Chunk(FastNoiseLite& noise, const ChunkID& loc, GenerationPars genPars){
+    meshPtr = std::make_shared<RenderableChunkMesh>();
+    dirty = true;
+    meshPtr->chunkId = loc;
+    chunkLoc = {loc.x,0,loc.z};
+    for(int i=0; i<CHUNKSIZE; i++){
+        chunk[i] = BlockID::Air;
+    }
+    for(int x=0; x<MAXCHUNKX; x++){
+        for(int z=0; z<MAXCHUNKZ; z++){
+            int dirtHeight = genPars.expected_dirt_height+ genPars.dirt_height_amplitude* noise.GetNoise((float)(x+loc.x),(float)(z+loc.z));
+            for(int y=0; y<genPars.bedrock_height; y++){
+                setBlockId({x,y,z}, BlockID::Bedrock);
+            }
+            for(int y=genPars.bedrock_height; y<dirtHeight-1; y++){
+                setBlockId({x,y,z}, BlockID::Dirt);
+            }
+            setBlockId({x,dirtHeight-1,z},BlockID::Grass_Dirt);
+        }
+    } 
+
 }
 
 BlockID Chunk::getBlockId(const LocInt& loc){

@@ -1,16 +1,29 @@
 #include <world/world.hpp>
 
 
-/*
-World::World(){
-    blocks = {};
-    for(int x=-20; x<20; x++){
-        for(int z=-20; z<20; z++){
-            blocks.push_back(Block(BlockType::Dirt,x,0,z));
+constexpr Chunk::GenerationPars generationPars = {
+    128,
+    20,
+    5 
+};
+
+
+
+World::World(unsigned int seed){
+    FastNoiseLite noise = FastNoiseLite(seed);
+
+    const int nr_chunks_side = 20;
+
+    for(int x=-MAXCHUNKX*nr_chunks_side/2; x<MAXCHUNKX*nr_chunks_side/2; x+=MAXCHUNKX){
+        for(int z=-nr_chunks_side/2*MAXCHUNKZ; z<nr_chunks_side/2*MAXCHUNKZ; z+=MAXCHUNKZ){
+            // chunks[{x,z}] = Chunk(blockList,{x,z}) ;
+            chunks[{x,z}] = Chunk(noise,{x,z},generationPars);
         }
     }
+
+
+
 }
-*/
 
 World::World(){
     blocks = {};
@@ -49,16 +62,6 @@ World::World(){
     blockList2.push_back({{4,4,13},BlockID::Bedrock});
     chunks[{0,0}] = Chunk(blockList2,{0,0});
 
-    //  testMeshPtr = std::make_shared<RenderableChunkMesh>();
-    // testMeshPtr->chunkId = {42,42};
-    // testMeshPtr->updated = true;
-    // ChunkMeshElt elt1 = {{{0,0,2},{2,0,2},{2,2,2},{0,2,2}},BlockID::Dirt,FaceType::Side};
-    // ChunkMeshElt elt2 = {{{2,0,2},{2,0,4},{2,2,4},{2,2,2}},BlockID::Bedrock,FaceType::Side};
-    // ChunkMeshElt elt3 = {{{2,0,4},{0,0,4},{0,2,4},{2,2,4}},BlockID::Gravel,FaceType::Side};
-    // ChunkMeshElt elt4 = {{{0,2,2},{2,2,2},{2,2,4},{0,2,4}},BlockID::Grass_Dirt,FaceType::Top};
-    // ChunkMeshElt elt5 = {{{0,0,4},{0,0,2},{0,2,2},{0,2,4}},BlockID::Grass_Dirt,FaceType::Side};
-    // ChunkMeshElt elt6 = {{{0,0,4},{2,0,4},{2,0,2},{0,0,2}},BlockID::Stone,FaceType::Side};
-    // testMeshPtr->mesh = { elt1,elt2,elt3,elt4,elt5,elt6};
 
 
 }
@@ -76,11 +79,3 @@ std::queue<std::shared_ptr<RenderableChunkMesh>> World::toRenderableChunkQueue()
     }
     return chunkQueue;
 }
-
-// std::queue<RenderableBlock> World::toRenderableQueue(){
-//     std::queue<RenderableBlock> blockQueue;
-//     for(auto b : blocks){
-//         blockQueue.push(b.toRenderable());
-//     }
-//     return blockQueue;
-// }
