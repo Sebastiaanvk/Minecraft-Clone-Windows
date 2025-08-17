@@ -12,20 +12,18 @@
 #include <memory>
 #include <iostream>
 #include <external/FastNoiseLite.h>
+#include <world/chunkManager.hpp>
 
-class World{
+class World {
 public:
-    World();
+    // World();
     World(unsigned int seed);
 
-    // std::queue<RenderableBlock> toRenderableQueue();
     std::queue<std::shared_ptr<RenderableChunkMesh>> toRenderableChunkQueue();
 
 private:
-    std::vector<Block> blocks;
-    std::unordered_map<ChunkID, Chunk> chunks;
-    std::shared_ptr<RenderableChunkMesh> testMeshPtr;
-    
+    ChunkManager chunkManager;
+    void addChunk(const ChunkID& chunkID);    
 };
 
 #endif //MODEL_HPP

@@ -2,7 +2,7 @@
 #include <blockRegistry.hpp>
 
 
-bool BlockRegistry::is_solid(BlockID id){
+bool BlockRegistry::is_solid(const BlockID& id){
     return registry[id].solid;
 }
 

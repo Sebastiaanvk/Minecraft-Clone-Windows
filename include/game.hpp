@@ -23,6 +23,7 @@ private:
     World world;
     Camera camera;
     void process_input();
+    unsigned int seed;
 
     float deltaTime;
     float lastFrame;

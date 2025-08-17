@@ -77,7 +77,7 @@ private:
 
 public:
     BlockRegistry() = delete;
-    static bool is_solid(const BlockID id);
+    static bool is_solid(const BlockID& id);
     static std::string getTextureName(const BlockID id, const FaceType faceType);
 };
 

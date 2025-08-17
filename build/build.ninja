@@ -126,6 +126,13 @@ build CMakeFiles/executable.dir/src/world/chunk.cpp.obj: CXX_COMPILER__executabl
   OBJECT_DIR = CMakeFiles\executable.dir
   OBJECT_FILE_DIR = CMakeFiles\executable.dir\src\world
 
+build CMakeFiles/executable.dir/src/world/chunkManager.cpp.obj: CXX_COMPILER__executable_unscanned_Debug C$:/Users/sebas/Documents/GitHub/Minecraft-Clone-Windows/src/world/chunkManager.cpp || cmake_object_order_depends_target_executable
+  DEP_FILE = CMakeFiles\executable.dir\src\world\chunkManager.cpp.obj.d
+  FLAGS = -g -std=gnu++17
+  INCLUDES = -IC:/dev/libs/glfw-3.4/include -IC:/Users/sebas/Documents/GitHub/Minecraft-Clone-Windows/include
+  OBJECT_DIR = CMakeFiles\executable.dir
+  OBJECT_FILE_DIR = CMakeFiles\executable.dir\src\world
+
 build CMakeFiles/executable.dir/src/world/world.cpp.obj: CXX_COMPILER__executable_unscanned_Debug C$:/Users/sebas/Documents/GitHub/Minecraft-Clone-Windows/src/world/world.cpp || cmake_object_order_depends_target_executable
   DEP_FILE = CMakeFiles\executable.dir\src\world\world.cpp.obj.d
   FLAGS = -g -std=gnu++17
@@ -141,7 +148,7 @@ build CMakeFiles/executable.dir/src/world/world.cpp.obj: CXX_COMPILER__executabl
 #############################################
 # Link the executable executable.exe
 
-build executable.exe: CXX_EXECUTABLE_LINKER__executable_Debug CMakeFiles/executable.dir/src/blockRegistry.cpp.obj CMakeFiles/executable.dir/src/camera.cpp.obj CMakeFiles/executable.dir/src/external/stb_image.cpp.obj CMakeFiles/executable.dir/src/game.cpp.obj CMakeFiles/executable.dir/src/glad.c.obj CMakeFiles/executable.dir/src/input/input_handler.cpp.obj CMakeFiles/executable.dir/src/main.cpp.obj CMakeFiles/executable.dir/src/render/renderer.cpp.obj CMakeFiles/executable.dir/src/shaders/shader.cpp.obj CMakeFiles/executable.dir/src/world/block.cpp.obj CMakeFiles/executable.dir/src/world/chunk.cpp.obj CMakeFiles/executable.dir/src/world/world.cpp.obj
+build executable.exe: CXX_EXECUTABLE_LINKER__executable_Debug CMakeFiles/executable.dir/src/blockRegistry.cpp.obj CMakeFiles/executable.dir/src/camera.cpp.obj CMakeFiles/executable.dir/src/external/stb_image.cpp.obj CMakeFiles/executable.dir/src/game.cpp.obj CMakeFiles/executable.dir/src/glad.c.obj CMakeFiles/executable.dir/src/input/input_handler.cpp.obj CMakeFiles/executable.dir/src/main.cpp.obj CMakeFiles/executable.dir/src/render/renderer.cpp.obj CMakeFiles/executable.dir/src/shaders/shader.cpp.obj CMakeFiles/executable.dir/src/world/block.cpp.obj CMakeFiles/executable.dir/src/world/chunk.cpp.obj CMakeFiles/executable.dir/src/world/chunkManager.cpp.obj CMakeFiles/executable.dir/src/world/world.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lglfw3  -lopengl32  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   LINK_PATH = -LC:/dev/libs/glfw-3.4/lib

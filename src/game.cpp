@@ -1,17 +1,17 @@
 #include <game.hpp>
 
 
-Game::Game(){
-    renderer = Renderer();
-    input_handler  =  Input_Handler();
-
-    unsigned int seed = std::chrono::system_clock::now().time_since_epoch().count();
-    std::mt19937 generator(seed); // Mersenne Twister engine
+Game::Game()
+    :renderer(),
+    input_handler(),
+    seed(std::chrono::system_clock::now().time_since_epoch().count()),
+    world(seed),
+    camera(),
+    deltaTime(0.0f),
+    lastFrame(0.0f)
+{
+    // std::mt19937 generator(seed); // Mersenne Twister engine (Not sure why this is here)
     std::cout << "Seed: "<< seed << std::endl;
-    world = World(seed);
-    camera = Camera();
-    deltaTime = 0.0f;
-    lastFrame = 0.0f;
 }
 
 

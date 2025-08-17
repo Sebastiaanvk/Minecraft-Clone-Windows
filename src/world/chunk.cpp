@@ -1,19 +1,20 @@
 #include <world/chunk.hpp>
+#include <world/chunkManager.hpp>
 
-Chunk::Chunk(){
+// Chunk::Chunk(){
 
-}
+// }
 
-Chunk::Chunk(const ChunkID& loc){
-//    updated = true;
-    meshPtr = std::make_shared<RenderableChunkMesh>();
-    dirty = true;
-    meshPtr->chunkId = loc;
-    chunkLoc = {loc.x,0,loc.z};
-    for(int i=0; i<CHUNKSIZE; i++){
-        chunk[i] = BlockID::Air;
-    }
-}
+// Chunk::Chunk(const ChunkID& loc){
+// //    updated = true;
+//     meshPtr = std::make_shared<RenderableChunkMesh>();
+//     dirty = true;
+//     meshPtr->chunkId = loc;
+//     chunkLoc = {loc.x,0,loc.z};
+//     for(int i=0; i<CHUNKSIZE; i++){
+//         chunk[i] = BlockID::Air;
+//     }
+// }
 
 // Chunk::Chunk(std::array<BlockID,CHUNKSIZE>& chunkInput, const ChunkID& loc){
 // //    updated = true;
@@ -24,22 +25,24 @@ Chunk::Chunk(const ChunkID& loc){
 //     chunk = chunkInput;
 // }
 
-Chunk::Chunk(std::vector<std::pair<LocInt,BlockID>> blockSet, const ChunkID& loc){
-    meshPtr = std::make_shared<RenderableChunkMesh>();
-    dirty = true;
-    meshPtr->chunkId = loc;
-    chunkLoc = {loc.x,0,loc.z};
-    for(int i=0; i<CHUNKSIZE; i++){
-        chunk[i] = BlockID::Air;
-    }
-    for(auto& b : blockSet){
-        setBlockId(b.first, b.second);
-    }
-}
+// Chunk::Chunk(std::vector<std::pair<LocInt,BlockID>> blockSet, const ChunkID& loc){
+//     meshPtr = std::make_shared<RenderableChunkMesh>();
+//     dirty = true;
+//     meshPtr->chunkId = loc;
+//     chunkLoc = {loc.x,0,loc.z};
+//     for(int i=0; i<CHUNKSIZE; i++){
+//         chunk[i] = BlockID::Air;
+//     }
+//     for(auto& b : blockSet){
+//         setBlockId(b.first, b.second);
+//     }
+// }
 
 
 
-Chunk::Chunk(FastNoiseLite& noise, const ChunkID& loc, GenerationPars genPars){
+Chunk::Chunk(FastNoiseLite& noise, const ChunkID& loc, GenerationPars genPars,ChunkManager& chunkManager)
+    : chunkManager(chunkManager)
+{
     meshPtr = std::make_shared<RenderableChunkMesh>();
     dirty = true;
     meshPtr->chunkId = loc;
@@ -62,8 +65,8 @@ Chunk::Chunk(FastNoiseLite& noise, const ChunkID& loc, GenerationPars genPars){
 
 }
 
-BlockID Chunk::getBlockId(const LocInt& loc){
-    return chunk[ loc.y*MAXCHUNKX*MAXCHUNKZ + loc.z*MAXCHUNKX + loc.x];
+BlockID Chunk::getBlockId(const LocInt& loc) const{
+    return chunk.at( loc.y*MAXCHUNKX*MAXCHUNKZ + loc.z*MAXCHUNKX + loc.x);
 }
 
 void Chunk::setBlockId(const LocInt& loc,BlockID id){
@@ -72,8 +75,15 @@ void Chunk::setBlockId(const LocInt& loc,BlockID id){
 }
 
 bool Chunk::blockIsSolid(const LocInt& loc){
-    if(loc.x<0||loc.y<0||loc.z<0||loc.x>=MAXCHUNKX || loc.y>=MAXCHUNKY || loc.z>=MAXCHUNKZ){
+    // std::cout << "Inside blockIsSolid" << std::endl;
+    if(loc.y<0||loc.y>=MAXCHUNKY){
         return false;
+    }
+    if(loc.x<0||loc.z<0||loc.x>=MAXCHUNKX || loc.z>=MAXCHUNKZ ){
+        LocInt newloc = loc+LocInt{chunkLoc.x,0,chunkLoc.z};
+        // std::cout << newloc.x << ", " << newloc.y << ", " << newloc.z << std::endl;
+        // return false;
+        return chunkManager.isSolid(newloc);
     }
     return BlockRegistry::is_solid( getBlockId(loc) );
 }
@@ -98,8 +108,11 @@ void Chunk::update_mesh(){
     for(int x=0; x<MAXCHUNKX; x++){ for(int y=0; y<MAXCHUNKY; y++){ for(int z=0; z< MAXCHUNKZ; z++){
         LocInt loc = {x,y,z};
         // Change later for see through shizzle.
+        // std::cout << loc << std::endl;
+        // std::cout << loc.x << "," << loc.y << "," << loc.z << std::endl;
         if(blockIsSolid(loc)){
             for(int i=0; i<6;i++){
+                // std::cout << i << std::endl;
                 LocInt dir = dirs[i];
                 if(!blockIsSolid(loc+dir)){
                     ChunkMeshElt meshElt;
