@@ -9,6 +9,8 @@ enum Key{
     RIGHT,
     SPACE,
     LEFT_SHIFT,
+    LEFT_MOUSE_BUTTON,
+    RIGHT_MOUSE_BUTTON,
     KEY_COUNT
 };
 

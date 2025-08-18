@@ -22,10 +22,18 @@ public:
 
     std::queue<std::shared_ptr<RenderableChunkMesh>> toRenderableChunkQueue();
     Player player;
+    void deleteTarget();
+    void update();
 
 private:
     ChunkManager chunkManager;
     void addChunk(const ChunkID& chunkID);    
+
+    bool blockTargeted;
+    LocInt targetedBlock;
+    void calculatePlayerTarget() ;
+
+
 };
 
 #endif //MODEL_HPP

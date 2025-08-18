@@ -7,9 +7,6 @@ constexpr Chunk::GenerationPars generationPars = {
     5 
 };
 
-// ChunkManager::ChunkManager(){
-
-// }
 
 ChunkManager::ChunkManager(unsigned int seed){
     noise = FastNoiseLite(seed);
@@ -32,6 +29,13 @@ ChunkID ChunkManager::getChunkID(const LocInt& loc) const{
 LocInt ChunkManager::getLocWithinChunk(const LocInt& loc) const{
     // Only works if MAXCHUNKX=16!
     return {loc.x & 15,loc.y,loc.z & 15};
+}
+
+void ChunkManager::deleteBlock(const LocInt& loc){
+    ChunkID chunkID = getChunkID(loc);
+    if(chunks.count(chunkID)!=0){
+        chunks.at(chunkID)->deleteBlock(getLocWithinChunk(loc));
+    }
 }
 
 BlockID ChunkManager::checkBlock(const LocInt& loc) const {

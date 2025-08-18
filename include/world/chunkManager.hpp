@@ -11,10 +11,10 @@ class Chunk;
 
 class ChunkManager {
 public:
-    // ChunkManager();
     ChunkManager(unsigned int seed);
     BlockID checkBlock(const LocInt& loc) const;
     bool isSolid(const LocInt& loc) const;
+    void deleteBlock(const LocInt& loc);
 
     std::queue<std::shared_ptr<RenderableChunkMesh>> toRenderableChunkQueue();
 

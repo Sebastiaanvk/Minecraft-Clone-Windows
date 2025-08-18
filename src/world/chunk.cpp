@@ -1,42 +1,6 @@
 #include <world/chunk.hpp>
 #include <world/chunkManager.hpp>
 
-// Chunk::Chunk(){
-
-// }
-
-// Chunk::Chunk(const ChunkID& loc){
-// //    updated = true;
-//     meshPtr = std::make_shared<RenderableChunkMesh>();
-//     dirty = true;
-//     meshPtr->chunkId = loc;
-//     chunkLoc = {loc.x,0,loc.z};
-//     for(int i=0; i<CHUNKSIZE; i++){
-//         chunk[i] = BlockID::Air;
-//     }
-// }
-
-// Chunk::Chunk(std::array<BlockID,CHUNKSIZE>& chunkInput, const ChunkID& loc){
-// //    updated = true;
-//     meshPtr = std::make_shared<RenderableChunkMesh>();
-//     meshPtr->chunkId = loc;
-//     dirty = true;
-//     chunkLoc = {loc.x,0,loc.z};
-//     chunk = chunkInput;
-// }
-
-// Chunk::Chunk(std::vector<std::pair<LocInt,BlockID>> blockSet, const ChunkID& loc){
-//     meshPtr = std::make_shared<RenderableChunkMesh>();
-//     dirty = true;
-//     meshPtr->chunkId = loc;
-//     chunkLoc = {loc.x,0,loc.z};
-//     for(int i=0; i<CHUNKSIZE; i++){
-//         chunk[i] = BlockID::Air;
-//     }
-//     for(auto& b : blockSet){
-//         setBlockId(b.first, b.second);
-//     }
-// }
 
 
 
@@ -90,6 +54,12 @@ bool Chunk::blockIsSolid(const LocInt& loc){
 
 bool Chunk::isDirty(){
     return dirty;
+}
+
+
+
+void Chunk::deleteBlock(LocInt loc){
+    setBlockId(loc, BlockID::Air);
 }
 
 //The corners are counter-clockwise, starting at the left bottom

@@ -159,7 +159,7 @@ bool Renderer::init(int width, int height){
 
 
     if(data){
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, atlasWidth, atlasHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlasWidth, atlasHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     } else {
         std::cout << "Failed to load texture" << std::endl;
@@ -225,7 +225,9 @@ void Renderer::render(World& world, Camera& camera){
             chunkMeshes[chunkID].nrVertices = 6*chunkPtr->mesh.size();
             glBindVertexArray(chunkMeshes[chunkID].VAO);
             glBindBuffer(GL_ARRAY_BUFFER,chunkMeshes[chunkID].VBO);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size()*sizeof(chunkVBOElt), vertices.data());
+            // glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size()*sizeof(chunkVBOElt), vertices.data());
+            glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(chunkVBOElt), vertices.data(), GL_STATIC_DRAW);
+
 
             chunkPtr->updated = false;
         } else {

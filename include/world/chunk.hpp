@@ -28,12 +28,9 @@ class Chunk{
         int dirt_height_amplitude;
         int bedrock_height;
     };
-    // Chunk();
-    // Chunk(const ChunkID& loc);
-    // Chunk(std::array<BlockID,CHUNKSIZE>& chunkInput, const ChunkID& loc);
-    // Chunk(std::vector<std::pair<LocInt,BlockID>> blockSet, const ChunkID& loc);
     Chunk(FastNoiseLite& noise,const ChunkID& loc, GenerationPars genPars, ChunkManager& chunkManager);
 
+    void deleteBlock(LocInt loc);
     void update_mesh();
     std::shared_ptr<RenderableChunkMesh> getMeshPtr();
     BlockID getBlockId(const LocInt& loc) const;

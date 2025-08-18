@@ -10,6 +10,8 @@ Input_Handler::Input_Handler(){
     toGLFWkey[Key::RIGHT] = GLFW_KEY_D;
     toGLFWkey[Key::SPACE] = GLFW_KEY_SPACE;
     toGLFWkey[Key::LEFT_SHIFT] = GLFW_KEY_LEFT_SHIFT;
+    toGLFWkey[Key::LEFT_MOUSE_BUTTON] = GLFW_MOUSE_BUTTON_LEFT,
+    toGLFWkey[Key::RIGHT_MOUSE_BUTTON] = GLFW_MOUSE_BUTTON_RIGHT;
 
     prev_pressed = {};
     curr_pressed = {};
@@ -47,7 +49,12 @@ void Input_Handler::update(GLFWwindow* window){
     for(int i = 0; i<Key::KEY_COUNT; i++){
         Key k = static_cast<Key>(i);
         prev_pressed[k] = curr_pressed[k];
-        curr_pressed[k] = (glfwGetKey(window, toGLFWkey[k]) == GLFW_PRESS);
+        if( k== Key::LEFT_MOUSE_BUTTON || k==Key::RIGHT_MOUSE_BUTTON){
+            curr_pressed[k] = (glfwGetMouseButton(window, toGLFWkey[k]) == GLFW_PRESS);
+        } else {
+            curr_pressed[k] = (glfwGetKey(window, toGLFWkey[k]) == GLFW_PRESS);
+        }
+
     }
 /*
     dx = tempDx; 

@@ -3,6 +3,30 @@
 
 Refactoren voor playerClass in plaats van Camera. (Gefixed!!!)
 
+## Blokken deleten en toevoegen.
+
+- world class kijkt naar waar de speler naar kijkt.
+- te deleten blok,
+- Waar we het blok toevoegen ( eerst printen?)
+- Elke world update opnieuw checken?
+
+
+Ray tracen:
+pos en forward.
+Voor elke dimensie kijken waar die snijdt?
+lengte is (x-pos.x)/forward.x.
+
+Idee:
+Bekijk eerst x:
+x positief.
+ceiling(pos.x). s = 
+Ok nieuw idee we kijken naar de afstand naar het midden van het blokje?
+
+
+
+
+## Rest van de ideeen
+
 Rode lijnen rond geselecteerd blokje? JA nu aan werken
 Chunks spawnen rond de speler?
 Camera mode en speler mode? Dus de handling bepaalt de player locatie en waar die naar kijkt en dan wordt de camera geupdate?

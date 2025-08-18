@@ -18,7 +18,7 @@ Game::Game()
 
 void Game::run(){
 
-    if(!renderer.init(2200,2000)){
+    if(!renderer.init(1600,1200)){
         return;
     }
     glfwSwapInterval(1); // Enables VSync
@@ -39,11 +39,15 @@ void Game::run(){
         input_handler.update(renderer.getWindow());
 
         process_input();
+
+        world.update();        
+
+
         camera.update(world.player);
 
         renderer.render(world,camera);
 
-        // std::cout<< world.player.playerLocAsString() << std::endl;
+        std::cout<< world.player.playerLocAsString() << std::endl;
 
     }
     glfwTerminate();
@@ -75,6 +79,16 @@ void Game::process_input(){
     }
     if(input_handler.key_down(Key::LEFT_SHIFT)){
         world.player.move_down(deltaTime);
+    }
+    if(input_handler.key_pressed(Key::LEFT_MOUSE_BUTTON)){
+        std::cout << "Left Mouse Button Pressed!" << std::endl;
+        world.deleteTarget();
+    }
+    if(input_handler.key_pressed(Key::RIGHT_MOUSE_BUTTON)){
+        std::cout << "Right Mouse Button Pressed!" << std::endl;
+    }
+    if(input_handler.key_pressed(Key::SPACE)){
+        std::cout << "Space Pressed!" << std::endl;
     }
     // std::cout << "dx: " << input_handler.getDX() << " dy: " << input_handler.getDY() << "\n";
     world.player.rotate(input_handler.getDX(),input_handler.getDY());
