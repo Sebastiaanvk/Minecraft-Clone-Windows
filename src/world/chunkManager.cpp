@@ -30,14 +30,13 @@ ChunkID ChunkManager::getChunkID(const LocInt& loc) const{
 }
 
 LocInt ChunkManager::getLocWithinChunk(const LocInt& loc) const{
-    // Neat trick to round down to the nearest multiple of 16.
     // Only works if MAXCHUNKX=16!
-    return {loc.x-(loc.x & ~15),loc.y,loc.z-(loc.z & ~15)};
+    return {loc.x & 15,loc.y,loc.z & 15};
 }
 
 BlockID ChunkManager::checkBlock(const LocInt& loc) const {
 
-    std::cout << "Inside checkBlock!" << std::endl;
+    // std::cout << "Inside checkBlock!" << std::endl;
 
     ChunkID chunkID = getChunkID(loc);
     if(chunks.count(chunkID)!=0){

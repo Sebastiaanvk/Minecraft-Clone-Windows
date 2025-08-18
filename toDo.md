@@ -1,11 +1,12 @@
 # Todo list
 
+Rode lijnen rond geselecteerd blokje?
 
 
 User interface fixen. (IMGui?)
-Rode lijnen rond geselecteerd blokje?
 Blokjes toevoegen en deleten.
 
+biome
 
 struct  van verschillende perlin noises?
 
