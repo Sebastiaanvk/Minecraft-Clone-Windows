@@ -13,6 +13,7 @@
 #include <iostream>
 #include <external/FastNoiseLite.h>
 #include <world/chunkManager.hpp>
+#include <world/player.hpp>
 
 class World {
 public:
@@ -20,6 +21,7 @@ public:
     World(unsigned int seed);
 
     std::queue<std::shared_ptr<RenderableChunkMesh>> toRenderableChunkQueue();
+    Player player;
 
 private:
     ChunkManager chunkManager;

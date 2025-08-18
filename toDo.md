@@ -1,6 +1,14 @@
 # Todo list
 
-Rode lijnen rond geselecteerd blokje?
+
+Refactoren voor playerClass in plaats van Camera. (Gefixed!!!)
+
+Rode lijnen rond geselecteerd blokje? JA nu aan werken
+Chunks spawnen rond de speler?
+Camera mode en speler mode? Dus de handling bepaalt de player locatie en waar die naar kijkt en dan wordt de camera geupdate?
+
+
+
 
 
 User interface fixen. (IMGui?)

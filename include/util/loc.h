@@ -2,6 +2,7 @@
 #define LOC_H
 
 #include <utility>
+#include <external/glm/glm.hpp>
 
 struct Loc2{
     int x;
@@ -63,34 +64,34 @@ namespace std {
 }
 
 
-struct LocFloat{
-    float x;
-    float y;
-    float z;
+// struct LocFloat{
+//     float x;
+//     float y;
+//     float z;
 
-    inline bool operator==(const LocFloat& loc2) const {
-        return x==loc2.x && y==loc2.y && z==loc2.z;
-    }
-};
+//     inline bool operator==(const LocFloat& loc2) const {
+//         return x==loc2.x && y==loc2.y && z==loc2.z;
+//     }
+// };
 
-// I again copied this hash function from chatgpt
-// It uses a golden ratio constant or something.
-namespace std {
-    template <>
-    struct hash<LocFloat> {
-        std::size_t operator()(const LocFloat& loc) const {
-            std::size_t h1 = std::hash<float>{}(loc.x);
-            std::size_t h2 = std::hash<float>{}(loc.y);
-            std::size_t h3 = std::hash<float>{}(loc.z);
+// // I again copied this hash function from chatgpt
+// // It uses a golden ratio constant or something.
+// namespace std {
+//     template <>
+//     struct hash<LocFloat> {
+//         std::size_t operator()(const LocFloat& loc) const {
+//             std::size_t h1 = std::hash<float>{}(loc.x);
+//             std::size_t h2 = std::hash<float>{}(loc.y);
+//             std::size_t h3 = std::hash<float>{}(loc.z);
 
-            // Mix the three hash values
-            std::size_t h = h1;
-            h ^= h2 + 0x9e3779b9 + (h << 6) + (h >> 2);
-            h ^= h3 + 0x9e3779b9 + (h << 6) + (h >> 2);
-            return h;
-        }
-    };
-}
+//             // Mix the three hash values
+//             std::size_t h = h1;
+//             h ^= h2 + 0x9e3779b9 + (h << 6) + (h >> 2);
+//             h ^= h3 + 0x9e3779b9 + (h << 6) + (h >> 2);
+//             return h;
+//         }
+//     };
+// }
 
 inline const LocInt dirs[] = {{1,0,0},{-1,0,0},{0,1,0},{0,-1,0},{0,0,1},{0,0,-1}};
 
@@ -98,19 +99,23 @@ inline LocInt operator+(const LocInt& loc1, const LocInt& loc2){
     return {loc1.x+loc2.x, loc1.y+loc2.y, loc1.z+loc2.z};
 }
 
-inline LocFloat operator+(const LocInt& loc1, const LocFloat& loc2){
-    return {loc1.x+loc2.x, loc1.y+loc2.y, loc1.z+loc2.z};
-}
+// inline LocFloat operator+(const LocInt& loc1, const LocFloat& loc2){
+//     return {loc1.x+loc2.x, loc1.y+loc2.y, loc1.z+loc2.z};
+// }
 
-inline LocFloat operator+(const LocFloat& loc1, const LocInt& loc2){
-    return {loc1.x+loc2.x, loc1.y+loc2.y, loc1.z+loc2.z};
-}
+// inline LocFloat operator+(const LocFloat& loc1, const LocInt& loc2){
+//     return {loc1.x+loc2.x, loc1.y+loc2.y, loc1.z+loc2.z};
+// }
 
-inline LocFloat operator+(const LocFloat& loc1, const LocFloat& loc2){
-    return {loc1.x+loc2.x, loc1.y+loc2.y, loc1.z+loc2.z};
-}
+// inline LocFloat operator+(const LocFloat& loc1, const LocFloat& loc2){
+//     return {loc1.x+loc2.x, loc1.y+loc2.y, loc1.z+loc2.z};
+// }
+
+typedef glm::vec3 LocFloat;
 
 typedef Loc2 ChunkID;
+
+const glm::vec3 UP = {0.0f,1.0f,0.0f};
 
 
 #endif //LOC_H

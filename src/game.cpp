@@ -28,10 +28,6 @@ void Game::run(){
         return;
     }
 
-    if(!camera.init()){
-        return;
-    }
-
     while( !glfwWindowShouldClose(renderer.getWindow()) ){
 
 //        std::this_thread::sleep_for(std::chrono::milliseconds(13)); // This might cause input problems!
@@ -43,10 +39,11 @@ void Game::run(){
         input_handler.update(renderer.getWindow());
 
         process_input();
+        camera.update(world.player);
 
         renderer.render(world,camera);
 
-        // std::cout<< camera.cameraStatsAsString() << std::endl;
+        // std::cout<< world.player.playerLocAsString() << std::endl;
 
     }
     glfwTerminate();
@@ -59,26 +56,26 @@ void Game::process_input(){
         glfwSetWindowShouldClose(renderer.getWindow(), true);
     }
     if(input_handler.key_down(Key::FORWARD)){
-        camera.move_forward(deltaTime);
+        world.player.move_forward(deltaTime);
     }
 
     if(input_handler.key_down(Key::BACKWARD)){
-        camera.move_backward(deltaTime);
+        world.player.move_backward(deltaTime);
     }
 
     if(input_handler.key_down(Key::LEFT)){
-        camera.move_left(deltaTime);
+        world.player.move_left(deltaTime);
     }
 
     if(input_handler.key_down(Key::RIGHT)){
-        camera.move_right(deltaTime);
+        world.player.move_right(deltaTime);
     }
     if(input_handler.key_down(Key::SPACE)){
-        camera.move_up(deltaTime);
+        world.player.move_up(deltaTime);
     }
     if(input_handler.key_down(Key::LEFT_SHIFT)){
-        camera.move_down(deltaTime);
+        world.player.move_down(deltaTime);
     }
     // std::cout << "dx: " << input_handler.getDX() << " dy: " << input_handler.getDY() << "\n";
-    camera.rotate(input_handler.getDX(),input_handler.getDY());
+    world.player.rotate(input_handler.getDX(),input_handler.getDY());
 }
