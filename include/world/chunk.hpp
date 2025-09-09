@@ -37,6 +37,7 @@ class Chunk{
     bool blockIsSolid(const LocInt& loc);
     void setBlockId(const LocInt& loc,BlockID id);
     bool isDirty();
+    void setDirty();
 
 
 private:

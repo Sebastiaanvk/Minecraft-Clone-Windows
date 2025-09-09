@@ -56,6 +56,10 @@ bool Chunk::isDirty(){
     return dirty;
 }
 
+void Chunk::setDirty(){
+    dirty = true;
+}
+
 
 
 void Chunk::deleteBlock(LocInt loc){
