@@ -14,6 +14,7 @@ public:
     ChunkManager(unsigned int seed);
     BlockID checkBlock(const LocInt& loc) const;
     bool isSolid(const LocInt& loc) const;
+    void placeBlock(const LocInt& loc);
     void deleteBlock(const LocInt& loc);
 
     std::queue<std::shared_ptr<RenderableChunkMesh>> toRenderableChunkQueue();

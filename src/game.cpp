@@ -86,6 +86,7 @@ void Game::process_input(){
     }
     if(input_handler.key_pressed(Key::RIGHT_MOUSE_BUTTON)){
         std::cout << "Right Mouse Button Pressed!" << std::endl;
+        world.placeBlock();
     }
     if(input_handler.key_pressed(Key::SPACE)){
         std::cout << "Space Pressed!" << std::endl;

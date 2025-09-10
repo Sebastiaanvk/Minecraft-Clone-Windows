@@ -23,6 +23,7 @@ public:
     std::queue<std::shared_ptr<RenderableChunkMesh>> toRenderableChunkQueue();
     Player player;
     void deleteTarget();
+    void placeBlock();
     void update();
 
 private:
@@ -31,6 +32,7 @@ private:
 
     bool blockTargeted;
     LocInt targetedBlock;
+    LocInt placementCandidate;
     void calculatePlayerTarget() ;
 
 

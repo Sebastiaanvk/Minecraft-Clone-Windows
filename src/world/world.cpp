@@ -26,6 +26,7 @@ void World::calculatePlayerTarget() {
 
     float distSolidX = 20*maxReach;
     LocInt closestSolidX;
+    LocInt placementCandidateX;
 
     if(forward.x>0){
         float nextX = ceil(pos.x);
@@ -35,6 +36,7 @@ void World::calculatePlayerTarget() {
             LocInt blockCandidate = {(int)floor(intersect.x+0.5f),(int)floor(intersect.y),(int)floor(intersect.z)};
             if(chunkManager.isSolid(blockCandidate)){
                 closestSolidX = blockCandidate;
+                placementCandidateX = blockCandidate + LocInt{-1,0,0};
                 distSolidX = dist;
                 break;
             }
@@ -49,6 +51,7 @@ void World::calculatePlayerTarget() {
             LocInt blockCandidate = {(int)floor(intersect.x-0.5f),(int)floor(intersect.y),(int)floor(intersect.z)};
             if(chunkManager.isSolid(blockCandidate)){
                 closestSolidX = blockCandidate;
+                placementCandidateX = blockCandidate + LocInt{1,0,0};
                 distSolidX = dist;
                 break;
             }
@@ -59,6 +62,7 @@ void World::calculatePlayerTarget() {
 
     float distSolidY = 20*maxReach;
     LocInt closestSolidY;
+    LocInt placementCandidateY;
 
     if(forward.y>0){
         float nextY = ceil(pos.y);
@@ -68,6 +72,7 @@ void World::calculatePlayerTarget() {
             LocInt blockCandidate = {(int)floor(intersect.x),(int)floor(intersect.y+0.5f),(int)floor(intersect.z)};
             if(chunkManager.isSolid(blockCandidate)){
                 closestSolidY = blockCandidate;
+                placementCandidateY = blockCandidate + LocInt{0,-1,0};
                 distSolidY = dist;
                 break;
             }
@@ -82,6 +87,7 @@ void World::calculatePlayerTarget() {
             LocInt blockCandidate = {(int)floor(intersect.x),(int)floor(intersect.y-0.5f),(int)floor(intersect.z)};
             if(chunkManager.isSolid(blockCandidate)){
                 closestSolidY = blockCandidate;
+                placementCandidateY = blockCandidate + LocInt{0,1,0};
                 distSolidY = dist;
                 break;
             }
@@ -92,6 +98,7 @@ void World::calculatePlayerTarget() {
 
     float distSolidZ = 20*maxReach;
     LocInt closestSolidZ;
+    LocInt placementCandidateZ;
 
     if(forward.z>0){
         float nextZ = ceil(pos.z);
@@ -100,8 +107,9 @@ void World::calculatePlayerTarget() {
             LocFloat intersect = pos + dist*forward;
             LocInt blockCandidate = {(int)floor(intersect.x),(int)floor(intersect.y),(int)floor(intersect.z+0.5f)};
             if(chunkManager.isSolid(blockCandidate)){
-                closestSolidY = blockCandidate;
-                distSolidY = dist;
+                closestSolidZ = blockCandidate;
+                placementCandidateZ = blockCandidate + LocInt{0,0,-1};
+                distSolidZ = dist;
                 break;
             }
             nextZ += 1;
@@ -115,6 +123,7 @@ void World::calculatePlayerTarget() {
             LocInt blockCandidate = {(int)floor(intersect.x),(int)floor(intersect.y),(int)floor(intersect.z-0.5f)};
             if(chunkManager.isSolid(blockCandidate)){
                 closestSolidZ = blockCandidate;
+                placementCandidateZ = blockCandidate + LocInt{0,0,1};
                 distSolidZ = dist;
                 break;
             }
@@ -127,13 +136,16 @@ void World::calculatePlayerTarget() {
     if(distSolidX<distSolidY){
         minDist = distSolidX;
         closestSolid = closestSolidX;
+        placementCandidate = placementCandidateX;
     } else {
         minDist = distSolidY;
         closestSolid = closestSolidY;
+        placementCandidate = placementCandidateY;
     }
     if(distSolidZ<minDist){
         minDist = distSolidZ;
         closestSolid = closestSolidZ;
+        placementCandidate = placementCandidateZ;
     }
     if(minDist < maxReach){
         blockTargeted = true;
@@ -150,6 +162,13 @@ void World::deleteTarget(){
         chunkManager.deleteBlock(targetedBlock);
     }
 
+}
+
+void World::placeBlock(){
+    if(blockTargeted){
+        chunkManager.placeBlock(placementCandidate);
+
+    }
 }
 
 void World::update(){

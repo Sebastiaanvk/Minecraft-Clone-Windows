@@ -31,6 +31,13 @@ LocInt ChunkManager::getLocWithinChunk(const LocInt& loc) const{
     return {loc.x & 15,loc.y,loc.z & 15};
 }
 
+void ChunkManager::placeBlock(const LocInt& loc){
+    ChunkID chunkID = getChunkID(loc);
+    if(chunks.count(chunkID)!=0){
+        chunks.at(chunkID)->setBlockId(getLocWithinChunk(loc),BlockID::Dirt);
+    }
+}
+
 void ChunkManager::deleteBlock(const LocInt& loc){
     for(int i = 0; i<6; i++){
         LocInt nb = loc + dirs[i];
