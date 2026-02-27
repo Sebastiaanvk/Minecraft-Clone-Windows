@@ -20,7 +20,7 @@ std::queue<std::shared_ptr<RenderableChunkMesh>> World::toRenderableChunkQueue()
 
 
 void World::calculatePlayerTarget() {
-    float maxReach = 10;
+    float maxReach = 12;
     LocFloat pos = player.getPos();
     LocFloat forward = player.getForwardDir();
 
@@ -165,7 +165,7 @@ void World::deleteTarget(){
 }
 
 void World::placeBlock(){
-    if(blockTargeted){
+    if(blockTargeted and !player.blockIntersects(placementCandidate)){
         chunkManager.placeBlock(placementCandidate);
 
     }

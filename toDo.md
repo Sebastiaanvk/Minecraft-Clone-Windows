@@ -1,7 +1,18 @@
 # Todo list
 
+Muis ingedrukt kunnen houden voor deleten en plaatsen
+Niet kunnen plaatsen als het blokje te dichtbij is
+verschillende types blokjes kunnen plaatsen
+Plusje voor richten
+9 vierkantjes onderin
+
+Game ticks van 1/20 per seconde met accumulators
+input handling aanpassen: De input state wordt doorgegeven aan de world en die
+consumed events zoals release en pressed, maar laat de down staan.
+
 
 Refactoren voor playerClass in plaats van Camera. (Gefixed!!!)
+
 
 ## Blokken deleten en toevoegen.
 

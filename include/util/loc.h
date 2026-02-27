@@ -42,6 +42,11 @@ struct LocInt{
     inline bool operator==(const LocInt& loc2) const {
         return x==loc2.x && y==loc2.y && z==loc2.z;
     }
+
+    inline bool operator!=(const LocInt& loc2) const {
+        return x!=loc2.x || y!=loc2.y || z!=loc2.z;
+    }
+
 };
 
 // I copied this hash function from chatgpt
@@ -112,6 +117,14 @@ inline LocInt operator+(const LocInt& loc1, const LocInt& loc2){
 // }
 
 typedef glm::vec3 LocFloat;
+
+inline LocInt posToBlockLoc(const LocFloat& loc){
+    return {
+        static_cast<int>(floor(loc.x)),
+        static_cast<int>(floor(loc.y)),
+        static_cast<int>(floor(loc.z))
+    };
+}   
 
 typedef Loc2 ChunkID;
 

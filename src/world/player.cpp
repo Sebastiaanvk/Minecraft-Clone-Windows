@@ -79,6 +79,15 @@ std::string Player::playerLocAsString(){
 LocFloat Player::getPos() const{
     return pos;
 }
+
+LocInt Player::getBlockLoc() const{
+    return posToBlockLoc(pos);
+}
+
+bool Player::blockIntersects(const LocInt& loc ){
+    return loc==getBlockLoc() || loc+LocInt({0,1,0})==getBlockLoc();
+}
+
 LocFloat Player::getForwardDir() const{
     return forward;
 }

@@ -17,6 +17,8 @@ public:
     std::string playerLocAsString();
 
     LocFloat getPos() const;
+    LocInt getBlockLoc() const;
+    bool blockIntersects(const LocInt& loc );
     LocFloat getForwardDir() const;
 private:
 
