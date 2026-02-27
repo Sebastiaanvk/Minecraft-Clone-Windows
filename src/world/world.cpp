@@ -172,6 +172,7 @@ void World::placeBlock(){
 }
 
 void World::update(Input_Handler& input_handler){
+    player.storePos();
 
     if(input_handler.key_down(Key::FORWARD)){
         player.move_forward(tickTimeLength);

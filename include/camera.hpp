@@ -12,7 +12,7 @@
 class Camera{
 public:
     Camera();
-    void update(const Player& player);
+    void update(const Player& player,float alpha);
 
     glm::mat4 getViewMatrix();
 

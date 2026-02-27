@@ -47,7 +47,9 @@ void Game::run(){
         }
 
 
-        camera.update(world.player);
+        float alpha = timeAccumulator/world.tickTimeLength;
+
+        camera.update(world.player,alpha);
 
         renderer.render(world,camera);
 

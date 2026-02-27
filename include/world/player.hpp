@@ -7,6 +7,7 @@
 class Player{
 public:
     Player();
+    void storePos();
     void rotate(float dx, float dy);
     void move_forward(float deltaTime);
     void move_backward(float deltaTime);
@@ -17,6 +18,7 @@ public:
     std::string playerLocAsString();
 
     LocFloat getPos() const;
+    LocFloat getInterpolatedPos(float alpha) const;
     LocInt getBlockLoc() const;
     bool blockIntersects(const LocInt& loc );
     LocFloat getForwardDir() const;
@@ -28,6 +30,7 @@ private:
     float pitch;
 
     LocFloat pos;
+    LocFloat lastPos;
     LocFloat forward;
 
 };

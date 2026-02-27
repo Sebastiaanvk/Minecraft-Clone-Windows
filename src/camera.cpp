@@ -7,10 +7,10 @@ Camera::Camera()
 
 }
 
-void Camera::update(const Player& player){
+void Camera::update(const Player& player,float alpha){
     // We flip the z, because in our world, x is to the right, z is forward and y is up
     // However, in opengl, the z axis goes out of the screen towards you.
-    glm::vec3 cameraPosZFlip = flipZ(player.getPos());
+    glm::vec3 cameraPosZFlip = flipZ(player.getInterpolatedPos(alpha));
     glm::vec3 cameraFrontZFlip = flipZ(player.getForwardDir());
 
     view = glm::lookAt(cameraPosZFlip,cameraFrontZFlip+cameraPosZFlip, UP);

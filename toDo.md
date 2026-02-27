@@ -12,7 +12,9 @@ consumed events zoals release en pressed, maar laat de down staan. -->
 
 <!-- Game ticks van 1/20 per seconde met accumulators -->
 
-posities interpoleren voor smooth graphics
+<!-- posities interpoleren voor smooth graphics -->
+
+
 
 Muis ingedrukt kunnen houden voor deleten en plaatsen
 Niet kunnen plaatsen als het blokje te dichtbij is

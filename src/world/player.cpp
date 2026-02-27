@@ -13,6 +13,10 @@ Player::Player()
 
 }
 
+void Player::storePos(){
+    lastPos = pos;
+}
+
 void Player::rotate(float dx, float dy){
 
     const float sensitivity = 0.1f;
@@ -78,6 +82,10 @@ std::string Player::playerLocAsString(){
 
 LocFloat Player::getPos() const{
     return pos;
+}
+
+LocFloat Player::getInterpolatedPos(float alpha) const{
+    return alpha*pos + (1-alpha)*lastPos;
 }
 
 LocInt Player::getBlockLoc() const{
