@@ -1,14 +1,25 @@
 # Todo list
 
+<!-- input handling hybride:
+Deels in de game en deels in de wereld
+In de input handler twee verschillende states:
+Een die checkt tegen opzichte van de vorige loop
+en een die wacht tot een press of release geconsumeerd is. -->
+
+
+<!-- input handling aanpassen: De input state wordt doorgegeven aan de world en die
+consumed events zoals release en pressed, maar laat de down staan. -->
+
+<!-- Game ticks van 1/20 per seconde met accumulators -->
+
+posities interpoleren voor smooth graphics
+
 Muis ingedrukt kunnen houden voor deleten en plaatsen
 Niet kunnen plaatsen als het blokje te dichtbij is
 verschillende types blokjes kunnen plaatsen
 Plusje voor richten
 9 vierkantjes onderin
 
-Game ticks van 1/20 per seconde met accumulators
-input handling aanpassen: De input state wordt doorgegeven aan de world en die
-consumed events zoals release en pressed, maar laat de down staan.
 
 
 Refactoren voor playerClass in plaats van Camera. (Gefixed!!!)

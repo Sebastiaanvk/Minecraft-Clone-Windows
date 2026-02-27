@@ -8,7 +8,7 @@
 
 World::World(unsigned int seed)
     : chunkManager(seed),player(),
-    blockTargeted(false)
+    blockTargeted(false),tick(0),tickTimeLength(0.05f)
 {
 }
 
@@ -171,7 +171,40 @@ void World::placeBlock(){
     }
 }
 
-void World::update(){
+void World::update(Input_Handler& input_handler){
+
+    if(input_handler.key_down(Key::FORWARD)){
+        player.move_forward(tickTimeLength);
+    }
+
+    if(input_handler.key_down(Key::BACKWARD)){
+        player.move_backward(tickTimeLength);
+    }
+
+    if(input_handler.key_down(Key::LEFT)){
+        player.move_left(tickTimeLength);
+    }
+
+    if(input_handler.key_down(Key::RIGHT)){
+        player.move_right(tickTimeLength);
+    }
+    if(input_handler.key_down(Key::SPACE)){
+        player.move_up(tickTimeLength);
+    }
+    if(input_handler.key_down(Key::LEFT_SHIFT)){
+        player.move_down(tickTimeLength);
+    }
+    if(input_handler.key_pressed(Key::LEFT_MOUSE_BUTTON)){
+        std::cout << "Left Mouse Button Pressed!" << std::endl;
+        deleteTarget();
+    }
+    if(input_handler.key_pressed(Key::RIGHT_MOUSE_BUTTON)){
+        std::cout << "Right Mouse Button Pressed!" << std::endl;
+        placeBlock();
+    }
+    if(input_handler.key_pressed(Key::SPACE)){
+        std::cout << "Space Pressed!" << std::endl;
+    }
     calculatePlayerTarget();
     std::cout << "BlockTargeted: " << blockTargeted << ", Location: " << targetedBlock.x << "," << targetedBlock.y << "," << targetedBlock.z << std::endl;  
 

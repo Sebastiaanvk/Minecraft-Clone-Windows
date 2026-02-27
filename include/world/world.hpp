@@ -14,6 +14,7 @@
 #include <external/FastNoiseLite.h>
 #include <world/chunkManager.hpp>
 #include <world/player.hpp>
+#include <input/input_handler.hpp>
 
 class World {
 public:
@@ -24,8 +25,12 @@ public:
     Player player;
     void deleteTarget();
     void placeBlock();
-    void update();
+    // void update();
+    // void update(Input_Handler& input_handler, float deltaTime);
+    void update(Input_Handler& input_handler);
 
+
+    float tickTimeLength;
 private:
     ChunkManager chunkManager;
     void addChunk(const ChunkID& chunkID);    
@@ -34,6 +39,7 @@ private:
     LocInt targetedBlock;
     LocInt placementCandidate;
     void calculatePlayerTarget() ;
+    int tick;
 
 
 };

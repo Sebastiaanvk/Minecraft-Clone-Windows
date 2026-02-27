@@ -27,6 +27,7 @@ private:
 
     float deltaTime;
     float lastFrame;
+    float timeAccumulator;
 };
 
 

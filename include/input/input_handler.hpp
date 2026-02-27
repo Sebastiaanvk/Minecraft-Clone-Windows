@@ -31,8 +31,10 @@ private:
     double dx,dy;
 //    static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 //    double scroll_dx, scroll_dy; 
-    std::unordered_map<Key,bool> prev_pressed; // All of these could be vectors or arrays, but I really dont feel like casting all the time and making the code ugly
-    std::unordered_map<Key,bool> curr_pressed;
+    std::unordered_map<Key,bool> prev_down; // All of these could be vectors or arrays, but I really dont feel like casting all the time and making the code ugly
+    std::unordered_map<Key,bool> curr_down;
+    std::unordered_map<Key,bool> pressed;
+    std::unordered_map<Key,bool> released;
     std::unordered_map<Key,GLFWkey> toGLFWkey;
 };
 

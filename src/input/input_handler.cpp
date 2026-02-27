@@ -13,12 +13,14 @@ Input_Handler::Input_Handler(){
     toGLFWkey[Key::LEFT_MOUSE_BUTTON] = GLFW_MOUSE_BUTTON_LEFT,
     toGLFWkey[Key::RIGHT_MOUSE_BUTTON] = GLFW_MOUSE_BUTTON_RIGHT;
 
-    prev_pressed = {};
-    curr_pressed = {};
+    prev_down = {};
+    curr_down = {};
     for(int i = 0; i<Key::KEY_COUNT; i++){ // Technically unnecessary, but I wanted to prevent bugs where the entry of the map is read
         Key k = static_cast<Key>(i);
-        prev_pressed[k] = false;
-        curr_pressed[k] = false;
+        prev_down[k] = false;
+        curr_down[k] = false;
+        pressed[k] = false;
+        released[k] = false;
     }
 }
 
@@ -48,13 +50,18 @@ bool Input_Handler::init(GLFWwindow* window){
 void Input_Handler::update(GLFWwindow* window){
     for(int i = 0; i<Key::KEY_COUNT; i++){
         Key k = static_cast<Key>(i);
-        prev_pressed[k] = curr_pressed[k];
+        prev_down[k] = curr_down[k];
         if( k== Key::LEFT_MOUSE_BUTTON || k==Key::RIGHT_MOUSE_BUTTON){
-            curr_pressed[k] = (glfwGetMouseButton(window, toGLFWkey[k]) == GLFW_PRESS);
+            curr_down[k] = (glfwGetMouseButton(window, toGLFWkey[k]) == GLFW_PRESS);
         } else {
-            curr_pressed[k] = (glfwGetKey(window, toGLFWkey[k]) == GLFW_PRESS);
+            curr_down[k] = (glfwGetKey(window, toGLFWkey[k]) == GLFW_PRESS);
         }
-
+        if (curr_down[k] && !(prev_down[k])){
+            pressed[k] = true;
+        }
+        if (!curr_down[k] && prev_down[k]){
+            released[k] = true;
+        }
     }
 /*
     dx = tempDx; 
@@ -76,15 +83,23 @@ void Input_Handler::update(GLFWwindow* window){
     previousY = ((double)height)/2;//currentY;
 }
 bool Input_Handler::key_down(Key k){
-    return curr_pressed[k];
+    return curr_down[k];
 }
 
 bool Input_Handler::key_pressed(Key k){
-    return curr_pressed[k] && !(prev_pressed[k]);
+    if (pressed[k]){
+        pressed[k] = false;
+        return true;
+    }
+    return false;
 }
 
 bool Input_Handler::key_released(Key k){
-    return prev_pressed[k] && !(curr_pressed[k]);
+    if (released[k]){
+        released[k] = false;
+        return true;
+    }
+    return false;
 }
 
 
