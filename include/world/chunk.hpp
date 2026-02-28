@@ -9,7 +9,7 @@
 #include <vector>
 #include <set>
 #include <memory>
-#include <external/FastNoiseLite.h>
+#include <FastNoiseLite.h>
 #include <iostream>
 
 // If these constants are changed, make sure to update getChunkID and getLockWithinChunk in the chunkManager class

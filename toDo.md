@@ -15,9 +15,23 @@ consumed events zoals release en pressed, maar laat de down staan. -->
 <!-- posities interpoleren voor smooth graphics -->
 
 
+<!-- Hmm ff nadenken over muis indrukken.
+We hebben meer frames per game tick, dus het kan zijn dat we een een key hebben ingedrukt, 
+maar volgens mij nu opgelost. -->
+<!-- Muis ingedrukt kunnen houden voor deleten en plaatsen -->
+<!-- Niet kunnen plaatsen als het blokje te dichtbij is -->
 
-Muis ingedrukt kunnen houden voor deleten en plaatsen
-Niet kunnen plaatsen als het blokje te dichtbij is
+<!-- Range van plaatsen eentje verder dan deleten!
+Ray tracing for block targets bepalen?
+snel met een block id en een positie en richting de afstand tot het snijpunt bepalen. -->
+
+<!-- Refactor code -->
+Imgui instellen
+UI library maken
+
+Lijnen rond geselecteerd blokje
+vinden waarom zwarte lijnen tussen de cubes ontstaan als je vanuit een hoek kijkt.
+
 verschillende types blokjes kunnen plaatsen
 Plusje voor richten
 9 vierkantjes onderin
@@ -54,6 +68,7 @@ Ok nieuw idee we kijken naar de afstand naar het midden van het blokje?
 Rode lijnen rond geselecteerd blokje? JA nu aan werken
 Chunks spawnen rond de speler?
 Camera mode en speler mode? Dus de handling bepaalt de player locatie en waar die naar kijkt en dan wordt de camera geupdate?
+Raytracing aanpassen voor ofwel klein stapje, of elke keer door de dichtsbijzijnde surface ipv drie verschillende loops.
 
 
 

@@ -2,7 +2,7 @@
 #define LOC_H
 
 #include <utility>
-#include <external/glm/glm.hpp>
+#include <glm/glm.hpp>
 
 struct Loc2{
     int x;

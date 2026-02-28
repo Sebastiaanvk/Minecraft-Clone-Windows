@@ -83,6 +83,10 @@ void Input_Handler::update(GLFWwindow* window){
     previousY = ((double)height)/2;//currentY;
 }
 bool Input_Handler::key_down(Key k){
+    if (pressed[k]){
+        pressed[k] = false;
+        return true;
+    }
     return curr_down[k];
 }
 

@@ -11,11 +11,11 @@
 #include <render/renderable.hpp>
 #include <shaders/shader.h>
 #include <util/loc.h>
-#include <external/stb_image.h>
-#include <external/json.hpp>
-#include <external/glm/glm.hpp>
-#include <external/glm/gtc/matrix_transform.hpp>
-#include <external/glm/gtc/type_ptr.hpp>
+#include <stb_image.h>
+#include <json.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 class RenderMesh{
     public:

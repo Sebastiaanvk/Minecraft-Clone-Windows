@@ -11,7 +11,7 @@
 #include <unordered_map>
 #include <memory>
 #include <iostream>
-#include <external/FastNoiseLite.h>
+#include <FastNoiseLite.h>
 #include <world/chunkManager.hpp>
 #include <world/player.hpp>
 #include <input/input_handler.hpp>
@@ -40,6 +40,7 @@ private:
     LocInt placementCandidate;
     void calculatePlayerTarget() ;
     int tick;
+    const int ticksBetweenBlocks = 7;
 
 
 };

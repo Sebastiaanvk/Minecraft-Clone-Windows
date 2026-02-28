@@ -20,6 +20,12 @@ std::queue<std::shared_ptr<RenderableChunkMesh>> World::toRenderableChunkQueue()
 
 
 void World::calculatePlayerTarget() {
+    /* Idea:
+    We look for the first cube surface we intersect with a ray going out of the camera.
+    There are 6 different sides to a block, so we need to see which side gets intersected first by the ray.
+    Hence, the split for x,y,z en whether the direction in that dimension is positive or negative.
+    
+    */
     float maxReach = 12;
     LocFloat pos = player.getPos();
     LocFloat forward = player.getForwardDir();
@@ -30,6 +36,7 @@ void World::calculatePlayerTarget() {
 
     if(forward.x>0){
         float nextX = ceil(pos.x);
+        // We know the forward has a length of 1, so we can easily calculate the distance the ray needs to travel in order to intersect the plane given by x==nextX.
         float dist = ((nextX-pos.x)/ forward.x);
         while(  dist <= maxReach ){
             LocFloat intersect = pos + dist*forward;
@@ -158,20 +165,28 @@ void World::calculatePlayerTarget() {
 
 void World::deleteTarget(){
     std::cout << "Deleting target. BlockTargeted: " << blockTargeted << ", Location: " << targetedBlock.x << "," << targetedBlock.y << "," << targetedBlock.z << std::endl;  
-    if(blockTargeted){
+    static int lastDeletionTick = -ticksBetweenBlocks;
+    
+    if( tick-lastDeletionTick>=ticksBetweenBlocks and blockTargeted){
+        lastDeletionTick = tick;
         chunkManager.deleteBlock(targetedBlock);
     }
 
 }
 
 void World::placeBlock(){
-    if(blockTargeted and !player.blockIntersects(placementCandidate)){
+    static int lastPlacementTick = -ticksBetweenBlocks;
+    if( tick-lastPlacementTick>=ticksBetweenBlocks and blockTargeted and !player.blockIntersects(placementCandidate)){
         chunkManager.placeBlock(placementCandidate);
+        lastPlacementTick = tick;
 
     }
 }
 
 void World::update(Input_Handler& input_handler){
+
+    tick += 1;
+
     player.storePos();
 
     if(input_handler.key_down(Key::FORWARD)){
@@ -195,11 +210,10 @@ void World::update(Input_Handler& input_handler){
     if(input_handler.key_down(Key::LEFT_SHIFT)){
         player.move_down(tickTimeLength);
     }
-    if(input_handler.key_pressed(Key::LEFT_MOUSE_BUTTON)){
+    if(input_handler.key_down(Key::LEFT_MOUSE_BUTTON)){
         std::cout << "Left Mouse Button Pressed!" << std::endl;
         deleteTarget();
-    }
-    if(input_handler.key_pressed(Key::RIGHT_MOUSE_BUTTON)){
+    } else if(input_handler.key_down(Key::RIGHT_MOUSE_BUTTON)){
         std::cout << "Right Mouse Button Pressed!" << std::endl;
         placeBlock();
     }

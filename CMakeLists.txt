@@ -8,15 +8,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(GLFW_ROOT "C:/dev/libs/glfw-3.4")
 
 # Add the GLFW include directory
-include_directories(${GLFW_ROOT}/include include)
+include_directories(${GLFW_ROOT}/include include extern)
 
 # Add the GLFW library directory
 link_directories(${GLFW_ROOT}/lib)
 
 # add_definitions(-DGLAD_GLAPI_EXPORT)
 
-file(GLOB SOURCES "src/*.cpp" "src/*.c" "src/external/*.cpp" "src/external/*.c" "src/input/*.cpp" "src/input/*.c" "src/render/*.cpp" "src/render/*.c" "src/world/*.cpp" "src/world/*.c" "src/shaders/*.cpp")
-add_executable(executable ${SOURCES})
+# file(GLOB SOURCES "src/*.cpp" "src/*.c" "src/external/*.cpp" "src/external/*.c" "src/input/*.cpp" "src/input/*.c" "src/render/*.cpp" "src/render/*.c" "src/world/*.cpp" "src/world/*.c" "src/shaders/*.cpp")
+file(GLOB EXTERN "extern/*.cpp" "extern/*.c")
+file(GLOB SOURCES "src/*.cpp" "src/*.c" "src/input/*.cpp" "src/input/*.c" "src/render/*.cpp" "src/render/*.c" "src/world/*.cpp" "src/world/*.c" "src/shaders/*.cpp")
+add_executable(executable ${SOURCES} ${EXTERN})
 
 
 target_link_libraries(executable glfw3 opengl32)

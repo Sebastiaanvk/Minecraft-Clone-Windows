@@ -1,7 +1,7 @@
 #ifndef RENDERABLE_HPP
 #define RENDERABLE_HPP
 
-#include <external/glm/vec3.hpp>
+#include <glm/vec3.hpp>
 #include <string>
 #include <vector>
 #include <blockRegistry.hpp>
