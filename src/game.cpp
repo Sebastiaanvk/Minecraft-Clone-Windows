@@ -13,6 +13,7 @@ Game::Game()
 {
     // std::mt19937 generator(seed); // Mersenne Twister engine (Not sure why this is here)
     std::cout << "Seed: "<< seed << std::endl;
+
 }
 
 
@@ -56,6 +57,7 @@ void Game::run(){
         std::cout<< world.player.playerLocAsString() << std::endl;
 
     }
+    renderer.shutDown();
     glfwTerminate();
 }
 
@@ -65,38 +67,6 @@ void Game::process_input(){
     if(input_handler.key_pressed(Key::ESCAPE)){
         glfwSetWindowShouldClose(renderer.getWindow(), true);
     }
-    // if(input_handler.key_down(Key::FORWARD)){
-    //     world.player.move_forward(deltaTime);
-    // }
-
-    // if(input_handler.key_down(Key::BACKWARD)){
-    //     world.player.move_backward(deltaTime);
-    // }
-
-    // if(input_handler.key_down(Key::LEFT)){
-    //     world.player.move_left(deltaTime);
-    // }
-
-    // if(input_handler.key_down(Key::RIGHT)){
-    //     world.player.move_right(deltaTime);
-    // }
-    // if(input_handler.key_down(Key::SPACE)){
-    //     world.player.move_up(deltaTime);
-    // }
-    // if(input_handler.key_down(Key::LEFT_SHIFT)){
-    //     world.player.move_down(deltaTime);
-    // }
-    // if(input_handler.key_pressed(Key::LEFT_MOUSE_BUTTON)){
-    //     std::cout << "Left Mouse Button Pressed!" << std::endl;
-    //     world.deleteTarget();
-    // }
-    // if(input_handler.key_pressed(Key::RIGHT_MOUSE_BUTTON)){
-    //     std::cout << "Right Mouse Button Pressed!" << std::endl;
-    //     world.placeBlock();
-    // }
-    // if(input_handler.key_pressed(Key::SPACE)){
-    //     std::cout << "Space Pressed!" << std::endl;
-    // }
     // std::cout << "dx: " << input_handler.getDX() << " dy: " << input_handler.getDY() << "\n";
     world.player.rotate(input_handler.getDX(),input_handler.getDY());
 }

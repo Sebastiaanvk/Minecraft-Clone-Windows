@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(GLFW_ROOT "C:/dev/libs/glfw-3.4")
 
 # Add the GLFW include directory
-include_directories(${GLFW_ROOT}/include include extern)
+include_directories(${GLFW_ROOT}/include include extern extern/imgui extern/imgui/backends)
 
 # Add the GLFW library directory
 link_directories(${GLFW_ROOT}/lib)
@@ -17,8 +17,9 @@ link_directories(${GLFW_ROOT}/lib)
 
 # file(GLOB SOURCES "src/*.cpp" "src/*.c" "src/external/*.cpp" "src/external/*.c" "src/input/*.cpp" "src/input/*.c" "src/render/*.cpp" "src/render/*.c" "src/world/*.cpp" "src/world/*.c" "src/shaders/*.cpp")
 file(GLOB EXTERN "extern/*.cpp" "extern/*.c")
+file(GLOB IMGUI "extern/imgui/*.cpp" "extern/imgui/*.c" "extern/imgui/backends/*.cpp" "extern/imgui/backends/*.c")
 file(GLOB SOURCES "src/*.cpp" "src/*.c" "src/input/*.cpp" "src/input/*.c" "src/render/*.cpp" "src/render/*.c" "src/world/*.cpp" "src/world/*.c" "src/shaders/*.cpp")
-add_executable(executable ${SOURCES} ${EXTERN})
+add_executable(executable ${SOURCES} ${EXTERN} ${IMGUI})
 
 
 target_link_libraries(executable glfw3 opengl32)

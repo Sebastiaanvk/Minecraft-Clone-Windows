@@ -37,6 +37,9 @@ Plusje voor richten
 9 vierkantjes onderin
 
 
+Add imgui debug files.(No idea if necessary, but they do exist or something)
+
+
 
 Refactoren voor playerClass in plaats van Camera. (Gefixed!!!)
 

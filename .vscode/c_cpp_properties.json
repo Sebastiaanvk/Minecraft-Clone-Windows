@@ -5,7 +5,9 @@
       "includePath": [
         "${workspaceFolder}/include",
         "C:/dev/libs/glfw-3.4/include",
-        "${workspaceFolder}/extern"
+        "${workspaceFolder}/extern",
+        "${workspaceFolder}/extern/imgui",
+        "${workspaceFolder}/extern/imgui/backends"
 
       ],
       "compilerPath": "C:/msys64/mingw64/bin/gcc.exe",
