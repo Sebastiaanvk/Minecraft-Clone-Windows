@@ -1,9 +1,0 @@
-# ninja log v6
-18	2526	7667595201097966	CMakeFiles/executable.dir/src/stb_image.cpp.obj	fd6ff3b23e956b14
-12	3448	7667595200921521	CMakeFiles/executable.dir/src/glad.c.obj	62759c8755e3466
-15	8458	7667595201078550	CMakeFiles/executable.dir/src/main.cpp.obj	88fadc9bc1d8684b
-8460	8813	7667595285511233	executable.exe	40b7f17a0ad4af2
-15	7025	7667722857593081	CMakeFiles/executable.dir/src/main.cpp.obj	88fadc9bc1d8684b
-7025	7396	7667722927578569	executable.exe	40b7f17a0ad4af2
-28	4688	7667724052418945	CMakeFiles/executable.dir/src/main.cpp.obj	88fadc9bc1d8684b
-4689	4884	7667724099058115	executable.exe	40b7f17a0ad4af2
