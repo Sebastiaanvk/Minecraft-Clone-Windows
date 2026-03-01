@@ -54,7 +54,7 @@ void Game::run(){
 
         renderer.render(world,camera);
 
-        std::cout<< world.player.playerLocAsString() << std::endl;
+        // std::cout<< world.player.playerLocAsString() << std::endl;
 
     }
     renderer.shutDown();
@@ -66,6 +66,9 @@ void Game::process_input(){
 
     if(input_handler.key_pressed(Key::ESCAPE)){
         glfwSetWindowShouldClose(renderer.getWindow(), true);
+    }
+    if(input_handler.key_pressed(Key::PAUSE)){
+        input_handler.switchFreeMouse(renderer.getWindow());
     }
     // std::cout << "dx: " << input_handler.getDX() << " dy: " << input_handler.getDY() << "\n";
     world.player.rotate(input_handler.getDX(),input_handler.getDY());

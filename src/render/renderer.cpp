@@ -205,13 +205,13 @@ GLFWwindow* Renderer::getWindow(){
 
 void Renderer::render(World& world, Camera& camera){
 
-        // (Your code calls glfwPollEvents())
-        // ...
-        // Start the Dear ImGui frame
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-        ImGui::ShowDemoWindow(); // Show demo window! :)
+    // (Your code calls glfwPollEvents())
+    // ...
+    // Start the Dear ImGui frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+    ImGui::ShowDemoWindow(); // Show demo window! :)
 
 
 

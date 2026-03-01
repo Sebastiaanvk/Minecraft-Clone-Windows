@@ -23,6 +23,9 @@ public:
     double getDX();
     double getDY();
 
+    // void setFreeMouse(bool free);
+    void switchFreeMouse(GLFWwindow* window);
+
 private:
     typedef int GLFWkey;
     double previousX, previousY;
@@ -36,6 +39,8 @@ private:
     std::unordered_map<Key,bool> pressed;
     std::unordered_map<Key,bool> released;
     std::unordered_map<Key,GLFWkey> toGLFWkey;
+
+    bool freeMouse = false;
 };
 
 

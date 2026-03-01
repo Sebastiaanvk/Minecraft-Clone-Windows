@@ -26,8 +26,19 @@ Ray tracing for block targets bepalen?
 snel met een block id en een positie en richting de afstand tot het snijpunt bepalen. -->
 
 <!-- Refactor code -->
+Ronddraaien in pauze mode aanpassen
+
+
 Imgui instellen
+
+In ImGui belangrijke stats toevoegen
+zwarte lijn blijk blokjes weg als ik vanuit een hoek kijk.
+
+
+
+
 UI library maken
+
 
 Lijnen rond geselecteerd blokje
 vinden waarom zwarte lijnen tussen de cubes ontstaan als je vanuit een hoek kijkt.

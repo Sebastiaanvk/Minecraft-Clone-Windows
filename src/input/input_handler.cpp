@@ -12,6 +12,7 @@ Input_Handler::Input_Handler(){
     toGLFWkey[Key::LEFT_SHIFT] = GLFW_KEY_LEFT_SHIFT;
     toGLFWkey[Key::LEFT_MOUSE_BUTTON] = GLFW_MOUSE_BUTTON_LEFT,
     toGLFWkey[Key::RIGHT_MOUSE_BUTTON] = GLFW_MOUSE_BUTTON_RIGHT;
+    toGLFWkey[Key::PAUSE] = GLFW_KEY_P;
 
     prev_down = {};
     curr_down = {};
@@ -24,13 +25,6 @@ Input_Handler::Input_Handler(){
     }
 }
 
-/*
-double Input_Handler::tempDx = 0.0;
-double Input_Handler::tempDy = 0.0;
-double Input_Handler::previousX = 0.0;
-double Input_Handler::previousY = 0.0;
-//bool Input_Handler::firstMouse = true;
-*/
 
 bool Input_Handler::init(GLFWwindow* window){
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
@@ -63,24 +57,23 @@ void Input_Handler::update(GLFWwindow* window){
             released[k] = true;
         }
     }
-/*
-    dx = tempDx; 
-    dy = tempDy;
-    tempDx = 0.0f; 
-    tempDy = 0.0f;
-*/
 
-    double currentX,currentY; 
-    glfwGetCursorPos(window, &currentX, &currentY);
-    dx = currentX - previousX;
-    dy =  previousY - currentY; // Reversed because in GLFW the y starts at the bottom
-    int width, height;
-    glfwGetFramebufferSize(window, &width, &height);
+    if(!freeMouse){
+        double currentX,currentY; 
+        glfwGetCursorPos(window, &currentX, &currentY);
+        // Need to check: Does the speed of the camera depend on the window size?
+        // Preferably, it should only depend on the actual mouse movement.
+        dx = currentX - previousX;
+        dy =  previousY - currentY; // Reversed because in GLFW the y starts at the bottom
+        int width, height;
+        glfwGetFramebufferSize(window, &width, &height);
 
-    glfwSetCursorPos(window, ((double)width)/2, ((double)height)/2);
-    
-    previousX = ((double)width)/2;//currentX;
-    previousY = ((double)height)/2;//currentY;
+        glfwSetCursorPos(window, ((double)width)/2, ((double)height)/2);
+       
+        previousX = ((double)width)/2;
+        previousY = ((double)height)/2;
+    }
+
 }
 bool Input_Handler::key_down(Key k){
     if (pressed[k]){
@@ -112,6 +105,28 @@ double Input_Handler::getDX(){
 }
 double Input_Handler::getDY(){
     return dy;
+}
+
+// void Input_Handler::setFreeMouse(bool free){
+//     freeMouse = free;
+// }
+
+void Input_Handler::switchFreeMouse(GLFWwindow* window){
+    freeMouse = !freeMouse;
+    if(freeMouse){
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        dx = 0;
+        dy = 0;
+    } else {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        int width, height;
+        glfwGetFramebufferSize(window, &width, &height);
+
+        glfwSetCursorPos(window, ((double)width)/2, ((double)height)/2);
+       
+        previousX = ((double)width)/2;
+        previousY = ((double)height)/2;
+    }
 }
 
 /*

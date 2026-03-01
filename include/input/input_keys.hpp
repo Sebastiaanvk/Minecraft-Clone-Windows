@@ -11,6 +11,7 @@ enum Key{
     LEFT_SHIFT,
     LEFT_MOUSE_BUTTON,
     RIGHT_MOUSE_BUTTON,
+    PAUSE,
     KEY_COUNT
 };
 

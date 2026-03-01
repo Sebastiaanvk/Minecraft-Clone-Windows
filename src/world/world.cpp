@@ -164,7 +164,7 @@ void World::calculatePlayerTarget() {
 }
 
 void World::deleteTarget(){
-    std::cout << "Deleting target. BlockTargeted: " << blockTargeted << ", Location: " << targetedBlock.x << "," << targetedBlock.y << "," << targetedBlock.z << std::endl;  
+    // std::cout << "Deleting target. BlockTargeted: " << blockTargeted << ", Location: " << targetedBlock.x << "," << targetedBlock.y << "," << targetedBlock.z << std::endl;  
     static int lastDeletionTick = -ticksBetweenBlocks;
     
     if( tick-lastDeletionTick>=ticksBetweenBlocks and blockTargeted){
@@ -211,17 +211,12 @@ void World::update(Input_Handler& input_handler){
         player.move_down(tickTimeLength);
     }
     if(input_handler.key_down(Key::LEFT_MOUSE_BUTTON)){
-        std::cout << "Left Mouse Button Pressed!" << std::endl;
         deleteTarget();
     } else if(input_handler.key_down(Key::RIGHT_MOUSE_BUTTON)){
-        std::cout << "Right Mouse Button Pressed!" << std::endl;
         placeBlock();
     }
-    if(input_handler.key_pressed(Key::SPACE)){
-        std::cout << "Space Pressed!" << std::endl;
-    }
     calculatePlayerTarget();
-    std::cout << "BlockTargeted: " << blockTargeted << ", Location: " << targetedBlock.x << "," << targetedBlock.y << "," << targetedBlock.z << std::endl;  
+    // std::cout << "BlockTargeted: " << blockTargeted << ", Location: " << targetedBlock.x << "," << targetedBlock.y << "," << targetedBlock.z << std::endl;  
 
 }
 
