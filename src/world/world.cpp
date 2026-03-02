@@ -8,7 +8,7 @@
 
 World::World(unsigned int seed)
     : chunkManager(seed),player(),
-    blockTargeted(false),tick(0),tickTimeLength(0.05f)
+    blockTargeted(false),tick(0)
 {
 }
 
@@ -165,9 +165,9 @@ void World::calculatePlayerTarget() {
 
 void World::deleteTarget(){
     // std::cout << "Deleting target. BlockTargeted: " << blockTargeted << ", Location: " << targetedBlock.x << "," << targetedBlock.y << "," << targetedBlock.z << std::endl;  
-    static int lastDeletionTick = -ticksBetweenBlocks;
+    static int lastDeletionTick = -ticksBetweenBlockManipulation;
     
-    if( tick-lastDeletionTick>=ticksBetweenBlocks and blockTargeted){
+    if( tick-lastDeletionTick>=ticksBetweenBlockManipulation and blockTargeted){
         lastDeletionTick = tick;
         chunkManager.deleteBlock(targetedBlock);
     }
@@ -175,8 +175,8 @@ void World::deleteTarget(){
 }
 
 void World::placeBlock(){
-    static int lastPlacementTick = -ticksBetweenBlocks;
-    if( tick-lastPlacementTick>=ticksBetweenBlocks and blockTargeted and !player.blockIntersects(placementCandidate)){
+    static int lastPlacementTick = -ticksBetweenBlockManipulation;
+    if( tick-lastPlacementTick>=ticksBetweenBlockManipulation and blockTargeted and !player.blockIntersects(placementCandidate)){
         chunkManager.placeBlock(placementCandidate);
         lastPlacementTick = tick;
 
@@ -218,6 +218,18 @@ void World::update(Input_Handler& input_handler){
     calculatePlayerTarget();
     // std::cout << "BlockTargeted: " << blockTargeted << ", Location: " << targetedBlock.x << "," << targetedBlock.y << "," << targetedBlock.z << std::endl;  
 
+}
+
+
+WorldUIData World::getUIData(){
+    WorldUIData uiData;
+    uiData.playerData = player.getUIData();
+    uiData.blockTargeted = blockTargeted;
+    uiData.targetedBlock = targetedBlock;
+    uiData.tick = tick;
+    uiData.ticksBetweenBlockManipulationP = &ticksBetweenBlockManipulation;
+    uiData.tickTimeLengthP = &tickTimeLength;
+    return uiData;
 }
 
 

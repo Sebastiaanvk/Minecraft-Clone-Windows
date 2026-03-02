@@ -26,22 +26,24 @@ Ray tracing for block targets bepalen?
 snel met een block id en een positie en richting de afstand tot het snijpunt bepalen. -->
 
 <!-- Refactor code -->
-Ronddraaien in pauze mode aanpassen
+<!-- Ronddraaien in pauze mode aanpassen -->
+
+<!-- Structs met UIData pointers toevoegen. -->
+
+<!-- Imgui instellen -->
 
 
-Imgui instellen
+<!-- In ImGui belangrijke stats toevoegen -->
+<!-- In Camera de muisdraai snelheid toevoegen.(Nevermind, staat in de player class.) -->
+<!-- Bij Pause mode alles pauzeren! -->
 
-In ImGui belangrijke stats toevoegen
+Default variabele waardes van de constructor naar de header verplaatsen.
+Crashes als ik buiten de chunks ben en een cube in een chunk probeer te verwijderen.
+
 zwarte lijn blijk blokjes weg als ik vanuit een hoek kijk.
-
-
-
-
 UI library maken
-
-
 Lijnen rond geselecteerd blokje
-vinden waarom zwarte lijnen tussen de cubes ontstaan als je vanuit een hoek kijkt.
+
 
 verschillende types blokjes kunnen plaatsen
 Plusje voor richten

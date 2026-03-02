@@ -27,3 +27,9 @@ float Camera::getFov(){
 LocFloat Camera::flipZ(const LocFloat& loc) const{
     return LocFloat(loc.x,loc.y,-loc.z);
 }
+
+CameraUIData Camera::getUIData(){
+    CameraUIData data;
+    data.fovP = &fov;
+    return data;
+}

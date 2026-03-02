@@ -9,6 +9,7 @@
 #include <camera.hpp>
 #include <memory>
 #include <render/renderable.hpp>
+#include <render/uiData.hpp>
 #include <shaders/shader.h>
 #include <util/loc.h>
 #include <stb_image.h>
@@ -35,7 +36,7 @@ public:
 
     GLFWwindow* getWindow();
 
-    void render(World& world, Camera& camera);
+    void render(World& world, Camera& camera, GameUIData gameData);
     void shutDown();
 private:
 // Chatgpt suggested using a struct for the data of the vbo.
@@ -52,6 +53,7 @@ private:
     int atlasHeight;
     float textureSizeHeight;
     float textureSizeWidth;
+    bool showGameData = true;
     std::vector<chunkVBOElt> updateVBOVector(const RenderableChunkMesh& worldMesh);
     RenderMesh createRenderMesh(const RenderableChunkMesh& worldMesh);
     std::map<ChunkID,RenderMesh> chunkMeshes;

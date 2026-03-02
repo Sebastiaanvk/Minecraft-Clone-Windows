@@ -10,7 +10,6 @@ Player::Player()
     direction.y = sin(glm::radians(pitch));
     direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
     forward = glm::normalize(direction);
-
 }
 
 void Player::storePos(){
@@ -19,9 +18,8 @@ void Player::storePos(){
 
 void Player::rotate(float dx, float dy){
 
-    const float sensitivity = 0.1f;
-    float xoffset = dx * sensitivity;
-    float yoffset = dy * sensitivity;
+    float xoffset = dx * rotationSensitivity;
+    float yoffset = dy * rotationSensitivity;
 
     yaw   -= xoffset;
     pitch += yoffset;  
@@ -98,4 +96,13 @@ bool Player::blockIntersects(const LocInt& loc ){
 
 LocFloat Player::getForwardDir() const{
     return forward;
+}
+PlayerUIData Player::getUIData(){
+    PlayerUIData uiData;
+    uiData.pos = pos;
+    uiData.forwardDirection = forward;
+    uiData.playerSpeedP = &playerSpeed;
+    uiData.rotationSensitivityP = &rotationSensitivity;
+
+    return uiData;
 }

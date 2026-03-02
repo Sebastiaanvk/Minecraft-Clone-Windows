@@ -3,6 +3,7 @@
 
 #include <string>
 #include <util/loc.h>
+#include <render/uiData.hpp>
 
 class Player{
 public:
@@ -22,12 +23,17 @@ public:
     LocInt getBlockLoc() const;
     bool blockIntersects(const LocInt& loc );
     LocFloat getForwardDir() const;
+
+    PlayerUIData getUIData();
+
 private:
 
     float playerSpeed;
 
     float yaw;
     float pitch;
+
+    float rotationSensitivity = 0.1f;
 
     LocFloat pos;
     LocFloat lastPos;

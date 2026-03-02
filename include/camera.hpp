@@ -8,6 +8,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <world/player.hpp>
+#include <render/uiData.hpp>
 
 class Camera{
 public:
@@ -17,6 +18,7 @@ public:
     glm::mat4 getViewMatrix();
 
     float getFov();
+    CameraUIData getUIData();
 private:
 
     glm::mat4 view;

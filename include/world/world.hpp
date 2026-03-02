@@ -15,6 +15,7 @@
 #include <world/chunkManager.hpp>
 #include <world/player.hpp>
 #include <input/input_handler.hpp>
+#include <render/uiData.hpp>
 
 class World {
 public:
@@ -30,7 +31,9 @@ public:
     void update(Input_Handler& input_handler);
 
 
-    float tickTimeLength;
+    float tickTimeLength = 0.05f;
+    WorldUIData getUIData();
+
 private:
     ChunkManager chunkManager;
     void addChunk(const ChunkID& chunkID);    
@@ -40,7 +43,7 @@ private:
     LocInt placementCandidate;
     void calculatePlayerTarget() ;
     int tick;
-    const int ticksBetweenBlocks = 7;
+    int ticksBetweenBlockManipulation = 7;
 
 
 };

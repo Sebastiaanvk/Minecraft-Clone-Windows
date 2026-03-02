@@ -129,6 +129,17 @@ void Input_Handler::switchFreeMouse(GLFWwindow* window){
     }
 }
 
+void Input_Handler::reset(){
+    for(int i = 0; i<Key::KEY_COUNT; i++){ // Technically unnecessary, but I wanted to prevent bugs where the entry of the map is read
+        Key k = static_cast<Key>(i);
+        prev_down[k] = false; 
+        curr_down[k] = false;
+        pressed[k] = false;
+        released[k] = false;
+    }
+    curr_down[Key::PAUSE] = true; //Important in order to prevent instant repausing.
+}
+
 /*
 void Input_Handler::mouse_callback(GLFWwindow* window, double xpos, double ypos){
 //{

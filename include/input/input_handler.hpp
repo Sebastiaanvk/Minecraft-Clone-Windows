@@ -26,6 +26,8 @@ public:
     // void setFreeMouse(bool free);
     void switchFreeMouse(GLFWwindow* window);
 
+    void reset();
+
 private:
     typedef int GLFWkey;
     double previousX, previousY;

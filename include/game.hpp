@@ -8,6 +8,7 @@
 #include <input/input_handler.hpp>
 #include <world/world.hpp>
 #include <input/input_keys.hpp>
+#include <render/uiData.hpp>
 #include <camera.hpp>
 #include <thread>
 #include <chrono>
@@ -28,6 +29,8 @@ private:
     float deltaTime;
     float lastFrame;
     float timeAccumulator;
+    
+    bool paused = false;
 };
 
 

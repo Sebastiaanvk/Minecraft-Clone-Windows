@@ -203,7 +203,7 @@ GLFWwindow* Renderer::getWindow(){
 
 
 
-void Renderer::render(World& world, Camera& camera){
+void Renderer::render(World& world, Camera& camera, GameUIData gameData){
 
     // (Your code calls glfwPollEvents())
     // ...
@@ -212,6 +212,37 @@ void Renderer::render(World& world, Camera& camera){
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     ImGui::ShowDemoWindow(); // Show demo window! :)
+
+    if(showGameData){
+        CameraUIData cameraUIData = camera.getUIData();
+        WorldUIData worldUIData = world.getUIData();
+        ImGui::Begin("Game Data", &showGameData);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+        if(gameData.paused)
+            ImGui::Text("Game is paused!");
+        else
+            ImGui::Text("Game is unpaused!");
+        if (ImGui::CollapsingHeader("Camera",ImGuiTreeNodeFlags_DefaultOpen)){
+            ImGui::SliderFloat("Camera fov (degrees)",cameraUIData.fovP,1.0f,179.0f);
+        }
+        if (ImGui::CollapsingHeader("Player",ImGuiTreeNodeFlags_DefaultOpen)){
+            ImGui::Text("Player location(xyz): %f,%f,%f",worldUIData.playerData.pos.x,worldUIData.playerData.pos.y,worldUIData.playerData.pos.z);
+            ImGui::Text("Looking direction(xyz): %f,%f,%f",worldUIData.playerData.forwardDirection.x,worldUIData.playerData.forwardDirection.y,worldUIData.playerData.forwardDirection.z);
+            ImGui::SliderFloat("Movement Speed",worldUIData.playerData.playerSpeedP,1.0f,100.0f);
+            ImGui::SliderFloat("Mouse Sensitivity",worldUIData.playerData.rotationSensitivityP,0.01f,0.5f);
+        }
+        if (ImGui::CollapsingHeader("World",ImGuiTreeNodeFlags_DefaultOpen)){
+            ImGui::SliderInt("Block Delay (ticks)",worldUIData.ticksBetweenBlockManipulationP,1,20);
+            ImGui::SliderFloat("Tick Length (seconds)",worldUIData.tickTimeLengthP,0.0f,1.0f);
+            if(worldUIData.blockTargeted){
+                ImGui::Text("Block targeted(xyz): %d,%d,%d",worldUIData.targetedBlock.x,worldUIData.targetedBlock.y,worldUIData.targetedBlock.z);
+            } else {
+                ImGui::Text("No block targeted.");
+            }
+        }
+        // if (ImGui::Button("Close Me"))
+        //     show_another_window = false;
+        ImGui::End();
+    }
 
 
 

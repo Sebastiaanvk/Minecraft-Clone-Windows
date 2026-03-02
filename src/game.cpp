@@ -43,7 +43,9 @@ void Game::run(){
         process_input();
         timeAccumulator += deltaTime;
         while(timeAccumulator>=world.tickTimeLength){
-            world.update(input_handler);        
+            if(!paused){
+                world.update(input_handler);        
+            }
             timeAccumulator -= world.tickTimeLength;
         }
 
@@ -52,7 +54,9 @@ void Game::run(){
 
         camera.update(world.player,alpha);
 
-        renderer.render(world,camera);
+        GameUIData gameData;
+        gameData.paused = paused;
+        renderer.render(world,camera,gameData);
 
         // std::cout<< world.player.playerLocAsString() << std::endl;
 
@@ -69,7 +73,13 @@ void Game::process_input(){
     }
     if(input_handler.key_pressed(Key::PAUSE)){
         input_handler.switchFreeMouse(renderer.getWindow());
+        paused = !paused;
+        if(!paused){
+            input_handler.reset();
+        }
     }
     // std::cout << "dx: " << input_handler.getDX() << " dy: " << input_handler.getDY() << "\n";
     world.player.rotate(input_handler.getDX(),input_handler.getDY());
 }
+
+
