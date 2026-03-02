@@ -28,6 +28,12 @@ struct GameUIData {
     bool paused;
 };
 
+struct RendererUIData {
+    float* textureMarginP;
+    float* localOutlineOffsetP;
+    float* localOutlineWidthP;
+};
+
 
 // struct UIData {
 //     // GameUIData gameData;

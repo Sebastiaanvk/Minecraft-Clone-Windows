@@ -3,6 +3,7 @@
 
 #include <utility>
 #include <glm/glm.hpp>
+#include <functional>
 
 struct Loc2{
     int x;

@@ -4,9 +4,11 @@
 ## Nu aan werken:
 
 
-Mijn OpenGl code opnieuw begrijpen.
+<!-- Mijn OpenGl code opnieuw begrijpen. -->
 
+Alle IMGUI dingen in een ander bestand.
 De rendercode mooi encapsulaten zodat de main render functie Heel overzichtelijk wordt.
+
 
 <!-- Lijnen rond geselecteerd blokje -->
 

@@ -28,7 +28,7 @@ public:
 
 private:
 
-    float playerSpeed = 40.0f;
+    float playerSpeed = 20.0f;
 
     float yaw = 90.0f;
     float pitch = 0.0f;

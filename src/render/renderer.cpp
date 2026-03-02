@@ -79,33 +79,6 @@ RenderMesh Renderer::createRenderMesh(const RenderableChunkMesh& worldMesh){
     return renderMesh;
 }
 
-// This is just for testing, delete later!
-// void Renderer::setupTestMeshes( int atlasWidth, int atlasHeight){
-//     glGenVertexArrays(1,&testVAO);
-//     glBindVertexArray(testVAO);
-
-//     glGenBuffers(1,&testVBO);
-//     glBindBuffer(GL_ARRAY_BUFFER, testVBO);
-
-//     float atlasRatio = (float) atlasHeight/atlasWidth;
-    
-//     chunkVBOElt testVertices [] = {
-//         {-5,5-10*atlasRatio,-5,0,1,255,255,255,255},
-//         {5,5,-5,1,0,255,255,255,255},
-//         {-5,5,-5,0,0,255,255,255,255},
-//         {5,5,-5,1,0,255,255,255,255},
-//         {-5,5-10*atlasRatio,-5,0,1,255,255,255,255},
-//         {5,5-10*atlasRatio,-5,1,1,255,255,255,255}
-//     };
-
-//     glBufferData(GL_ARRAY_BUFFER, sizeof(testVertices), testVertices, GL_STATIC_DRAW);
-
-//     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-//     glEnableVertexAttribArray(0);
-//     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3*sizeof(float)));
-//     glEnableVertexAttribArray(1);
-
-// }
 
 
 bool Renderer::setupCubeOutline(){
@@ -150,7 +123,6 @@ bool Renderer::setupCubeOutline(){
     glEnableVertexAttribArray(0);  
 
     outLineShaderProgram = Shader("include/shaders/cubeOutlineShader.vs","include/shaders/cubeOutlineShader.fs");
-    //  chunkShaderProgram = Shader("../include/shaders/chunkShader.vs","../include/shaders/chunkShader.fs");
 
     return true;
 
@@ -229,18 +201,7 @@ bool Renderer::init(int width, int height){
 
     // setupTestMeshes(atlasWidth, atlasHeight);
 
-    // Setup Dear ImGui context
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO&  io = ImGui::GetIO();
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-    // io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // IF using Docking Branch
-
-    // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(window, true);          // Second param install_callback=true will install GLFW callbacks and chain to existing ones.
-    ImGui_ImplOpenGL3_Init();
-
+    CustomImGui::setup(window);
 
     if(!setupCubeOutline()){
         return false;
@@ -254,54 +215,20 @@ GLFWwindow* Renderer::getWindow(){
 }
 
 
+RendererUIData Renderer::getRendererUIData(){
+    RendererUIData rendererUIData;
+    rendererUIData.textureMarginP = &textureMargin;
+    rendererUIData.localOutlineOffsetP = &localOutlineOffset;
+    rendererUIData.localOutlineWidthP = &localOutlineWidth;
 
+    return rendererUIData;
+}
 
 void Renderer::render(World& world, Camera& camera, GameUIData gameData){
 
-    // Start the Dear ImGui frame
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-    ImGui::ShowDemoWindow(); // Show demo window! :)
+    getRendererUIData();
 
-    // Custom IMGUI window with game data.
-    if(showGameData){
-        CameraUIData cameraUIData = camera.getUIData();
-        WorldUIData worldUIData = world.getUIData();
-        ImGui::Begin("Game Data", &showGameData);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-        if(gameData.paused)
-            ImGui::Text("Game is paused!");
-        else
-            ImGui::Text("Game is unpaused!");
-        if (ImGui::CollapsingHeader("Camera",ImGuiTreeNodeFlags_DefaultOpen)){
-            ImGui::SliderFloat("Camera fov (degrees)",cameraUIData.fovP,1.0f,179.0f);
-        }
-        if (ImGui::CollapsingHeader("Player",ImGuiTreeNodeFlags_DefaultOpen)){
-            ImGui::Text("Player location(xyz): %f,%f,%f",worldUIData.playerData.pos.x,worldUIData.playerData.pos.y,worldUIData.playerData.pos.z);
-            ImGui::Text("Looking direction(xyz): %f,%f,%f",worldUIData.playerData.forwardDirection.x,worldUIData.playerData.forwardDirection.y,worldUIData.playerData.forwardDirection.z);
-            ImGui::SliderFloat("Movement Speed",worldUIData.playerData.playerSpeedP,1.0f,100.0f);
-            ImGui::SliderFloat("Mouse Sensitivity",worldUIData.playerData.rotationSensitivityP,0.01f,0.5f);
-        }
-        if (ImGui::CollapsingHeader("World",ImGuiTreeNodeFlags_DefaultOpen)){
-            ImGui::SliderInt("Block Delay (ticks)",worldUIData.ticksBetweenBlockManipulationP,1,20);
-            ImGui::SliderFloat("Tick Length (seconds)",worldUIData.tickTimeLengthP,0.01f,1.0f);
-            if(worldUIData.blockTargeted){
-                ImGui::Text("Block targeted(xyz): %d,%d,%d",worldUIData.targetedBlock.x,worldUIData.targetedBlock.y,worldUIData.targetedBlock.z);
-            } else {
-                ImGui::Text("No block targeted.");
-            }
-        }
-        if (ImGui::CollapsingHeader("Renderer",ImGuiTreeNodeFlags_DefaultOpen)){
-            ImGui::SliderFloat("Texture margin",&textureMargin,0.0f,0.02f);
-            ImGui::SliderFloat("Local Outline Offset",&localOutlineOffset,0.0f,0.02f);
-            ImGui::SliderFloat("Local Outline Width",&localOutlineWidth,0.0f,10.0f);
-
-        }
-        // if (ImGui::Button("Close Me"))
-        //     show_another_window = false;
-        ImGui::End();
-    }
-
+    CustomImGui::renderStart(camera.getUIData(),world.getUIData(),gameData,getRendererUIData());
 
     //Chunk rendering starts here:
 
@@ -387,10 +314,7 @@ void Renderer::render(World& world, Camera& camera, GameUIData gameData){
 
 
 
-
-    // ImGui rendering:
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    CustomImGui::renderEnd();
 
 
     glfwSwapBuffers(window);
@@ -398,7 +322,5 @@ void Renderer::render(World& world, Camera& camera, GameUIData gameData){
 
 
 void Renderer::shutDown(){
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
+    CustomImGui::shutdown();
 }
