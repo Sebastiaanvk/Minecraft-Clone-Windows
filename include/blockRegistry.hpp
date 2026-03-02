@@ -3,13 +3,12 @@
 
 #include <array>
 #include <string>
+#include <cstdint>
 
 enum FaceType {Side, Top, Bot};
 inline const FaceType faceTypeArr[] = {Side,Side,Top,Bot,Side,Side};
 
-//typedef int BlockType;
-
-enum BlockID{
+enum class BlockID : std::uint8_t {
     Air,
     Dirt,
     Gravel,
@@ -28,7 +27,7 @@ private:
         std::string_view textureNameTop;
         std::string_view textureNameBottom;
     };
-    inline static constexpr std::array<BlockData,BlockID::TYPE_COUNT> registry = {{
+    inline static constexpr std::array<BlockData,static_cast<std::size_t>(BlockID::TYPE_COUNT)> registry = {{
         //Air:
     {
         false,

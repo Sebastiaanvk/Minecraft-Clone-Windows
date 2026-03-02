@@ -13,22 +13,22 @@ RenderableBlock Block::toRenderable(){
     ren.z=z;
     switch (type)
     {
-    case Dirt:
+    case BlockID::Dirt:
         ren.sideTexture = "dirt.png";
         ren.botTexture = "dirt.png";
         ren.topTexture = "dirt.png";
         break;
-    case Gravel:
+    case BlockID::Gravel:
         ren.sideTexture = "gravel.png";
         ren.botTexture = "gravel.png";
         ren.topTexture = "gravel.png";
         break;
-    case Stone:
+    case BlockID::Stone:
         ren.sideTexture = "stone.png";
         ren.botTexture = "stone.png";
         ren.topTexture = "stone.png";
         break;
-    case Grass_Dirt:
+    case BlockID::Grass_Dirt:
         ren.sideTexture = "grass_block_side.png";
         ren.botTexture = "dirt.png";
         ren.topTexture = "green_concrete_powder.png";

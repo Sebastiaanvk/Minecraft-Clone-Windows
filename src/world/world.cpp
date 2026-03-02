@@ -7,8 +7,7 @@
 // }
 
 World::World(unsigned int seed)
-    : chunkManager(seed),player(),
-    blockTargeted(false),tick(0)
+    : chunkManager(seed),player()
 {
 }
 

@@ -3,6 +3,7 @@
 
 
 #include <render/renderable.hpp>
+#include <blockRegistry.hpp>
 
 
 

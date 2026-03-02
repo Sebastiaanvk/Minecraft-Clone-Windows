@@ -6,10 +6,7 @@ Game::Game()
     input_handler(),
     seed(std::chrono::system_clock::now().time_since_epoch().count()),
     world(seed),
-    camera(),
-    deltaTime(0.0f),
-    lastFrame(0.0f),
-    timeAccumulator(0.0f)
+    camera()
 {
     // std::mt19937 generator(seed); // Mersenne Twister engine (Not sure why this is here)
     std::cout << "Seed: "<< seed << std::endl;

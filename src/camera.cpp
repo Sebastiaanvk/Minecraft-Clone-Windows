@@ -2,7 +2,6 @@
 
 
 Camera::Camera()
-    :fov(45.0f)
 {
 
 }

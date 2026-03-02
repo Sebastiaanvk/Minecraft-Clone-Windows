@@ -42,7 +42,9 @@ void ChunkManager::deleteBlock(const LocInt& loc){
     for(int i = 0; i<6; i++){
         LocInt nb = loc + dirs[i];
         ChunkID nbChunkId = getChunkID(nb);
-        chunks.at(nbChunkId)->setDirty();
+        if(chunks.count(nbChunkId)!=0){
+            chunks.at(nbChunkId)->setDirty();
+        }
     }
     ChunkID chunkID = getChunkID(loc);
     if(chunks.count(chunkID)!=0){

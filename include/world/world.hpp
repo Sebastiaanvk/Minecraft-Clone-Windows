@@ -26,8 +26,6 @@ public:
     Player player;
     void deleteTarget();
     void placeBlock();
-    // void update();
-    // void update(Input_Handler& input_handler, float deltaTime);
     void update(Input_Handler& input_handler);
 
 
@@ -38,11 +36,11 @@ private:
     ChunkManager chunkManager;
     void addChunk(const ChunkID& chunkID);    
 
-    bool blockTargeted;
+    bool blockTargeted = false;
     LocInt targetedBlock;
     LocInt placementCandidate;
     void calculatePlayerTarget() ;
-    int tick;
+    int tick = 0;
     int ticksBetweenBlockManipulation = 7;
 
 

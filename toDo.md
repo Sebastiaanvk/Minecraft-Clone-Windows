@@ -1,5 +1,63 @@
 # Todo list
 
+
+## Nu aan werken:
+
+
+Mijn OpenGl code opnieuw begrijpen.
+
+De rendercode mooi encapsulaten zodat de main render functie Heel overzichtelijk wordt.
+
+Lijnen rond geselecteerd blokje
+UI library maken
+
+
+
+zwarte lijn blijk blokjes weg als ik vanuit een hoek kijk. Ja wat de hek is dit? Its like a circle around the player where you get this lines and de blocks get darker as well.
+
+
+verschillende types blokjes kunnen plaatsen
+Plusje voor richten
+9 vierkantjes onderin
+
+
+### Inventory
+
+### Chunks rond speler rednerern
+Chunks spawnen rond de speler?
+Uitzoeken wie verantwoordelijk is voor het bijhouden van welk chunks we wel en niet renderen.(world of chunkManager?)
+De world checkt welke chunks in range van de player zijn.
+
+### Entitities
+
+
+### 
+
+
+<!-- Refactoren voor playerClass in plaats van Camera. (Gefixed!!!) -->
+
+
+## Misc en langetermijn ideeen
+
+Rode lijnen rond geselecteerd blokje? JA nu aan werken
+Camera mode en speler mode? Dus de handling bepaalt de player locatie en waar die naar kijkt en dan wordt de camera geupdate?
+Raytracing aanpassen voor ofwel klein stapje, of elke keer door de dichtsbijzijnde surface ipv drie verschillende loops.
+Add imgui debug files.(No idea if necessary, but they do exist or something)
+Frame rate vastzettn
+
+Water
+Bomen
+biomes
+Coolere world Generation
+
+struct  van verschillende perlin noises?
+
+See through shizzle
+
+Wereld saven
+
+
+## Al gefixt/afgehandeld:
 <!-- input handling hybride:
 Deels in de game en deels in de wereld
 In de input handler twee verschillende states:
@@ -37,71 +95,6 @@ snel met een block id en een positie en richting de afstand tot het snijpunt bep
 <!-- In Camera de muisdraai snelheid toevoegen.(Nevermind, staat in de player class.) -->
 <!-- Bij Pause mode alles pauzeren! -->
 
-Default variabele waardes van de constructor naar de header verplaatsen.
-Crashes als ik buiten de chunks ben en een cube in een chunk probeer te verwijderen.
+<!-- Default variabele waardes van de constructor naar de header verplaatsen. -->
 
-zwarte lijn blijk blokjes weg als ik vanuit een hoek kijk.
-UI library maken
-Lijnen rond geselecteerd blokje
-
-
-verschillende types blokjes kunnen plaatsen
-Plusje voor richten
-9 vierkantjes onderin
-
-
-Add imgui debug files.(No idea if necessary, but they do exist or something)
-
-
-
-Refactoren voor playerClass in plaats van Camera. (Gefixed!!!)
-
-
-## Blokken deleten en toevoegen.
-
-- world class kijkt naar waar de speler naar kijkt.
-- te deleten blok,
-- Waar we het blok toevoegen ( eerst printen?)
-- Elke world update opnieuw checken?
-
-
-Ray tracen:
-pos en forward.
-Voor elke dimensie kijken waar die snijdt?
-lengte is (x-pos.x)/forward.x.
-
-Idee:
-Bekijk eerst x:
-x positief.
-ceiling(pos.x). s = 
-Ok nieuw idee we kijken naar de afstand naar het midden van het blokje?
-
-
-
-
-## Rest van de ideeen
-
-Rode lijnen rond geselecteerd blokje? JA nu aan werken
-Chunks spawnen rond de speler?
-Camera mode en speler mode? Dus de handling bepaalt de player locatie en waar die naar kijkt en dan wordt de camera geupdate?
-Raytracing aanpassen voor ofwel klein stapje, of elke keer door de dichtsbijzijnde surface ipv drie verschillende loops.
-
-
-
-
-
-User interface fixen. (IMGui?)
-Blokjes toevoegen en deleten.
-
-biome
-
-struct  van verschillende perlin noises?
-
-Uitzoeken wie verantwoordelijk is voor het bijhouden van welk chunks we wel en niet renderen.(world of chunkManager?)
-De world checkt welke chunks in range van de player zijn.
-
-
-Frame rate vast zetten of de game ticks alleen in vaste intervallen.
-
-See through shizzle
-
+<!-- Crashes als ik buiten de chunks ben en een cube in een chunk probeer te verwijderen. Gefixt! -->

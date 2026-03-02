@@ -26,9 +26,9 @@ private:
     void process_input();
     unsigned int seed;
 
-    float deltaTime;
-    float lastFrame;
-    float timeAccumulator;
+    float deltaTime = 0.0f;
+    float lastFrame = 0.0f;
+    float timeAccumulator = 0.0f;
     
     bool paused = false;
 };

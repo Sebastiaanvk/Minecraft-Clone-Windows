@@ -22,7 +22,7 @@ public:
 private:
 
     glm::mat4 view;
-    float fov;
+    float fov = 45.0f;
 
     LocFloat flipZ(const LocFloat& loc) const;
 };

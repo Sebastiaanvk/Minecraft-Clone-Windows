@@ -18,8 +18,9 @@ link_directories(${GLFW_ROOT}/lib)
 # file(GLOB SOURCES "src/*.cpp" "src/*.c" "src/external/*.cpp" "src/external/*.c" "src/input/*.cpp" "src/input/*.c" "src/render/*.cpp" "src/render/*.c" "src/world/*.cpp" "src/world/*.c" "src/shaders/*.cpp")
 file(GLOB EXTERN "extern/*.cpp" "extern/*.c")
 file(GLOB IMGUI "extern/imgui/*.cpp" "extern/imgui/*.c" "extern/imgui/backends/*.cpp" "extern/imgui/backends/*.c")
-file(GLOB SOURCES "src/*.cpp" "src/*.c" "src/input/*.cpp" "src/input/*.c" "src/render/*.cpp" "src/render/*.c" "src/world/*.cpp" "src/world/*.c" "src/shaders/*.cpp")
-add_executable(executable ${SOURCES} ${EXTERN} ${IMGUI})
+file(GLOB GLAD "extern/glad/*.c")
+file(GLOB SOURCES "src/*.cpp" "src/input/*.cpp" "src/render/*.cpp" "src/world/*.cpp" "src/shaders/*.cpp")
+add_executable(executable ${SOURCES} ${EXTERN} ${IMGUI} ${GLAD})
 
 
 target_link_libraries(executable glfw3 opengl32)

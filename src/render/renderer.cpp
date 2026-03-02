@@ -232,7 +232,7 @@ void Renderer::render(World& world, Camera& camera, GameUIData gameData){
         }
         if (ImGui::CollapsingHeader("World",ImGuiTreeNodeFlags_DefaultOpen)){
             ImGui::SliderInt("Block Delay (ticks)",worldUIData.ticksBetweenBlockManipulationP,1,20);
-            ImGui::SliderFloat("Tick Length (seconds)",worldUIData.tickTimeLengthP,0.0f,1.0f);
+            ImGui::SliderFloat("Tick Length (seconds)",worldUIData.tickTimeLengthP,0.01f,1.0f);
             if(worldUIData.blockTargeted){
                 ImGui::Text("Block targeted(xyz): %d,%d,%d",worldUIData.targetedBlock.x,worldUIData.targetedBlock.y,worldUIData.targetedBlock.z);
             } else {

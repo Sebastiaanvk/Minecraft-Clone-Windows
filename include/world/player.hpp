@@ -28,14 +28,14 @@ public:
 
 private:
 
-    float playerSpeed;
+    float playerSpeed = 10.0f;
 
-    float yaw;
-    float pitch;
+    float yaw = 90.0f;
+    float pitch = 0.0f;
 
     float rotationSensitivity = 0.1f;
 
-    LocFloat pos;
+    LocFloat pos = glm::vec3(0.0f,128.0f, 0.0f);
     LocFloat lastPos;
     LocFloat forward;
 

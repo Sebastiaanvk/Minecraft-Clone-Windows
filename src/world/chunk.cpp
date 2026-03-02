@@ -5,12 +5,11 @@
 
 
 Chunk::Chunk(FastNoiseLite& noise, const ChunkID& loc, GenerationPars genPars,ChunkManager& chunkManager)
-    : chunkManager(chunkManager)
+    : chunkManager(chunkManager), chunkLoc({loc.x,0,loc.z})
 {
     meshPtr = std::make_shared<RenderableChunkMesh>();
-    dirty = true;
     meshPtr->chunkId = loc;
-    chunkLoc = {loc.x,0,loc.z};
+    // chunkLoc = {loc.x,0,loc.z};
     for(int i=0; i<CHUNKSIZE; i++){
         chunk[i] = BlockID::Air;
     }

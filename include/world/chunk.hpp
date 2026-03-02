@@ -30,6 +30,7 @@ class Chunk{
     };
     Chunk(FastNoiseLite& noise,const ChunkID& loc, GenerationPars genPars, ChunkManager& chunkManager);
 
+    // The LocInt loc parameter of the Chunk methods take the location relative to the Chunk location in the world.
     void deleteBlock(LocInt loc);
     void update_mesh();
     std::shared_ptr<RenderableChunkMesh> getMeshPtr();
@@ -44,7 +45,7 @@ private:
     ChunkManager& chunkManager;
     std::array<BlockID,CHUNKSIZE> chunk;
     LocInt chunkLoc;
-    bool dirty;
+    bool dirty = true;
     std::shared_ptr<RenderableChunkMesh> meshPtr;
 };
 

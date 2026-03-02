@@ -1,10 +1,7 @@
 #include <world/player.hpp>
 
 Player::Player()
-    :playerSpeed(10.0f),
-    pos(glm::vec3(0.0f, 128.0f,  0.0f)),
-    yaw(90.0f),
-    pitch(0.0f){
+    {
     glm::vec3 direction;
     direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
     direction.y = sin(glm::radians(pitch));
