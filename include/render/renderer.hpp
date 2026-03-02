@@ -48,16 +48,30 @@ private:
 
     GLFWwindow* window;
     nlohmann::json jsonAtlasData;
-    Shader shaderprogram;
+    Shader chunkShaderProgram;
+
+    unsigned int VAOBlockOutline;
+    unsigned int VBOBlockOutline;
+    unsigned int EBOBlockOutline;
+    Shader outLineShaderProgram;
+    float localOutlineOffset = 0.002f;
+    float localOutlineWidth = 7.0f;
+
+
     int atlasWidth;
     int atlasHeight;
     float textureSizeHeight;
     float textureSizeWidth;
+     
     bool showGameData = true;
+    float textureMargin = 0.002f;
+
     std::vector<chunkVBOElt> updateVBOVector(const RenderableChunkMesh& worldMesh);
     RenderMesh createRenderMesh(const RenderableChunkMesh& worldMesh);
     std::map<ChunkID,RenderMesh> chunkMeshes;
     // void setupTestMeshes( int atlasWidth, int atlasHeight);
+    bool setupCubeOutline();
+    LocInt worldLocToRenderLoc(const LocInt& loc);
 };
 
 

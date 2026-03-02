@@ -8,7 +8,8 @@ Mijn OpenGl code opnieuw begrijpen.
 
 De rendercode mooi encapsulaten zodat de main render functie Heel overzichtelijk wordt.
 
-Lijnen rond geselecteerd blokje
+<!-- Lijnen rond geselecteerd blokje -->
+
 UI library maken
 
 
@@ -19,6 +20,11 @@ zwarte lijn blijk blokjes weg als ik vanuit een hoek kijk. Ja wat de hek is dit?
 verschillende types blokjes kunnen plaatsen
 Plusje voor richten
 9 vierkantjes onderin
+
+Bloemen toevoegen
+Bomen toevoegen.
+
+
 
 
 ### Inventory

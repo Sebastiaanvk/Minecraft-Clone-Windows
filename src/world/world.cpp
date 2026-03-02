@@ -233,4 +233,10 @@ WorldUIData World::getUIData(){
 
 
 
+bool World::hasBlockTargeted() const{
+    return blockTargeted;
+}
+LocInt World::getTargetedBlock() const{
+    return targetedBlock;
+}
 

@@ -7,10 +7,7 @@ unsigned int testVBO;
 
 
 Renderer::Renderer(){
-
-
 }
-
 
 
 void framebuffer_size_callback(GLFWwindow* , int width, int height)
@@ -22,6 +19,10 @@ glm::vec2 jsonGet(const nlohmann::json& data, const std::string& textureName, in
     float xLoc = ((float)data["frames"][textureName]["frame"]["x"])/((float)atlasWidth);
     float yLoc = ((float)data["frames"][textureName]["frame"]["y"])/((float)atlasHeight); 
     return {xLoc, yLoc};
+}
+
+LocInt Renderer::worldLocToRenderLoc(const LocInt& loc){
+    return {loc.x,loc.y,-loc.z};
 }
 
 
@@ -43,8 +44,8 @@ std::vector<Renderer::chunkVBOElt> Renderer::updateVBOVector(const RenderableChu
            vboElt.pos[0] = face.corners[corner].x;
            vboElt.pos[1] = face.corners[corner].y;
            vboElt.pos[2] = -face.corners[corner].z;
-           vboElt.uv[0] = uvCoord.x+uvDiff[corner].first*textureSizeWidth;
-           vboElt.uv[1] = uvCoord.y+uvDiff[corner].second*textureSizeHeight;
+           vboElt.uv[0] = uvCoord.x+(textureMargin)*textureSizeWidth+(1.0f-2.0f*textureMargin)*uvDiff[corner].first*textureSizeWidth;
+           vboElt.uv[1] = uvCoord.y+(textureMargin)*textureSizeHeight+(1.0f-2.0f*textureMargin)*uvDiff[corner].second*textureSizeHeight;
            vboElt.tint[0] = face.tint[0];
            vboElt.tint[1] = face.tint[1];
            vboElt.tint[2] = face.tint[2];
@@ -53,8 +54,6 @@ std::vector<Renderer::chunkVBOElt> Renderer::updateVBOVector(const RenderableChu
             vertices.push_back(vboElt);
         }
     }
-
-
     return vertices;
 }
 
@@ -108,11 +107,60 @@ RenderMesh Renderer::createRenderMesh(const RenderableChunkMesh& worldMesh){
 
 // }
 
+
+bool Renderer::setupCubeOutline(){
+
+    const float cubeOutlineVertices[] = {
+        0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, -1.0f,
+        1.0f, 0.0f, -1.0f,
+        1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, -1.0f,
+        1.0f, 1.0f, -1.0f,
+        1.0f, 1.0f, 0.0f,
+    };
+    const unsigned int cubeOutlineIndices[] = {
+        0,1,
+        1,2,
+        2,3,
+        3,0,
+        4,5,
+        5,6,
+        6,7,
+        7,4,
+        0,4,
+        1,5,
+        2,6,
+        3,7
+    };
+
+    glGenVertexArrays(1, &VAOBlockOutline);
+    glBindVertexArray(VAOBlockOutline);
+
+    glGenBuffers(1, &VBOBlockOutline);
+    glBindBuffer(GL_ARRAY_BUFFER, VBOBlockOutline);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeOutlineVertices), cubeOutlineVertices, GL_STATIC_DRAW);
+    
+    glGenBuffers(1, &EBOBlockOutline);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOBlockOutline);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeOutlineIndices), cubeOutlineIndices,GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);  
+
+    outLineShaderProgram = Shader("include/shaders/cubeOutlineShader.vs","include/shaders/cubeOutlineShader.fs");
+    //  chunkShaderProgram = Shader("../include/shaders/chunkShader.vs","../include/shaders/chunkShader.fs");
+
+    return true;
+
+}
+
 bool Renderer::init(int width, int height){
     glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); //Dont know what it does
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); //Dont know what it does
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // Dont know what it does.
     window = glfwCreateWindow(width,height,  "Minecraft Clone", NULL, NULL);
     if (window == NULL)
     {
@@ -120,7 +168,7 @@ bool Renderer::init(int width, int height){
         glfwTerminate();
         return false;
     }
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(window); // Dont know what it does.
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
@@ -132,12 +180,10 @@ bool Renderer::init(int width, int height){
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
 
 
-//  Shaders:
-     shaderprogram = Shader("include/shaders/chunkShader.vs","include/shaders/chunkShader.fs");
-    //  shaderprogram = Shader("../include/shaders/chunkShader.vs","../include/shaders/chunkShader.fs");
     
-//    stbi_set_flip_vertically_on_load(true);  
+//    stbi_set_flip_vertically_on_load(true);  //Dont know what this does.
 
+// Setting up the texture atlas
     unsigned int textureAtlas;
     glGenTextures(1, &textureAtlas);  
     glActiveTexture(GL_TEXTURE0);
@@ -168,12 +214,16 @@ bool Renderer::init(int width, int height){
     }
     stbi_image_free(data);
 
-    shaderprogram.use();
-    shaderprogram.setInt("textureAtlas",0);
+//  Shaders:
+     chunkShaderProgram = Shader("include/shaders/chunkShader.vs","include/shaders/chunkShader.fs");
+    //  chunkShaderProgram = Shader("../include/shaders/chunkShader.vs","../include/shaders/chunkShader.fs");
+    chunkShaderProgram.use();
+    chunkShaderProgram.setInt("textureAtlas",0);
 
     glEnable(GL_DEPTH_TEST);  
     glEnable(GL_CULL_FACE);
 
+    // The json contains a dictionary from the entity names to the locations on the texture atlas.
     std::ifstream f("assets/blockAtlasJson.json");
     jsonAtlasData = nlohmann::json::parse(f);
 
@@ -191,6 +241,11 @@ bool Renderer::init(int width, int height){
     ImGui_ImplGlfw_InitForOpenGL(window, true);          // Second param install_callback=true will install GLFW callbacks and chain to existing ones.
     ImGui_ImplOpenGL3_Init();
 
+
+    if(!setupCubeOutline()){
+        return false;
+    }
+
     return true;
 }
 
@@ -201,18 +256,15 @@ GLFWwindow* Renderer::getWindow(){
 
 
 
-
-
 void Renderer::render(World& world, Camera& camera, GameUIData gameData){
 
-    // (Your code calls glfwPollEvents())
-    // ...
     // Start the Dear ImGui frame
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     ImGui::ShowDemoWindow(); // Show demo window! :)
 
+    // Custom IMGUI window with game data.
     if(showGameData){
         CameraUIData cameraUIData = camera.getUIData();
         WorldUIData worldUIData = world.getUIData();
@@ -239,50 +291,55 @@ void Renderer::render(World& world, Camera& camera, GameUIData gameData){
                 ImGui::Text("No block targeted.");
             }
         }
+        if (ImGui::CollapsingHeader("Renderer",ImGuiTreeNodeFlags_DefaultOpen)){
+            ImGui::SliderFloat("Texture margin",&textureMargin,0.0f,0.02f);
+            ImGui::SliderFloat("Local Outline Offset",&localOutlineOffset,0.0f,0.02f);
+            ImGui::SliderFloat("Local Outline Width",&localOutlineWidth,0.0f,10.0f);
+
+        }
         // if (ImGui::Button("Close Me"))
         //     show_another_window = false;
         ImGui::End();
     }
 
 
-
+    //Chunk rendering starts here:
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    // Calculate the view and projection matrices
     glm::mat4 view;
     view = camera.getViewMatrix();
-
-    unsigned int viewLoc = glGetUniformLocation(shaderprogram.ID, "view");
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-
-    
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
-    
     glm::mat4 projection;
     projection = glm::perspective(glm::radians(camera.getFov()),  (float)width / (float)height, 0.1f, 300.0f);
 
-    unsigned int projectionLoc = glGetUniformLocation(shaderprogram.ID, "projection");
+    // Set the view and projection matrices to the right values in the chunk shader program
+    chunkShaderProgram.use();
+
+    unsigned int viewLoc = glGetUniformLocation(chunkShaderProgram.ID, "view");
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+    unsigned int projectionLoc = glGetUniformLocation(chunkShaderProgram.ID, "projection");
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
+    // Loop through the renderable chunk meshes.
     std::queue<std::shared_ptr<RenderableChunkMesh>> chunkQueue = world.toRenderableChunkQueue();
     while(!chunkQueue.empty()){
         std::shared_ptr<RenderableChunkMesh> chunkPtr = chunkQueue.front();
         chunkQueue.pop();
         ChunkID chunkID = chunkPtr->chunkId;
-        if(chunkMeshes.count(chunkID)==0){
+        if(chunkMeshes.count(chunkID)==0){ // If we havent rendered the chunk before, we set up the VAO and VBO.
             chunkMeshes[chunkID] = createRenderMesh(*chunkPtr);
             glBindVertexArray(chunkMeshes[chunkID].VAO);
-        } else if(chunkPtr->updated){
+        } else if(chunkPtr->updated){ // The chunk was updated so we recalculate the VBO.
             std::vector<chunkVBOElt> vertices = updateVBOVector(*chunkPtr);
             chunkMeshes[chunkID].nrVertices = 6*chunkPtr->mesh.size();
             glBindVertexArray(chunkMeshes[chunkID].VAO);
             glBindBuffer(GL_ARRAY_BUFFER,chunkMeshes[chunkID].VBO);
             // glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size()*sizeof(chunkVBOElt), vertices.data());
             glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(chunkVBOElt), vertices.data(), GL_STATIC_DRAW);
-
-
             chunkPtr->updated = false;
         } else {
             glBindVertexArray(chunkMeshes[chunkID].VAO);
@@ -291,15 +348,49 @@ void Renderer::render(World& world, Camera& camera, GameUIData gameData){
         glDrawArrays(GL_TRIANGLES, 0, chunkMeshes[chunkID].nrVertices);
     }
 
-    // glBindVertexArray(testVAO);
-    // glDrawArrays(GL_TRIANGLES,0,6);
 
-    // Rendering
-    // (Your code clears your framebuffer, renders your other stuff etc.)
+    // Highlight the selected cube.
+    if( world.hasBlockTargeted()){
+        // glDisable(GL_DEPTH_TEST);
+        LocInt targetedBlock = world.getTargetedBlock();
+        glBindVertexArray(VAOBlockOutline);
+        outLineShaderProgram.use();
+
+        outLineShaderProgram.setMat4("view",view);
+        outLineShaderProgram.setMat4("projection",projection);
+
+        outLineShaderProgram.setLocInt("offset",worldLocToRenderLoc(targetedBlock));
+        glLineWidth(localOutlineWidth);
+        glm::vec3 localOffsets[] = {    glm::vec3(localOutlineOffset,localOutlineOffset,0),
+                                        glm::vec3(-localOutlineOffset,localOutlineOffset,0),
+                                        glm::vec3(-localOutlineOffset,-localOutlineOffset,0),
+                                        glm::vec3(localOutlineOffset,-localOutlineOffset,0),
+                                        glm::vec3(localOutlineOffset,0,localOutlineOffset),
+                                        glm::vec3(-localOutlineOffset,0,localOutlineOffset),
+                                        glm::vec3(-localOutlineOffset,0,-localOutlineOffset),
+                                        glm::vec3(localOutlineOffset,0,-localOutlineOffset),
+                                        glm::vec3(0,localOutlineOffset,localOutlineOffset),
+                                        glm::vec3(0,-localOutlineOffset,localOutlineOffset),
+                                        glm::vec3(0,-localOutlineOffset,-localOutlineOffset),
+                                        glm::vec3(0,localOutlineOffset,-localOutlineOffset)};
+        for(int i=0; i<12; i++){
+            outLineShaderProgram.setVec3("localOffset",localOffsets[i]);
+            glDrawElements(GL_LINES,24, GL_UNSIGNED_INT, 0);
+        }
+        glLineWidth(1.0f);
+
+        // glEnable(GL_DEPTH_TEST);
+    }
+
+
+
+
+
+
+
+    // ImGui rendering:
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-    // (Your code calls glfwSwapBuffers() etc.)
-
 
 
     glfwSwapBuffers(window);

@@ -27,7 +27,8 @@ public:
     void deleteTarget();
     void placeBlock();
     void update(Input_Handler& input_handler);
-
+    bool hasBlockTargeted() const;
+    LocInt getTargetedBlock() const;
 
     float tickTimeLength = 0.05f;
     WorldUIData getUIData();
@@ -41,7 +42,7 @@ private:
     LocInt placementCandidate;
     void calculatePlayerTarget() ;
     int tick = 0;
-    int ticksBetweenBlockManipulation = 7;
+    int ticksBetweenBlockManipulation = 6;
 
 
 };
