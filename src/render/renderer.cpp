@@ -15,11 +15,6 @@ void framebuffer_size_callback(GLFWwindow* , int width, int height)
     glViewport(0, 0, width, height);
 } 
 
-glm::vec2 jsonGet(const nlohmann::json& data, const std::string& textureName, int atlasWidth, int atlasHeight){
-    float xLoc = ((float)data["frames"][textureName]["frame"]["x"])/((float)atlasWidth);
-    float yLoc = ((float)data["frames"][textureName]["frame"]["y"])/((float)atlasHeight); 
-    return {xLoc, yLoc};
-}
 
 LocInt Renderer::worldLocToRenderLoc(const LocInt& loc){
     return {loc.x,loc.y,-loc.z};
@@ -36,20 +31,20 @@ std::vector<Renderer::chunkVBOElt> Renderer::updateVBOVector(const RenderableChu
     for( auto face: worldMesh.mesh){
         // std::cout << face.blockType << std::endl;
         // Triangles counter-clockwise
-        glm::vec2 uvCoord = jsonGet(jsonAtlasData, BlockRegistry::getTextureName(face.blockType,face.faceType), atlasWidth, atlasHeight);
+        glm::vec2 uvCoord = blockTextureAtlas.getUVCoord(face.blockType,face.faceType);
         for(int i=0;i<6;i++){
             chunkVBOElt vboElt;
             int corner = cornerOrder[i];
-
-           vboElt.pos[0] = face.corners[corner].x;
-           vboElt.pos[1] = face.corners[corner].y;
-           vboElt.pos[2] = -face.corners[corner].z;
-           vboElt.uv[0] = uvCoord.x+(textureMargin)*textureSizeWidth+(1.0f-2.0f*textureMargin)*uvDiff[corner].first*textureSizeWidth;
-           vboElt.uv[1] = uvCoord.y+(textureMargin)*textureSizeHeight+(1.0f-2.0f*textureMargin)*uvDiff[corner].second*textureSizeHeight;
-           vboElt.tint[0] = face.tint[0];
-           vboElt.tint[1] = face.tint[1];
-           vboElt.tint[2] = face.tint[2];
-           vboElt.tint[3] = 255;
+            
+            vboElt.pos[0] = face.corners[corner].x;
+            vboElt.pos[1] = face.corners[corner].y;
+            vboElt.pos[2] = -face.corners[corner].z;
+            vboElt.uv[0] = uvCoord.x+(textureMargin+(1.0f-2.0f*textureMargin)*uvDiff[corner].first)*blockTextureAtlas.getTextureSizeWidth();
+            vboElt.uv[1] = uvCoord.y+(textureMargin+(1.0f-2.0f*textureMargin)*uvDiff[corner].second)*blockTextureAtlas.getTextureSizeHeight();
+            vboElt.tint[0] = face.tint[0];
+            vboElt.tint[1] = face.tint[1];
+            vboElt.tint[2] = face.tint[2];
+            vboElt.tint[3] = 255;
 
             vertices.push_back(vboElt);
         }
@@ -155,49 +150,19 @@ bool Renderer::init(int width, int height){
     
 //    stbi_set_flip_vertically_on_load(true);  //Dont know what this does.
 
-// Setting up the texture atlas
-    unsigned int textureAtlas;
-    glGenTextures(1, &textureAtlas);  
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textureAtlas);  
-
-    // set the texture wrapping/filtering options (on the currently bound texture object)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-    int  nrChannels;
-    unsigned char *data = stbi_load("assets/blockAtlas.png", &atlasWidth, &atlasHeight, &nrChannels, 0); 
-    std::cout << "atlasWidth: " << atlasWidth << ", atlasHeight: " << atlasHeight << std::endl;
-
-    // The atlasWidth and atlasHeight give the number of pixels in the atlas.
-    // textureSizeWidth gives the portion of the image that belongs to a single texture.
-    textureSizeWidth = (float)16/(float)atlasWidth;
-    textureSizeHeight = (float)16/(float)atlasHeight;
-
-
-    if(data){
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlasWidth, atlasHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    } else {
-        std::cout << "Failed to load texture" << std::endl;
+    blockTextureAtlas = TextureAtlas();
+    if(!blockTextureAtlas.setup()){
         return false;
     }
-    stbi_image_free(data);
 
 //  Shaders:
-     chunkShaderProgram = Shader("include/shaders/chunkShader.vs","include/shaders/chunkShader.fs");
+    chunkShaderProgram = Shader("include/shaders/chunkShader.vs","include/shaders/chunkShader.fs");
     //  chunkShaderProgram = Shader("../include/shaders/chunkShader.vs","../include/shaders/chunkShader.fs");
     chunkShaderProgram.use();
     chunkShaderProgram.setInt("textureAtlas",0);
 
     glEnable(GL_DEPTH_TEST);  
     glEnable(GL_CULL_FACE);
-
-    // The json contains a dictionary from the entity names to the locations on the texture atlas.
-    std::ifstream f("assets/blockAtlasJson.json");
-    jsonAtlasData = nlohmann::json::parse(f);
 
     // setupTestMeshes(atlasWidth, atlasHeight);
 
@@ -245,6 +210,7 @@ void Renderer::render(World& world, Camera& camera, GameUIData gameData){
 
     // Set the view and projection matrices to the right values in the chunk shader program
     chunkShaderProgram.use();
+    blockTextureAtlas.bind();
 
     unsigned int viewLoc = glGetUniformLocation(chunkShaderProgram.ID, "view");
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));

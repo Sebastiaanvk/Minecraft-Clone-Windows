@@ -3,18 +3,21 @@
 
 ## Nu aan werken:
 
+Setting up an opengl testing folder.
 
-<!-- Mijn OpenGl code opnieuw begrijpen. -->
+Textures file met texture class om dat overzichtelijk te krijgen.
 
-Alle IMGUI dingen in een ander bestand.
+UI library maken.
+Mijn idee: functie die een rechthoek op het scherm output.
+Krijgt een locatie, width and height en een kleur. thats it.IN
+
+
+
+
+Crosshair + inventory slots.
+Daarna: inventory toevoegen voor verschillende blokjes kunnen plaatsen.
+
 De rendercode mooi encapsulaten zodat de main render functie Heel overzichtelijk wordt.
-
-
-<!-- Lijnen rond geselecteerd blokje -->
-
-UI library maken
-
-
 
 zwarte lijn blijk blokjes weg als ik vanuit een hoek kijk. Ja wat de hek is dit? Its like a circle around the player where you get this lines and de blocks get darker as well.
 
@@ -106,3 +109,9 @@ snel met een block id en een positie en richting de afstand tot het snijpunt bep
 <!-- Default variabele waardes van de constructor naar de header verplaatsen. -->
 
 <!-- Crashes als ik buiten de chunks ben en een cube in een chunk probeer te verwijderen. Gefixt! -->
+
+<!-- Mijn OpenGl code opnieuw begrijpen. -->
+
+<!-- Alle IMGUI dingen in een ander bestand. -->
+
+<!-- Lijnen rond geselecteerd blokje -->

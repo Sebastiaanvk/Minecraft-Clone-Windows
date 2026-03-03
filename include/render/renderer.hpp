@@ -12,12 +12,11 @@
 #include <render/uiData.hpp>
 #include <shaders/shader.h>
 #include <util/loc.h>
-#include <stb_image.h>
-#include <json.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <render/customImGui.hpp>
+#include <render/textures.hpp>
 
 class RenderMesh{
     public:
@@ -45,8 +44,8 @@ private:
     };
 
     GLFWwindow* window;
-    nlohmann::json jsonAtlasData;
     Shader chunkShaderProgram;
+    TextureAtlas blockTextureAtlas;
 
     unsigned int VAOBlockOutline;
     unsigned int VBOBlockOutline;
@@ -56,10 +55,6 @@ private:
     float localOutlineWidth = 7.0f;
 
 
-    int atlasWidth;
-    int atlasHeight;
-    float textureSizeHeight;
-    float textureSizeWidth;
      
     bool showGameData = true;
     float textureMargin = 0.002f;
