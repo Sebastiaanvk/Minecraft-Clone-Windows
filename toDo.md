@@ -3,15 +3,16 @@
 
 ## Nu aan werken:
 
-Setting up an opengl testing folder.
+<!-- Setting up an opengl testing folder. -->
 
-Textures file met texture class om dat overzichtelijk te krijgen.
+<!-- Textures file met texture class om dat overzichtelijk te krijgen. -->
+
 
 UI library maken.
 Mijn idee: functie die een rechthoek op het scherm output.
 Krijgt een locatie, width and height en een kleur. thats it.IN
 
-
+De hotbar texture naar de texture class sturen voor consistentie.
 
 
 Crosshair + inventory slots.

@@ -32,6 +32,7 @@ struct RendererUIData {
     float* textureMarginP;
     float* localOutlineOffsetP;
     float* localOutlineWidthP;
+    float* hotbarWidthPortionP;
 };
 
 

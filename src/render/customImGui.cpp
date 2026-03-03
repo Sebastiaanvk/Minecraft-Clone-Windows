@@ -54,6 +54,7 @@ void CustomImGui::renderStart(CameraUIData cameraUIData, WorldUIData worldUIData
             ImGui::SliderFloat("Texture margin",rendererUIData.textureMarginP,0.0f,0.02f);
             ImGui::SliderFloat("Local Outline Offset",rendererUIData.localOutlineOffsetP,0.0f,0.02f);
             ImGui::SliderFloat("Local Outline Width",rendererUIData.localOutlineWidthP,0.0f,10.0f);
+            ImGui::SliderFloat("Hotbar Width Portion",rendererUIData.hotbarWidthPortionP,0.0f,1.0f);
 
         }
         // if (ImGui::Button("Close Me"))

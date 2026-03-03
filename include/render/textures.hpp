@@ -12,6 +12,12 @@
 #include <iostream>
 #include <fstream>
 
+struct TextureLoc{
+    int x;
+    int y;
+    int width;
+    int height;
+};
 
 class TextureAtlas{
 public:
@@ -32,7 +38,7 @@ private:
 };
 
 
-// class UITextures{
+// class HotbarTexture{
 // };
 
 

@@ -23,13 +23,12 @@ LocInt Renderer::worldLocToRenderLoc(const LocInt& loc){
 
 std::vector<Renderer::chunkVBOElt> Renderer::updateVBOVector(const RenderableChunkMesh& worldMesh){
     std::vector<chunkVBOElt> vertices;
-    // the face has nubmered corners starting in the bottom left corner and going counter clockwise.
+    // The face has numbered corners starting in the bottom left corner and going counter clockwise.
     // The corners that correspond to the two triangles that make up the face.
     const int cornerOrder[6] = {0,1,3,1,2,3};
-    // The uv diffs that correspond the the four corners of the face.
+    // The uv diffs that correspond to the four corners of the face.
     const std::pair<int,int> uvDiff[] = {{0,1},{1,1},{1,0},{0,0}};
     for( auto face: worldMesh.mesh){
-        // std::cout << face.blockType << std::endl;
         // Triangles counter-clockwise
         glm::vec2 uvCoord = TextureAtlas::getUVCoord(face.blockType,face.faceType);
         for(int i=0;i<6;i++){
@@ -102,7 +101,6 @@ bool Renderer::setupCubeOutline(){
         2,6,
         3,7
     };
-
     glGenVertexArrays(1, &VAOBlockOutline);
     glBindVertexArray(VAOBlockOutline);
 
@@ -118,16 +116,17 @@ bool Renderer::setupCubeOutline(){
     glEnableVertexAttribArray(0);  
 
     outLineShaderProgram = Shader("include/shaders/cubeOutlineShader.vs","include/shaders/cubeOutlineShader.fs");
-
     return true;
-
 }
 
+
+
 bool Renderer::init(int width, int height){
+    // Generic GLFW window stuff.
     glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); //Dont know what it does
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); //Dont know what it does
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // Dont know what it does.
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); 
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); 
     window = glfwCreateWindow(width,height,  "Minecraft Clone", NULL, NULL);
     if (window == NULL)
     {
@@ -135,7 +134,7 @@ bool Renderer::init(int width, int height){
         glfwTerminate();
         return false;
     }
-    glfwMakeContextCurrent(window); // Dont know what it does.
+    glfwMakeContextCurrent(window); 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
@@ -143,13 +142,14 @@ bool Renderer::init(int width, int height){
     }    
 
     glViewport(0, 0, width, height);
+    // Changes the size of the window
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);  
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
 
 
     
 //    stbi_set_flip_vertically_on_load(true);  //This changes the texture to have 0,0 as top left instead of the default bottom left.
-
+// setup the large texture atlas for all block textures.
     if(!TextureAtlas::setup()){
         return false;
     }
@@ -161,9 +161,9 @@ bool Renderer::init(int width, int height){
     chunkShaderProgram.setInt("textureAtlas",0);
 
     glEnable(GL_DEPTH_TEST);  
+    // Only render triangles going counter clockwise.
     glEnable(GL_CULL_FACE);
 
-    // setupTestMeshes(atlasWidth, atlasHeight);
 
     CustomImGui::setup(window);
 
@@ -171,6 +171,13 @@ bool Renderer::init(int width, int height){
         return false;
     }
 
+    if(!setup2dRenderer()){
+        return false;
+    }
+
+    if(!setupHotbarTexture()){
+        return false;
+    }
     return true;
 }
 
@@ -184,6 +191,7 @@ RendererUIData Renderer::getRendererUIData(){
     rendererUIData.textureMarginP = &textureMargin;
     rendererUIData.localOutlineOffsetP = &localOutlineOffset;
     rendererUIData.localOutlineWidthP = &localOutlineWidth;
+    rendererUIData.hotbarWidthPortionP = &hotbarWidthPortion;
 
     return rendererUIData;
 }
@@ -192,7 +200,7 @@ void Renderer::render(World& world, Camera& camera, GameUIData gameData){
 
     getRendererUIData();
 
-    CustomImGui::renderStart(camera.getUIData(),world.getUIData(),gameData,getRendererUIData());
+    CustomImGui::renderStart(camera.getUIData(), world.getUIData(), gameData, getRendererUIData());
 
     //Chunk rendering starts here:
 
@@ -209,8 +217,7 @@ void Renderer::render(World& world, Camera& camera, GameUIData gameData){
 
     // Set the view and projection matrices to the right values in the chunk shader program
     chunkShaderProgram.use();
-    // TextureAtlas::bind();
-
+    TextureAtlas::bind();
     unsigned int viewLoc = glGetUniformLocation(chunkShaderProgram.ID, "view");
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     unsigned int projectionLoc = glGetUniformLocation(chunkShaderProgram.ID, "projection");
@@ -243,7 +250,6 @@ void Renderer::render(World& world, Camera& camera, GameUIData gameData){
 
     // Highlight the selected cube.
     if( world.hasBlockTargeted()){
-        // glDisable(GL_DEPTH_TEST);
         LocInt targetedBlock = world.getTargetedBlock();
         glBindVertexArray(VAOBlockOutline);
         outLineShaderProgram.use();
@@ -270,13 +276,11 @@ void Renderer::render(World& world, Camera& camera, GameUIData gameData){
             glDrawElements(GL_LINES,24, GL_UNSIGNED_INT, 0);
         }
         glLineWidth(1.0f);
-
-        // glEnable(GL_DEPTH_TEST);
     }
 
-
-
-
+    
+    // Render UI
+    renderHotbar();
 
 
     CustomImGui::renderEnd();
@@ -289,3 +293,117 @@ void Renderer::render(World& world, Camera& camera, GameUIData gameData){
 void Renderer::shutDown(){
     CustomImGui::shutdown();
 }
+
+bool Renderer::setup2dRenderer(){
+    // negative y means going down in opengl 2d space, but going up in the texture atlas
+    // These are Normalized Device Coordinates  in [-1,1]x[-1,1]
+    // x,y,u,v (Note that we pick 0,0 as top left for both)
+    const float vertices[] = {
+        0.0f,-1.0f,0.0f,1.0f, //lower left corner
+        1.0f,-1.0f,1.0f,1.0f,
+        1.0f,0.0f,1.0f,0.0f,  
+        0.0f,0.0f,0.0f,0.0f // Upper left corner
+    };
+    const unsigned int indices[] = {0,1,3,1,2,3}; // Two counter clockwise triangles.
+
+    unsigned int VBO2dTexture; 
+    unsigned int EBO2dTexture;
+    glGenVertexArrays(1, &VAO2dTexture);
+    glBindVertexArray(VAO2dTexture);
+    glGenBuffers(1, &VBO2dTexture);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO2dTexture);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    
+    glGenBuffers(1, &EBO2dTexture);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO2dTexture);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);  
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+    glEnableVertexAttribArray(1);  
+
+    uiTextureShaderProgram = Shader("include/shaders/uiShader.vs","include/shaders/uiShader.fs");
+    uiTextureShaderProgram.setInt("textureAtlas",0);
+
+    return true;
+}
+bool Renderer::setupHotbarTexture(){
+
+    // Setting up the texture atlas
+    glGenTextures(1, &hotbarTextureAtlas);  
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, hotbarTextureAtlas);  
+
+    // set the texture wrapping/filtering options (on the currently bound texture object)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    int  nrChannels;
+    int atlasWidth,atlasHeight;
+    unsigned char *data = stbi_load("assets/minecraftHotbarTexture.png", &atlasWidth, &atlasHeight, &nrChannels, 0); 
+    std::cout << "atlasWidth: " << atlasWidth << ", atlasHeight: " << atlasHeight << std::endl;
+
+    if(data){
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlasWidth, atlasHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D); // Not sure if necessary.
+    } else {
+        std::cout << "Failed to load hotbar texture." << std::endl;
+        return false;
+    }
+    stbi_image_free(data);
+    return true;
+}
+
+void Renderer::renderHotbar(){
+    glBindVertexArray(VAO2dTexture);
+    glBindTexture(GL_TEXTURE_2D,hotbarTextureAtlas);
+    glDisable(GL_DEPTH_TEST);
+    TextureLoc hotbarTexture = {0,0,182,22}; //The full png is 256x64.
+    int textureWidth = 256;
+    int textureHeight = 64;
+    glm::vec2 hotbarTextureLoc = glm::vec2(0,0);
+    glm::vec2 hotbarTextureSize = glm::vec2((float)hotbarTexture.width/textureWidth,(float)hotbarTexture.height/textureHeight);
+    
+    int width, height;
+    glfwGetWindowSize(window, &width, &height);
+    float hotbarScreenHeight = 2*hotbarWidthPortion*((float)hotbarTexture.height/hotbarTexture.width)*((float)width/height);
+    glm::vec2 size = glm::vec2(2*hotbarWidthPortion,hotbarScreenHeight);
+    glm::vec2 loc = glm::vec2(-hotbarWidthPortion,-1.0f+hotbarScreenHeight);
+    
+    uiTextureShaderProgram.use();
+    uiTextureShaderProgram.setVec2("loc",loc);
+    uiTextureShaderProgram.setVec2("size",size);
+    uiTextureShaderProgram.setVec2("textureLoc",hotbarTextureLoc);
+    uiTextureShaderProgram.setVec2("textureSize",hotbarTextureSize);
+    glDrawElements(GL_TRIANGLES,6, GL_UNSIGNED_INT, 0);
+
+    glEnable(GL_DEPTH_TEST);
+}
+// void Renderer::renderHotbarTest(){
+//     glBindVertexArray(VAO2dTexture);
+//     glBindTexture(GL_TEXTURE_2D,hotbarTextureAtlas);
+//     glDisable(GL_DEPTH_TEST);
+//     // TextureLoc hotbarTexture = {0,0,182,22}; //The full png is 256x64.
+//     // int textureWidth = 256;
+//     // int textureHeight = 64;
+//     glm::vec2 hotbarTextureLoc = glm::vec2(0.0f,0.0f);
+//     glm::vec2 hotbarTextureSize = glm::vec2(1.0f,1.0f);
+    
+//     // int width, height;
+//     // glfwGetWindowSize(window, &width, &height);
+//     // float hotbarScreenHeight = 2*hotbarWidthPortion*((float)hotbarTexture.height/hotbarTexture.width)*((float)width/height);
+//     glm::vec2 size = glm::vec2(1.0f,1.0f);
+//     glm::vec2 loc = glm::vec2(-0.5f,0.5f);
+    
+//     uiTextureShaderProgram.use();
+//     uiTextureShaderProgram.setVec2("loc",loc);
+//     uiTextureShaderProgram.setVec2("size",size);
+//     uiTextureShaderProgram.setVec2("textureLoc",hotbarTextureLoc);
+//     uiTextureShaderProgram.setVec2("textureSize",hotbarTextureSize);
+//     glDrawElements(GL_TRIANGLES,6, GL_UNSIGNED_INT, 0);
+
+//     glEnable(GL_DEPTH_TEST);
+// }

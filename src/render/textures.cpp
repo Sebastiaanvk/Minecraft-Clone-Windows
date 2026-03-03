@@ -36,7 +36,7 @@ void TextureAtlas::bind(){
 
 bool TextureAtlas::setup(){
 
-// Setting up the texture atlas
+    // Setting up the texture atlas
     glGenTextures(1, &textureAtlasID);  
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureAtlasID);  

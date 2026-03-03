@@ -17,7 +17,7 @@ Game::Game()
 
 void Game::run(){
 
-    if(!renderer.init(1600,1200)){
+    if(!renderer.init(1600,1000)){
         return;
     }
     glfwSwapInterval(1); // Enables VSync
