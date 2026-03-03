@@ -15,25 +15,25 @@
 
 class TextureAtlas{
 public:
-    TextureAtlas();
-    void bind();
-    bool setup();
-    glm::vec2 getUVCoord(const BlockID& blockID, const FaceType& faceType) const;
-    float getTextureSizeHeight() const;
-    float getTextureSizeWidth() const;
+    static bool setup();
+    static void bind();
+    static glm::vec2 getUVCoord(const BlockID& blockID, const FaceType& faceType);
+    static float getTextureSizeHeight();
+    static float getTextureSizeWidth();
 
 private:
-    nlohmann::json jsonAtlasData;
-    int atlasWidth;
-    int atlasHeight;
-    float textureSizeHeight;
-    float textureSizeWidth;
-    unsigned int textureAtlasID;
+    TextureAtlas() = delete;
+    static nlohmann::json jsonAtlasData;
+    static int atlasWidth;
+    static int atlasHeight;
+    static float textureSizeHeight;
+    static float textureSizeWidth;
+    static unsigned int textureAtlasID;
 };
 
 
-
-
+// class UITextures{
+// };
 
 
 

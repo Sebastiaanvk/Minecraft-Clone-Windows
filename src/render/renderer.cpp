@@ -31,7 +31,7 @@ std::vector<Renderer::chunkVBOElt> Renderer::updateVBOVector(const RenderableChu
     for( auto face: worldMesh.mesh){
         // std::cout << face.blockType << std::endl;
         // Triangles counter-clockwise
-        glm::vec2 uvCoord = blockTextureAtlas.getUVCoord(face.blockType,face.faceType);
+        glm::vec2 uvCoord = TextureAtlas::getUVCoord(face.blockType,face.faceType);
         for(int i=0;i<6;i++){
             chunkVBOElt vboElt;
             int corner = cornerOrder[i];
@@ -39,8 +39,8 @@ std::vector<Renderer::chunkVBOElt> Renderer::updateVBOVector(const RenderableChu
             vboElt.pos[0] = face.corners[corner].x;
             vboElt.pos[1] = face.corners[corner].y;
             vboElt.pos[2] = -face.corners[corner].z;
-            vboElt.uv[0] = uvCoord.x+(textureMargin+(1.0f-2.0f*textureMargin)*uvDiff[corner].first)*blockTextureAtlas.getTextureSizeWidth();
-            vboElt.uv[1] = uvCoord.y+(textureMargin+(1.0f-2.0f*textureMargin)*uvDiff[corner].second)*blockTextureAtlas.getTextureSizeHeight();
+            vboElt.uv[0] = uvCoord.x+(textureMargin+(1.0f-2.0f*textureMargin)*uvDiff[corner].first)*TextureAtlas::getTextureSizeWidth();
+            vboElt.uv[1] = uvCoord.y+(textureMargin+(1.0f-2.0f*textureMargin)*uvDiff[corner].second)*TextureAtlas::getTextureSizeHeight();
             vboElt.tint[0] = face.tint[0];
             vboElt.tint[1] = face.tint[1];
             vboElt.tint[2] = face.tint[2];
@@ -148,10 +148,9 @@ bool Renderer::init(int width, int height){
 
 
     
-//    stbi_set_flip_vertically_on_load(true);  //Dont know what this does.
+//    stbi_set_flip_vertically_on_load(true);  //This changes the texture to have 0,0 as top left instead of the default bottom left.
 
-    blockTextureAtlas = TextureAtlas();
-    if(!blockTextureAtlas.setup()){
+    if(!TextureAtlas::setup()){
         return false;
     }
 
@@ -210,7 +209,7 @@ void Renderer::render(World& world, Camera& camera, GameUIData gameData){
 
     // Set the view and projection matrices to the right values in the chunk shader program
     chunkShaderProgram.use();
-    blockTextureAtlas.bind();
+    // TextureAtlas::bind();
 
     unsigned int viewLoc = glGetUniformLocation(chunkShaderProgram.ID, "view");
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));

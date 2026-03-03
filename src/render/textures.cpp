@@ -1,7 +1,13 @@
 #include <render/textures.hpp>
 
-
-
+unsigned int TextureAtlas::textureAtlasID = 0;
+float TextureAtlas::textureSizeWidth = 0.0f;
+float TextureAtlas::textureSizeHeight = 0.0f;
+int TextureAtlas::atlasWidth = 0;
+int TextureAtlas::atlasHeight = 0;
+// The json contains a dictionary from the entity names to the locations on the texture atlas.
+std::ifstream f("assets/blockAtlasJson.json");
+nlohmann::json TextureAtlas::jsonAtlasData = nlohmann::json::parse(f);
 
 glm::vec2 jsonGet(const nlohmann::json& data, const std::string& textureName, int atlasWidth, int atlasHeight){
     float xLoc = ((float)data["frames"][textureName]["frame"]["x"])/((float)atlasWidth);
@@ -9,21 +15,18 @@ glm::vec2 jsonGet(const nlohmann::json& data, const std::string& textureName, in
     return {xLoc, yLoc};
 }
 
-glm::vec2 TextureAtlas::getUVCoord(const BlockID& blockID,const FaceType& faceType) const{
+glm::vec2 TextureAtlas::getUVCoord(const BlockID& blockID,const FaceType& faceType){
     return jsonGet(jsonAtlasData, BlockRegistry::getTextureName(blockID,faceType), atlasWidth, atlasHeight);
 }
 
-float TextureAtlas::getTextureSizeHeight() const{
+float TextureAtlas::getTextureSizeHeight(){
     return textureSizeHeight;
 
 }
-float TextureAtlas::getTextureSizeWidth() const{
+float TextureAtlas::getTextureSizeWidth(){
     return textureSizeWidth;
 }
 
-TextureAtlas::TextureAtlas(){
-
-}
 
 void TextureAtlas::bind(){
     // glActiveTexture(GL_TEXTURE0); // Optional if I want to have multiple textureAtlases simultaneously.
@@ -65,8 +68,5 @@ bool TextureAtlas::setup(){
 
 
 
-    // The json contains a dictionary from the entity names to the locations on the texture atlas.
-    std::ifstream f("assets/blockAtlasJson.json");
-    jsonAtlasData = nlohmann::json::parse(f);
     return true;
 }

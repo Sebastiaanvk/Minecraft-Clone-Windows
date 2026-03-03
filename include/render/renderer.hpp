@@ -45,7 +45,6 @@ private:
 
     GLFWwindow* window;
     Shader chunkShaderProgram;
-    TextureAtlas blockTextureAtlas;
 
     unsigned int VAOBlockOutline;
     unsigned int VBOBlockOutline;
