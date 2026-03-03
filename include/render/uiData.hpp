@@ -33,6 +33,8 @@ struct RendererUIData {
     float* localOutlineOffsetP;
     float* localOutlineWidthP;
     float* hotbarWidthPortionP;
+    float* crossHairLengthP;
+    float* crossHairWidthP;
 };
 
 

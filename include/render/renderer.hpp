@@ -48,8 +48,6 @@ private:
     Shader chunkShaderProgram;
 
     unsigned int VAOBlockOutline;
-    unsigned int VBOBlockOutline; // Do we even need the VBO and EBO in the header?
-    unsigned int EBOBlockOutline;
     Shader outLineShaderProgram;
     float localOutlineOffset = 0.002f;
     float localOutlineWidth = 7.0f;
@@ -58,10 +56,15 @@ private:
     Shader uiTextureShaderProgram;
     unsigned int VAO2dTexture;
 
+    Shader rectangleShaderProgram;
+    unsigned int VAORectangle;
      
     bool showGameData = true;
     float textureMargin = 0.002f;
     float hotbarWidthPortion = 0.7f;
+
+    float crossHairLength = 0.05f; //These ratios are with respect to the height of the window.
+    float crossHairWidth = 0.005f;
 
     std::vector<chunkVBOElt> updateVBOVector(const RenderableChunkMesh& worldMesh);
     RenderMesh createRenderMesh(const RenderableChunkMesh& worldMesh);
@@ -72,11 +75,13 @@ private:
 
     bool setup2dRenderer();
     bool setupHotbarTexture();
+    bool setupRectangleRenderer();
 
     RendererUIData getRendererUIData();
 
     void renderHotbar();
     // void renderHotbarTest();
+    void renderCrosshair();
 
 };
 

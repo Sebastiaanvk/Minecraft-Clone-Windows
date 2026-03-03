@@ -104,10 +104,12 @@ bool Renderer::setupCubeOutline(){
     glGenVertexArrays(1, &VAOBlockOutline);
     glBindVertexArray(VAOBlockOutline);
 
+    unsigned int VBOBlockOutline; 
     glGenBuffers(1, &VBOBlockOutline);
     glBindBuffer(GL_ARRAY_BUFFER, VBOBlockOutline);
     glBufferData(GL_ARRAY_BUFFER, sizeof(cubeOutlineVertices), cubeOutlineVertices, GL_STATIC_DRAW);
     
+    unsigned int EBOBlockOutline;
     glGenBuffers(1, &EBOBlockOutline);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOBlockOutline);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeOutlineIndices), cubeOutlineIndices,GL_STATIC_DRAW);
@@ -178,6 +180,11 @@ bool Renderer::init(int width, int height){
     if(!setupHotbarTexture()){
         return false;
     }
+    
+    if(!setupRectangleRenderer()){
+        return false;
+    }
+
     return true;
 }
 
@@ -192,6 +199,8 @@ RendererUIData Renderer::getRendererUIData(){
     rendererUIData.localOutlineOffsetP = &localOutlineOffset;
     rendererUIData.localOutlineWidthP = &localOutlineWidth;
     rendererUIData.hotbarWidthPortionP = &hotbarWidthPortion;
+    rendererUIData.crossHairLengthP = &crossHairLength;
+    rendererUIData.crossHairWidthP = &crossHairWidth;
 
     return rendererUIData;
 }
@@ -281,6 +290,7 @@ void Renderer::render(World& world, Camera& camera, GameUIData gameData){
     
     // Render UI
     renderHotbar();
+    renderCrosshair();
 
 
     CustomImGui::renderEnd();
@@ -293,6 +303,9 @@ void Renderer::render(World& world, Camera& camera, GameUIData gameData){
 void Renderer::shutDown(){
     CustomImGui::shutdown();
 }
+
+
+
 
 bool Renderer::setup2dRenderer(){
     // negative y means going down in opengl 2d space, but going up in the texture atlas
@@ -407,3 +420,57 @@ void Renderer::renderHotbar(){
 
 //     glEnable(GL_DEPTH_TEST);
 // }
+
+
+bool Renderer::setupRectangleRenderer(){
+
+    // negative y means going down in opengl 2d space
+    // These are Normalized Device Coordinates  in [-1,1]x[-1,1]
+    // x,y 
+    const float vertices[] = {
+        0.0f,-1.0f, //lower left corner
+        1.0f,-1.0f,
+        1.0f,0.0f,  
+        0.0f,0.0f // Upper left corner
+    };
+    const unsigned int indices[] = {0,1,3,1,2,3}; // Two counter clockwise triangles.
+
+    unsigned int VBORectangle; 
+    unsigned int EBORectangle;
+    glGenVertexArrays(1, &VAORectangle);
+    glBindVertexArray(VAORectangle);
+    glGenBuffers(1, &VBORectangle);
+    glBindBuffer(GL_ARRAY_BUFFER, VBORectangle);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    
+    glGenBuffers(1, &EBORectangle);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBORectangle);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);  
+
+    // Maybe change so that we get the pixel position as input
+    // and we multiply by an orthographic matrix?
+    rectangleShaderProgram = Shader("include/shaders/rectangleShader.vs","include/shaders/rectangleShader.fs");
+    return true;
+}
+
+void Renderer::renderCrosshair(){
+    glBindVertexArray(VAORectangle);
+    glDisable(GL_DEPTH_TEST);
+    rectangleShaderProgram.use();
+    rectangleShaderProgram.setVec4("color",glm::vec4(0.3f,0.3f,0.3f,1.0f));
+    int width, height;
+    glfwGetWindowSize(window, &width, &height);
+    float widthHeightRatio = (float)width/height; //Generally >1.
+    rectangleShaderProgram.setVec2("loc",glm::vec2(-crossHairWidth/widthHeightRatio,crossHairLength));
+    rectangleShaderProgram.setVec2("size",glm::vec2(2*crossHairWidth/widthHeightRatio,2*crossHairLength));
+    glDrawElements(GL_TRIANGLES,6, GL_UNSIGNED_INT, 0);
+
+    rectangleShaderProgram.setVec2("loc",glm::vec2(-crossHairLength/widthHeightRatio,crossHairWidth));
+    rectangleShaderProgram.setVec2("size",glm::vec2(2*crossHairLength/widthHeightRatio,2*crossHairWidth));
+    glDrawElements(GL_TRIANGLES,6, GL_UNSIGNED_INT, 0);
+
+    glEnable(GL_DEPTH_TEST);
+}
