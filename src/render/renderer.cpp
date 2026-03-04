@@ -75,52 +75,6 @@ RenderMesh Renderer::createRenderMesh(const RenderableChunkMesh& worldMesh){
 
 
 
-bool Renderer::setupCubeOutline(){
-
-    const float cubeOutlineVertices[] = {
-        0.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, -1.0f,
-        1.0f, 0.0f, -1.0f,
-        1.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, -1.0f,
-        1.0f, 1.0f, -1.0f,
-        1.0f, 1.0f, 0.0f,
-    };
-    const unsigned int cubeOutlineIndices[] = {
-        0,1,
-        1,2,
-        2,3,
-        3,0,
-        4,5,
-        5,6,
-        6,7,
-        7,4,
-        0,4,
-        1,5,
-        2,6,
-        3,7
-    };
-    glGenVertexArrays(1, &VAOBlockOutline);
-    glBindVertexArray(VAOBlockOutline);
-
-    unsigned int VBOBlockOutline; 
-    glGenBuffers(1, &VBOBlockOutline);
-    glBindBuffer(GL_ARRAY_BUFFER, VBOBlockOutline);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeOutlineVertices), cubeOutlineVertices, GL_STATIC_DRAW);
-    
-    unsigned int EBOBlockOutline;
-    glGenBuffers(1, &EBOBlockOutline);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOBlockOutline);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeOutlineIndices), cubeOutlineIndices,GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);  
-
-    outLineShaderProgram = Shader("include/shaders/cubeOutlineShader.vs","include/shaders/cubeOutlineShader.fs");
-    return true;
-}
-
 
 
 bool Renderer::init(int width, int height){
@@ -193,17 +147,6 @@ GLFWwindow* Renderer::getWindow(){
 }
 
 
-RendererUIData Renderer::getRendererUIData(){
-    RendererUIData rendererUIData;
-    rendererUIData.textureMarginP = &textureMargin;
-    rendererUIData.localOutlineOffsetP = &localOutlineOffset;
-    rendererUIData.localOutlineWidthP = &localOutlineWidth;
-    rendererUIData.hotbarWidthPortionP = &hotbarWidthPortion;
-    rendererUIData.crossHairLengthP = &crossHairLength;
-    rendererUIData.crossHairWidthP = &crossHairWidth;
-
-    return rendererUIData;
-}
 
 void Renderer::render(World& world, Camera& camera, GameUIData gameData){
 
@@ -305,6 +248,63 @@ void Renderer::shutDown(){
 }
 
 
+RendererUIData Renderer::getRendererUIData(){
+    RendererUIData rendererUIData;
+    rendererUIData.textureMarginP = &textureMargin;
+    rendererUIData.localOutlineOffsetP = &localOutlineOffset;
+    rendererUIData.localOutlineWidthP = &localOutlineWidth;
+    rendererUIData.hotbarWidthPortionP = &hotbarWidthPortion;
+    rendererUIData.crossHairLengthP = &crossHairLength;
+    rendererUIData.crossHairWidthP = &crossHairWidth;
+
+    return rendererUIData;
+}
+
+bool Renderer::setupCubeOutline(){
+
+    const float cubeOutlineVertices[] = {
+        0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, -1.0f,
+        1.0f, 0.0f, -1.0f,
+        1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, -1.0f,
+        1.0f, 1.0f, -1.0f,
+        1.0f, 1.0f, 0.0f,
+    };
+    const unsigned int cubeOutlineIndices[] = {
+        0,1,
+        1,2,
+        2,3,
+        3,0,
+        4,5,
+        5,6,
+        6,7,
+        7,4,
+        0,4,
+        1,5,
+        2,6,
+        3,7
+    };
+    glGenVertexArrays(1, &VAOBlockOutline);
+    glBindVertexArray(VAOBlockOutline);
+
+    unsigned int VBOBlockOutline; 
+    glGenBuffers(1, &VBOBlockOutline);
+    glBindBuffer(GL_ARRAY_BUFFER, VBOBlockOutline);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeOutlineVertices), cubeOutlineVertices, GL_STATIC_DRAW);
+    
+    unsigned int EBOBlockOutline;
+    glGenBuffers(1, &EBOBlockOutline);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOBlockOutline);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeOutlineIndices), cubeOutlineIndices,GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);  
+
+    outLineShaderProgram = Shader("include/shaders/cubeOutlineShader.vs","include/shaders/cubeOutlineShader.fs");
+    return true;
+}
 
 
 bool Renderer::setup2dRenderer(){
