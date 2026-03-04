@@ -239,4 +239,7 @@ bool World::hasBlockTargeted() const{
 LocInt World::getTargetedBlock() const{
     return targetedBlock;
 }
+int World::getHotbarSelection() const{
+    return player.getHotbarSelection();
+}
 

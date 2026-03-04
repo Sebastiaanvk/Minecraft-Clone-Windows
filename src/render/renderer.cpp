@@ -289,7 +289,7 @@ void Renderer::render(World& world, Camera& camera, GameUIData gameData){
 
     
     // Render UI
-    renderHotbar();
+    renderHotbar(world);
     renderCrosshair();
 
 
@@ -370,7 +370,10 @@ bool Renderer::setupHotbarTexture(){
     return true;
 }
 
-void Renderer::renderHotbar(){
+
+void Renderer::renderHotbar(const World& world){
+    // In the real game, the htobar doesnt scale directly with the window size
+    // Instead it jumps in size at certain window sizes. Probably so the pixels align with the texture nicely.
     glBindVertexArray(VAO2dTexture);
     glBindTexture(GL_TEXTURE_2D,hotbarTextureAtlas);
     glDisable(GL_DEPTH_TEST);
@@ -392,6 +395,23 @@ void Renderer::renderHotbar(){
     uiTextureShaderProgram.setVec2("textureLoc",hotbarTextureLoc);
     uiTextureShaderProgram.setVec2("textureSize",hotbarTextureSize);
     glDrawElements(GL_TRIANGLES,6, GL_UNSIGNED_INT, 0);
+
+// Alright, this could have been done in a way nicer way, I'm sure
+// Just want something that works right now.
+    glm::vec2 selectionBoxTextureLoc = glm::vec2(0,(float)22/64);
+    glm::vec2 selectionBoxTextureSize = glm::vec2((float)24/256,(float)24/64);
+
+    glm::vec2 selectionBoxSize = glm::vec2((float)24/182*size.x,(float)24/22*size.y);
+    float selectionBoxXLoc = (float)(182+2)/182*loc.x + (world.getHotbarSelection()-1)*size.x*20/182;
+    glm::vec2 selectionBoxLoc = glm::vec2(selectionBoxXLoc,-1.0f+((float)23/22)*hotbarScreenHeight);
+
+
+    uiTextureShaderProgram.setVec2("loc",selectionBoxLoc);
+    uiTextureShaderProgram.setVec2("size",selectionBoxSize);
+    uiTextureShaderProgram.setVec2("textureLoc",selectionBoxTextureLoc);
+    uiTextureShaderProgram.setVec2("textureSize",selectionBoxTextureSize);
+    glDrawElements(GL_TRIANGLES,6, GL_UNSIGNED_INT, 0);
+
 
     glEnable(GL_DEPTH_TEST);
 }

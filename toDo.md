@@ -3,13 +3,13 @@
 
 ## Nu aan werken:
 
-Crosshair + inventory slots.
+<!-- Crosshair  -->
+
+inventory slots. Hotbar selection toevoegen aan player en imgui.
+Daarna veldje renderern dat geselecteerd is.
+Daarna in de input een hotbar selection toevoegen.
+
 Daarna: inventory toevoegen voor verschillende blokjes kunnen plaatsen.
-
-<!-- Setting up an opengl testing folder. -->
-
-<!-- Textures file met texture class om dat overzichtelijk te krijgen. -->
-
 
 UI library maken.
 <!-- Mijn idee: functie die een rechthoek op het scherm output.
@@ -20,12 +20,10 @@ De hotbar texture naar de texture class sturen voor consistentie.
 
 De rendercode mooi encapsulaten zodat de main render functie Heel overzichtelijk wordt.
 
-zwarte lijn blijk blokjes weg als ik vanuit een hoek kijk. Ja wat de hek is dit? Its like a circle around the player where you get this lines and de blocks get darker as well.
+zwarte lijn blijk blokjes weg als ik vanuit een hoek kijk. Ja wat de hek is dit? Its like a circle around the player where you get these lines and de blocks get darker as well.
 
 
 verschillende types blokjes kunnen plaatsen
-Plusje voor richten
-9 vierkantjes onderin
 
 Bloemen toevoegen
 Bomen toevoegen.
@@ -116,3 +114,10 @@ snel met een block id en een positie en richting de afstand tot het snijpunt bep
 <!-- Alle IMGUI dingen in een ander bestand. -->
 
 <!-- Lijnen rond geselecteerd blokje -->
+
+<!-- Setting up an opengl testing folder. -->
+
+<!-- Textures file met texture class om dat overzichtelijk te krijgen. -->
+
+<!-- Plusje voor richten
+9 vierkantjes onderin -->

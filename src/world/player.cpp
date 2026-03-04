@@ -94,12 +94,18 @@ bool Player::blockIntersects(const LocInt& loc ){
 LocFloat Player::getForwardDir() const{
     return forward;
 }
+
+int Player::getHotbarSelection() const{
+    return hotbarSelection;
+}
+
 PlayerUIData Player::getUIData(){
     PlayerUIData uiData;
     uiData.pos = pos;
     uiData.forwardDirection = forward;
     uiData.playerSpeedP = &playerSpeed;
     uiData.rotationSensitivityP = &rotationSensitivity;
+    uiData.hotbarSelectionP = &hotbarSelection;
 
     return uiData;
 }

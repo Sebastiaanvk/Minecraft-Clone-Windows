@@ -12,6 +12,7 @@ struct PlayerUIData {
     LocFloat forwardDirection;
     float* playerSpeedP;
     float* rotationSensitivityP;
+    int* hotbarSelectionP;
 };
 
 struct WorldUIData {

@@ -79,7 +79,7 @@ private:
 
     RendererUIData getRendererUIData();
 
-    void renderHotbar();
+    void renderHotbar(const World& world);
     // void renderHotbarTest();
     void renderCrosshair();
 

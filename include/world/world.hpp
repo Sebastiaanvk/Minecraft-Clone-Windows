@@ -29,6 +29,7 @@ public:
     void update(Input_Handler& input_handler);
     bool hasBlockTargeted() const;
     LocInt getTargetedBlock() const;
+    int getHotbarSelection() const;
 
     float tickTimeLength = 0.05f;
     WorldUIData getUIData();
