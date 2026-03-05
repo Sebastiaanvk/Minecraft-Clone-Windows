@@ -176,9 +176,10 @@ void World::deleteTarget(){
 void World::placeBlock(){
     static int lastPlacementTick = -ticksBetweenBlockManipulation;
     if( tick-lastPlacementTick>=ticksBetweenBlockManipulation and blockTargeted and !player.blockIntersects(placementCandidate)){
-        chunkManager.placeBlock(placementCandidate);
-        lastPlacementTick = tick;
-
+        if(player.placeableBlockSelected()){
+            chunkManager.placeBlock(placementCandidate,player.getSelectedBlock());
+            lastPlacementTick = tick;
+        }
     }
 }
 
@@ -247,6 +248,6 @@ LocInt World::getTargetedBlock() const{
     return targetedBlock;
 }
 int World::getHotbarSelection() const{
-    return player.getHotbarSelection();
+    return player.getHotbarSelectionIndex();
 }
 

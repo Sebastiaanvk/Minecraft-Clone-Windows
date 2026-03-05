@@ -31,10 +31,10 @@ LocInt ChunkManager::getLocWithinChunk(const LocInt& loc) const{
     return {loc.x & 15,loc.y,loc.z & 15};
 }
 
-void ChunkManager::placeBlock(const LocInt& loc){
+void ChunkManager::placeBlock(const LocInt& loc,const BlockID& blockId){
     ChunkID chunkID = getChunkID(loc);
     if(chunks.count(chunkID)!=0){
-        chunks.at(chunkID)->setBlockId(getLocWithinChunk(loc),BlockID::Dirt);
+        chunks.at(chunkID)->setBlockId(getLocWithinChunk(loc),blockId);
     }
 }
 

@@ -95,7 +95,7 @@ LocFloat Player::getForwardDir() const{
     return forward;
 }
 
-int Player::getHotbarSelection() const{
+int Player::getHotbarSelectionIndex() const{
     return hotbarSelection;
 }
 void Player::changeHotbarSelection( bool moveUp){
@@ -116,4 +116,11 @@ PlayerUIData Player::getUIData(){
     uiData.hotbarSelectionP = &hotbarSelection;
 
     return uiData;
+}
+bool Player::placeableBlockSelected(){
+    // Change this later to check whether the block/item type is actually placeable.
+    return hotbar[hotbarSelection].occupied;
+}
+BlockID Player::getSelectedBlock(){
+    return hotbar[hotbarSelection].blockId;
 }

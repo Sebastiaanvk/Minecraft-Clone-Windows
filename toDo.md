@@ -3,33 +3,18 @@
 
 ## Nu aan werken:
 
-<!-- Crosshair  -->
+Remove the include folder and move everything to src
 
-<!-- inventory slots. Hotbar selection toevoegen aan player en imgui. -->
-<!-- Daarna veldje renderern dat geselecteerd is. -->
-<!-- Daarna in de input een hotbar selection toevoegen. -->
-
-inventory toevoegen aan de player.(misschien met bool voor empty, kan later int voor hoeveelheid worden.)
-Blokje texture kunnen plaatsen in de inventory.
-
-Daarna: inventory toevoegen voor verschillende blokjes kunnen plaatsen.
-
+Render hotbar blocks
 Frame rate toevoegen aan ImGui.
-
-
-<!-- UI library maken. -->
-<!-- Mijn idee: functie die een rechthoek op het scherm output.
-Krijgt een locatie, width and height en een kleur. thats it.IN -->
-
-De hotbar texture naar de texture class sturen voor consistentie.
-
-
-De rendercode mooi encapsulaten zodat de main render functie Heel overzichtelijk wordt.
+Optional: De hotbar texture naar de texture class sturen voor consistentie.
+Optional: De rendercode mooi encapsulaten zodat de main render functie Heel overzichtelijk wordt.
+Optional: Fix mipmap shizzzle
 
 zwarte lijn blijk blokjes weg als ik vanuit een hoek kijk. Ja wat de hek is dit? Its like a circle around the player where you get these lines and de blocks get darker as well.
 
 
-verschillende types blokjes kunnen plaatsen
+
 
 Bloemen toevoegen
 Bomen toevoegen.
@@ -127,3 +112,19 @@ snel met een block id en een positie en richting de afstand tot het snijpunt bep
 
 <!-- Plusje voor richten
 9 vierkantjes onderin -->
+
+<!-- Crosshair  -->
+
+<!-- inventory slots. Hotbar selection toevoegen aan player en imgui. -->
+<!-- Daarna veldje renderern dat geselecteerd is. -->
+<!-- Daarna in de input een hotbar selection toevoegen. -->
+
+<!-- inventory toevoegen aan de player.(misschien met bool voor empty, kan later int voor hoeveelheid worden.) -->
+
+<!-- Daarna: inventory toevoegen voor verschillende blokjes kunnen plaatsen. -->
+
+
+<!-- UI library maken. -->
+<!-- Mijn idee: functie die een rechthoek op het scherm output.
+Krijgt een locatie, width and height en een kleur. thats it.IN -->
+<!-- verschillende types blokjes kunnen plaatsen -->

@@ -4,6 +4,7 @@
 #include <string>
 #include <util/loc.h>
 #include <render/uiData.hpp>
+#include <blockRegistry.hpp>
 
 class Player{
 public:
@@ -23,10 +24,12 @@ public:
     LocInt getBlockLoc() const;
     bool blockIntersects(const LocInt& loc );
     LocFloat getForwardDir() const;
-    int getHotbarSelection() const;
+    int getHotbarSelectionIndex() const;
     void changeHotbarSelection( bool moveUp);
 
     PlayerUIData getUIData();
+    bool placeableBlockSelected();
+    BlockID getSelectedBlock();
 
 private:
 
@@ -42,7 +45,23 @@ private:
     LocFloat pos = glm::vec3(0.0f,128.0f, 0.0f);
     LocFloat lastPos;
     LocFloat forward;
+    struct InventorySlot {
+        bool occupied;
+        BlockID blockId;
+        
+    };
 
+    InventorySlot hotbar[9] = {
+        {true,BlockID::Dirt},
+        {true,BlockID::Gravel},
+        {true,BlockID::Stone},
+        {true,BlockID::Bedrock},
+        {false,BlockID::Air},
+        {false,BlockID::Air},
+        {false,BlockID::Air},
+        {false,BlockID::Air},
+        {false,BlockID::Air}
+    };
 };
 
 
