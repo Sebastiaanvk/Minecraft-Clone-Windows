@@ -62,7 +62,6 @@ bool TextureAtlas::setup(){
     textureSizeWidth = (float)16/(float)atlasWidth;
     textureSizeHeight = (float)16/(float)atlasHeight;
 
-
     if(data){
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlasWidth, atlasHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -71,8 +70,6 @@ bool TextureAtlas::setup(){
         return false;
     }
     stbi_image_free(data);
-
-
 
     return true;
 }

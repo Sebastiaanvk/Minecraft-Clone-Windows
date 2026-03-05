@@ -40,7 +40,7 @@ void CustomImGui::renderStart(CameraUIData cameraUIData, WorldUIData worldUIData
             ImGui::Text("Looking direction(xyz): %f,%f,%f",worldUIData.playerData.forwardDirection.x,worldUIData.playerData.forwardDirection.y,worldUIData.playerData.forwardDirection.z);
             ImGui::SliderFloat("Movement Speed",worldUIData.playerData.playerSpeedP,1.0f,100.0f);
             ImGui::SliderFloat("Mouse Sensitivity",worldUIData.playerData.rotationSensitivityP,0.01f,0.5f);
-            ImGui::SliderInt("Hotbar Selection",worldUIData.playerData.hotbarSelectionP,1,9);
+            ImGui::SliderInt("Hotbar Selection",worldUIData.playerData.hotbarSelectionP,0,8);
         }
         if (ImGui::CollapsingHeader("World",ImGuiTreeNodeFlags_DefaultOpen)){
             ImGui::SliderInt("Block Delay (ticks)",worldUIData.ticksBetweenBlockManipulationP,1,20);

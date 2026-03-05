@@ -39,6 +39,11 @@ struct RendererUIData {
 };
 
 
+// struct InputData {
+//     float scrollDiff;
+// };
+
+
 // struct UIData {
 //     // GameUIData gameData;
 //     CameraUIData cameraData;

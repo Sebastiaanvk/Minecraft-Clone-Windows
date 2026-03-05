@@ -214,6 +214,13 @@ void World::update(Input_Handler& input_handler){
     } else if(input_handler.key_down(Key::RIGHT_MOUSE_BUTTON)){
         placeBlock();
     }
+    float scrollDiff = input_handler.getScrollDiffWithReset();
+    if(scrollDiff>0.1f){
+        player.changeHotbarSelection(true);
+    } else if( scrollDiff<-0.1f){
+        player.changeHotbarSelection(false);
+    }
+
     calculatePlayerTarget();
     // std::cout << "BlockTargeted: " << blockTargeted << ", Location: " << targetedBlock.x << "," << targetedBlock.y << "," << targetedBlock.z << std::endl;  
 

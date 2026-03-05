@@ -98,6 +98,14 @@ LocFloat Player::getForwardDir() const{
 int Player::getHotbarSelection() const{
     return hotbarSelection;
 }
+void Player::changeHotbarSelection( bool moveUp){
+    // Maybe switch these two.
+    if(!moveUp){
+        hotbarSelection = (hotbarSelection+1)%9;
+    } else {
+        hotbarSelection = (hotbarSelection-1+9)%9;
+    }
+}
 
 PlayerUIData Player::getUIData(){
     PlayerUIData uiData;

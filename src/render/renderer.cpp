@@ -402,7 +402,7 @@ void Renderer::renderHotbar(const World& world){
     glm::vec2 selectionBoxTextureSize = glm::vec2((float)24/256,(float)24/64);
 
     glm::vec2 selectionBoxSize = glm::vec2((float)24/182*size.x,(float)24/22*size.y);
-    float selectionBoxXLoc = (float)(182+2)/182*loc.x + (world.getHotbarSelection()-1)*size.x*20/182;
+    float selectionBoxXLoc = (float)(182+2)/182*loc.x + world.getHotbarSelection()*size.x*20/182;
     glm::vec2 selectionBoxLoc = glm::vec2(selectionBoxXLoc,-1.0f+((float)23/22)*hotbarScreenHeight);
 
 

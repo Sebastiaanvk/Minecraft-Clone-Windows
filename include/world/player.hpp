@@ -24,6 +24,7 @@ public:
     bool blockIntersects(const LocInt& loc );
     LocFloat getForwardDir() const;
     int getHotbarSelection() const;
+    void changeHotbarSelection( bool moveUp);
 
     PlayerUIData getUIData();
 
@@ -36,7 +37,7 @@ private:
 
     float rotationSensitivity = 0.1f;
 
-    int hotbarSelection = 1;
+    int hotbarSelection = 0;
 
     LocFloat pos = glm::vec3(0.0f,128.0f, 0.0f);
     LocFloat lastPos;

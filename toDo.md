@@ -5,13 +5,19 @@
 
 <!-- Crosshair  -->
 
-inventory slots. Hotbar selection toevoegen aan player en imgui.
-Daarna veldje renderern dat geselecteerd is.
-Daarna in de input een hotbar selection toevoegen.
+<!-- inventory slots. Hotbar selection toevoegen aan player en imgui. -->
+<!-- Daarna veldje renderern dat geselecteerd is. -->
+<!-- Daarna in de input een hotbar selection toevoegen. -->
+
+inventory toevoegen aan de player.(misschien met bool voor empty, kan later int voor hoeveelheid worden.)
+Blokje texture kunnen plaatsen in de inventory.
 
 Daarna: inventory toevoegen voor verschillende blokjes kunnen plaatsen.
 
-UI library maken.
+Frame rate toevoegen aan ImGui.
+
+
+<!-- UI library maken. -->
 <!-- Mijn idee: functie die een rechthoek op het scherm output.
 Krijgt een locatie, width and height en een kleur. thats it.IN -->
 

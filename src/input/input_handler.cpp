@@ -25,6 +25,12 @@ Input_Handler::Input_Handler(){
     }
 }
 
+// Had to do it like this, becuase glfw is too old to accept functions that are methods of a class.
+double Input_Handler::scrollDiff = 0.0f;
+
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset){
+    Input_Handler::scrollDiff += yoffset;
+}
 
 bool Input_Handler::init(GLFWwindow* window){
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
@@ -32,10 +38,10 @@ bool Input_Handler::init(GLFWwindow* window){
     glfwGetFramebufferSize(window, &width, &height);
     previousX = ((double)width)/2;
     previousY = ((double)height)/2;
-    dx = 0.0f;
-    dy = 0.0f;
     glfwSetCursorPos(window, previousX , previousY);
 //    glfwSetCursorPosCallback(window, mouse_callback);  
+
+    glfwSetScrollCallback(window, scrollCallback);
     return true;
 }
 
@@ -138,7 +144,18 @@ void Input_Handler::reset(){
         released[k] = false;
     }
     curr_down[Key::PAUSE] = true; //Important in order to prevent instant repausing.
+    scrollDiff = 0.0f;
 }
+
+
+
+double Input_Handler::getScrollDiffWithReset(){
+    double d = scrollDiff;
+    scrollDiff = 0.0f;
+    return d;
+}
+
+
 
 /*
 void Input_Handler::mouse_callback(GLFWwindow* window, double xpos, double ypos){
