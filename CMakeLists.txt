@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(GLFW_ROOT "C:/dev/libs/glfw-3.4")
 
 # Add the GLFW include directory
-include_directories(${GLFW_ROOT}/include include extern extern/imgui extern/imgui/backends)
+include_directories(${GLFW_ROOT}/include src extern extern/imgui extern/imgui/backends)
 
 # Add the GLFW library directory
 link_directories(${GLFW_ROOT}/lib)

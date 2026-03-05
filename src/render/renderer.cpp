@@ -111,8 +111,7 @@ bool Renderer::init(int width, int height){
     }
 
 //  Shaders:
-    chunkShaderProgram = Shader("include/shaders/chunkShader.vs","include/shaders/chunkShader.fs");
-    //  chunkShaderProgram = Shader("../include/shaders/chunkShader.vs","../include/shaders/chunkShader.fs");
+    chunkShaderProgram = Shader("src/shaders/chunkShader.vs","src/shaders/chunkShader.fs");
     chunkShaderProgram.use();
     chunkShaderProgram.setInt("textureAtlas",0);
 
@@ -302,7 +301,7 @@ bool Renderer::setupCubeOutline(){
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);  
 
-    outLineShaderProgram = Shader("include/shaders/cubeOutlineShader.vs","include/shaders/cubeOutlineShader.fs");
+    outLineShaderProgram = Shader("src/shaders/cubeOutlineShader.vs","src/shaders/cubeOutlineShader.fs");
     return true;
 }
 
@@ -336,7 +335,7 @@ bool Renderer::setup2dRenderer(){
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
     glEnableVertexAttribArray(1);  
 
-    uiTextureShaderProgram = Shader("include/shaders/uiShader.vs","include/shaders/uiShader.fs");
+    uiTextureShaderProgram = Shader("src/shaders/uiShader.vs","src/shaders/uiShader.fs");
     uiTextureShaderProgram.setInt("textureAtlas",0);
 
     return true;
@@ -472,7 +471,7 @@ bool Renderer::setupRectangleRenderer(){
 
     // Maybe change so that we get the pixel position as input
     // and we multiply by an orthographic matrix?
-    rectangleShaderProgram = Shader("include/shaders/rectangleShader.vs","include/shaders/rectangleShader.fs");
+    rectangleShaderProgram = Shader("src/shaders/rectangleShader.vs","src/shaders/rectangleShader.fs");
     return true;
 }
 
