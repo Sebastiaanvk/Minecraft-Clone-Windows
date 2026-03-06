@@ -27,6 +27,7 @@ struct WorldUIData {
 
 struct GameUIData {
     bool paused;
+    float frameRate;
 };
 
 struct RendererUIData {

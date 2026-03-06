@@ -32,6 +32,7 @@ void CustomImGui::renderStart(CameraUIData cameraUIData, WorldUIData worldUIData
             ImGui::Text("Game is paused!");
         else
             ImGui::Text("Game is unpaused!");
+        ImGui::Text("Frame rate:%.1f",gameUIData.frameRate);
         if (ImGui::CollapsingHeader("Camera",ImGuiTreeNodeFlags_DefaultOpen)){
             ImGui::SliderFloat("Camera fov (degrees)",cameraUIData.fovP,1.0f,179.0f);
         }

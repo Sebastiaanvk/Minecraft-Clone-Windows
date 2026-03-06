@@ -31,6 +31,18 @@ void Game::run(){
 
 //        std::this_thread::sleep_for(std::chrono::milliseconds(13)); // This might cause input problems!
         float currentFrame = glfwGetTime();
+        // frameTimeQueue.push(currentFrame);
+        // if(frameTimeQueue.size()>frameTimeQueueLength){
+        //     float timeDiff = currentFrame-frameTimeQueue.front();
+        //     frameTimeQueue.pop();
+        //     frameRate = frameTimeQueueLength/timeDiff;
+        // }
+        nrFramesInSecond += 1;
+        if(currentFrame-lastSecondFrame>1.0f){
+            frameRate = (float)nrFramesInSecond/(currentFrame-lastSecondFrame);
+            lastSecondFrame = currentFrame;
+            nrFramesInSecond = 0;
+        }
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;  
 
@@ -51,9 +63,7 @@ void Game::run(){
 
         camera.update(world.player,alpha);
 
-        GameUIData gameData;
-        gameData.paused = paused;
-        renderer.render(world,camera,gameData);
+        renderer.render(world,camera,getGameUIData());
 
         // std::cout<< world.player.playerLocAsString() << std::endl;
 
@@ -79,4 +89,10 @@ void Game::process_input(){
     world.player.rotate(input_handler.getDX(),input_handler.getDY());
 }
 
+GameUIData Game::getGameUIData(){
+        GameUIData gameData;
+        gameData.paused = paused;
+        gameData.frameRate = frameRate;
+        return gameData;
+}
 

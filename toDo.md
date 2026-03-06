@@ -3,18 +3,15 @@
 
 ## Nu aan werken:
 
-Change the chunk mesh generation with isOpaque instead of isSolid.
-Meer type blokjes toevoegen.
+<!-- Change the chunk mesh generation with isOpaque instead of isSolid. -->
+<!-- Meer type blokjes toevoegen. -->
 
-Change types, solid for when youre not able to walk through it
-opaque for when the block is not transparent.
-And then for the raytracing, we simply need to check whether its not an air block.
-But Im gonna change the raytracing anyways, for entity and hitbox detection and stuff.
+<!-- Change types, solid for when youre not able to walk through it
+opaque for when the block is not transparent. -->
 
 
 Frame rate toevoegen aan ImGui.
 
-Add flowers.
 Chunk rendering and generation rond de speler.
 Physics.
 
@@ -29,6 +26,8 @@ Optional: Rewrite Renderer function so I can understand what the f is going on a
 
 zwarte lijn blijk blokjes weg als ik vanuit een hoek kijk. Ja wat de hek is dit? Its like a circle around the player where you get these lines and de blocks get darker as well.
 
+And then for the raytracing, we simply need to check whether its not an air block.
+But Im gonna change the raytracing anyways, for entity and hitbox detection and stuff.
 
 
 
