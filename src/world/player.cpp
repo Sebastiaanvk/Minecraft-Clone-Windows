@@ -122,5 +122,8 @@ bool Player::placeableBlockSelected(){
     return hotbar[hotbarSelection].occupied;
 }
 BlockID Player::getSelectedBlock(){
-    return hotbar[hotbarSelection].blockId;
+    return hotbar[hotbarSelection].contents;
+}
+const std::array<InventorySlot,9>& Player::getHotbar() const{
+    return hotbar;
 }

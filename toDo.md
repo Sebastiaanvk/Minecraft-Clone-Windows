@@ -3,13 +3,27 @@
 
 ## Nu aan werken:
 
-Remove the include folder and move everything to src
+<!-- Remove the include folder and move everything to src -->
+
+Optional: Rewrite Renderer function so I can understand what the f is going on and its easier to add other stuff.
+
+
 
 Render hotbar blocks
 Frame rate toevoegen aan ImGui.
+
+Meer type blokjes toevoegen.
+
+Chunk rendering and generation rond de speler.
+Physics.
+
+
+
+
 Optional: De hotbar texture naar de texture class sturen voor consistentie.
 Optional: De rendercode mooi encapsulaten zodat de main render functie Heel overzichtelijk wordt.
 Optional: Fix mipmap shizzzle
+Optional: Texture array instead of texture atlas.
 
 zwarte lijn blijk blokjes weg als ik vanuit een hoek kijk. Ja wat de hek is dit? Its like a circle around the player where you get these lines and de blocks get darker as well.
 

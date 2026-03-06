@@ -27,6 +27,10 @@ float TextureAtlas::getTextureSizeWidth(){
     return textureSizeWidth;
 }
 
+glm::vec2 TextureAtlas::getTextureSize(){
+    return glm::vec2(textureSizeWidth,textureSizeHeight);
+}
+
 
 void TextureAtlas::bind(){
     // glActiveTexture(GL_TEXTURE0); // Optional if I want to have multiple textureAtlases simultaneously.

@@ -7,7 +7,8 @@
 #include <blockRegistry.hpp>
 #include <util/loc.h>
 
-
+// Im adding renderable to a lot of the structs in this file
+// Maybe I turn it into a namespace at some point.
  
 // A single side of a block
 struct ChunkMeshElt{
@@ -32,6 +33,11 @@ struct RenderableBlock{
     std::string topTexture;
     std::string sideTexture;
     std::string botTexture;
+};
+
+struct RenderableInventory{
+    BlockID slotContents[9];
+    bool slotOccupied[9];
 };
 
 #endif // RENDERABLE_HPP

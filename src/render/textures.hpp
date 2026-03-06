@@ -26,7 +26,7 @@ public:
     static glm::vec2 getUVCoord(const BlockID& blockID, const FaceType& faceType);
     static float getTextureSizeHeight();
     static float getTextureSizeWidth();
-
+    static glm::vec2 getTextureSize();
 private:
     TextureAtlas() = delete;
     static nlohmann::json jsonAtlasData;

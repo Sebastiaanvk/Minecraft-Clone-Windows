@@ -411,6 +411,24 @@ void Renderer::renderHotbar(const World& world){
     uiTextureShaderProgram.setVec2("textureSize",selectionBoxTextureSize);
     glDrawElements(GL_TRIANGLES,6, GL_UNSIGNED_INT, 0);
 
+    TextureAtlas::bind();
+    RenderableInventory renderableInventory = world.getRenderableInventory();
+    float pixelsTextures = 10.0f; // Just for now. These are the number of pixels of the original hotbar texture. Not actual pixels on the screen.
+    float itemCornerOffset = (20.0f-pixelsTextures)/2; // The squares in the hotbar texture have size 20x20.
+
+    float cornerX = (float)(91-1-itemCornerOffset)/91*loc.x; // The hotbar Texture is 182 pixels wide. There is one extra column on the side.
+    float cornerY = -1.0f+(float)(22-1-itemCornerOffset)/22*hotbarScreenHeight;
+    glm::vec2 itemSize = glm::vec2(pixelsTextures/182*size.x,pixelsTextures/22*size.y);
+    uiTextureShaderProgram.setVec2("size",itemSize);
+    for(int i=0; i<9; i++){
+        if(renderableInventory.slotOccupied[i]){
+            uiTextureShaderProgram.setVec2("loc",glm::vec2(cornerX+(float)i*20/182*size.x,cornerY));
+            uiTextureShaderProgram.setVec2("textureLoc",TextureAtlas::getUVCoord(renderableInventory.slotContents[i],FaceType::Side));
+            uiTextureShaderProgram.setVec2("textureSize",TextureAtlas::getTextureSize());
+            glDrawElements(GL_TRIANGLES,6, GL_UNSIGNED_INT, 0);
+        }
+    }
+
 
     glEnable(GL_DEPTH_TEST);
 }

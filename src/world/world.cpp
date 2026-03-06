@@ -238,7 +238,16 @@ WorldUIData World::getUIData(){
     uiData.tickTimeLengthP = &tickTimeLength;
     return uiData;
 }
+RenderableInventory World::getRenderableInventory() const{
+    RenderableInventory renderableInventory;
 
+    const std::array<InventorySlot,9>& hotbarInventory =  player.getHotbar();
+    for(int i=0; i<9; i++){
+        renderableInventory.slotOccupied[i] = hotbarInventory[i].occupied;
+        renderableInventory.slotContents[i] = hotbarInventory[i].contents;
+    }
+    return renderableInventory;
+}
 
 
 bool World::hasBlockTargeted() const{

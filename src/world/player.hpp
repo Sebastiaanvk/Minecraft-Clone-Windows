@@ -5,6 +5,13 @@
 #include <util/loc.h>
 #include <render/uiData.hpp>
 #include <blockRegistry.hpp>
+#include <array>
+
+struct InventorySlot {
+    bool occupied;
+    BlockID contents;
+    // Add quantity when the time is ripe.
+};
 
 class Player{
 public:
@@ -31,6 +38,8 @@ public:
     bool placeableBlockSelected();
     BlockID getSelectedBlock();
 
+    const std::array<InventorySlot,9>& getHotbar() const;
+
 private:
 
     float playerSpeed = 20.0f;
@@ -45,13 +54,8 @@ private:
     LocFloat pos = glm::vec3(0.0f,128.0f, 0.0f);
     LocFloat lastPos;
     LocFloat forward;
-    struct InventorySlot {
-        bool occupied;
-        BlockID blockId;
-        
-    };
 
-    InventorySlot hotbar[9] = {
+    std::array<InventorySlot,9> hotbar = {{
         {true,BlockID::Dirt},
         {true,BlockID::Gravel},
         {true,BlockID::Stone},
@@ -61,7 +65,7 @@ private:
         {false,BlockID::Air},
         {false,BlockID::Air},
         {false,BlockID::Air}
-    };
+    }};
 };
 
 

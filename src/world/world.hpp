@@ -33,6 +33,8 @@ public:
 
     float tickTimeLength = 0.05f;
     WorldUIData getUIData();
+    RenderableInventory getRenderableInventory() const;
+
 
 private:
     ChunkManager chunkManager;
