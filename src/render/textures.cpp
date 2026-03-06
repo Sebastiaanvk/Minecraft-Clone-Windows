@@ -59,7 +59,7 @@ bool TextureAtlas::setup(){
 
     int  nrChannels;
     unsigned char *data = stbi_load("assets/blockAtlas.png", &atlasWidth, &atlasHeight, &nrChannels, 0); 
-    std::cout << "atlasWidth: " << atlasWidth << ", atlasHeight: " << atlasHeight << std::endl;
+    // std::cout << "atlasWidth: " << atlasWidth << ", atlasHeight: " << atlasHeight << std::endl;
 
     // The atlasWidth and atlasHeight give the number of pixels in the atlas.
     // textureSizeWidth gives the portion of the image that belongs to a single texture.

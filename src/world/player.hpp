@@ -57,12 +57,12 @@ private:
 
     std::array<InventorySlot,9> hotbar = {{
         {true,BlockID::Dirt},
+        {true,BlockID::Grass_Dirt},
         {true,BlockID::Gravel},
         {true,BlockID::Stone},
         {true,BlockID::Bedrock},
-        {false,BlockID::Air},
-        {false,BlockID::Air},
-        {false,BlockID::Air},
+        {true,BlockID::White_Wool},
+        {true,BlockID::Black_Wool},
         {false,BlockID::Air},
         {false,BlockID::Air}
     }};

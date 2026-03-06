@@ -36,6 +36,7 @@ class Chunk{
     std::shared_ptr<RenderableChunkMesh> getMeshPtr();
     BlockID getBlockId(const LocInt& loc) const;
     bool blockIsSolid(const LocInt& loc);
+    bool blockIsOpaque(const LocInt& loc) const;
     void setBlockId(const LocInt& loc,BlockID id);
     bool isDirty();
     void setDirty();

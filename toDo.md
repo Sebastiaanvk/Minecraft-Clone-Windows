@@ -3,17 +3,18 @@
 
 ## Nu aan werken:
 
-<!-- Remove the include folder and move everything to src -->
-
-Optional: Rewrite Renderer function so I can understand what the f is going on and its easier to add other stuff.
-
-
-
-Render hotbar blocks
-Frame rate toevoegen aan ImGui.
-
+Change the chunk mesh generation with isOpaque instead of isSolid.
 Meer type blokjes toevoegen.
 
+Change types, solid for when youre not able to walk through it
+opaque for when the block is not transparent.
+And then for the raytracing, we simply need to check whether its not an air block.
+But Im gonna change the raytracing anyways, for entity and hitbox detection and stuff.
+
+
+Frame rate toevoegen aan ImGui.
+
+Add flowers.
 Chunk rendering and generation rond de speler.
 Physics.
 
@@ -24,6 +25,7 @@ Optional: De hotbar texture naar de texture class sturen voor consistentie.
 Optional: De rendercode mooi encapsulaten zodat de main render functie Heel overzichtelijk wordt.
 Optional: Fix mipmap shizzzle
 Optional: Texture array instead of texture atlas.
+Optional: Rewrite Renderer function so I can understand what the f is going on and its easier to add other stuff.
 
 zwarte lijn blijk blokjes weg als ik vanuit een hoek kijk. Ja wat de hek is dit? Its like a circle around the player where you get these lines and de blocks get darker as well.
 
@@ -142,3 +144,7 @@ snel met een block id en een positie en richting de afstand tot het snijpunt bep
 <!-- Mijn idee: functie die een rechthoek op het scherm output.
 Krijgt een locatie, width and height en een kleur. thats it.IN -->
 <!-- verschillende types blokjes kunnen plaatsen -->
+<!-- Remove the include folder and move everything to src -->
+
+
+<!-- Render hotbar blocks -->

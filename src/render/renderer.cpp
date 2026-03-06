@@ -356,7 +356,7 @@ bool Renderer::setupHotbarTexture(){
     int  nrChannels;
     int atlasWidth,atlasHeight;
     unsigned char *data = stbi_load("assets/minecraftHotbarTexture.png", &atlasWidth, &atlasHeight, &nrChannels, 0); 
-    std::cout << "atlasWidth: " << atlasWidth << ", atlasHeight: " << atlasHeight << std::endl;
+    // std::cout << "atlasWidth: " << atlasWidth << ", atlasHeight: " << atlasHeight << std::endl;
 
     if(data){
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlasWidth, atlasHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);

@@ -2,8 +2,6 @@
 #include <world/chunkManager.hpp>
 
 
-
-
 Chunk::Chunk(FastNoiseLite& noise, const ChunkID& loc, GenerationPars genPars,ChunkManager& chunkManager)
     : chunkManager(chunkManager), chunkLoc({loc.x,0,loc.z})
 {
@@ -25,7 +23,6 @@ Chunk::Chunk(FastNoiseLite& noise, const ChunkID& loc, GenerationPars genPars,Ch
             setBlockId({x,dirtHeight-1,z},BlockID::Grass_Dirt);
         }
     } 
-
 }
 
 BlockID Chunk::getBlockId(const LocInt& loc) const{
@@ -49,6 +46,20 @@ bool Chunk::blockIsSolid(const LocInt& loc){
         return chunkManager.isSolid(newloc);
     }
     return BlockRegistry::is_solid( getBlockId(loc) );
+}
+
+bool Chunk::blockIsOpaque(const LocInt& loc) const{
+    // std::cout << "Inside blockIsSolid" << std::endl;
+    if(loc.y<0||loc.y>=MAXCHUNKY){
+        return false;
+    }
+    if(loc.x<0||loc.z<0||loc.x>=MAXCHUNKX || loc.z>=MAXCHUNKZ ){
+        LocInt newloc = loc+LocInt{chunkLoc.x,0,chunkLoc.z};
+        // std::cout << newloc.x << ", " << newloc.y << ", " << newloc.z << std::endl;
+        // return false;
+        return chunkManager.isOpaque(newloc);
+    }
+    return BlockRegistry::isOpaque( getBlockId(loc) );
 }
 
 bool Chunk::isDirty(){
@@ -83,11 +94,11 @@ void Chunk::update_mesh(){
         // Change later for see through shizzle.
         // std::cout << loc << std::endl;
         // std::cout << loc.x << "," << loc.y << "," << loc.z << std::endl;
-        if(blockIsSolid(loc)){
+        if(blockIsOpaque(loc)){
             for(int i=0; i<6;i++){
                 // std::cout << i << std::endl;
                 LocInt dir = dirs[i];
-                if(!blockIsSolid(loc+dir)){
+                if(!blockIsOpaque(loc+dir)){
                     ChunkMeshElt meshElt;
                     meshElt.corners[0] = chunkLoc + loc + blockSides[i][0];
                     meshElt.corners[1] = chunkLoc + loc + blockSides[i][1];

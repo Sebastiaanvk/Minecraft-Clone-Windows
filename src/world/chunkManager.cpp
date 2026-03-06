@@ -65,8 +65,6 @@ BlockID ChunkManager::checkBlock(const LocInt& loc) const {
 
 bool ChunkManager::isSolid(const LocInt& loc) const {
 
-    // std::cout << "Inside isSolid!" << std::endl;
-
     // ChunkID chunkID = {loc.x- (loc.x%MAXCHUNKX),loc.z- (loc.z%MAXCHUNKZ)};
     ChunkID chunkID = getChunkID(loc);
     if(chunks.count(chunkID)!=0){
@@ -76,6 +74,13 @@ bool ChunkManager::isSolid(const LocInt& loc) const {
 
 }
 
+bool ChunkManager::isOpaque(const LocInt& loc) const {
+    ChunkID chunkID = getChunkID(loc);
+    if(chunks.count(chunkID)!=0){
+        return chunks.at(chunkID)->blockIsOpaque(getLocWithinChunk(loc));
+    }
+    return false;
+}
 
 std::queue<std::shared_ptr<RenderableChunkMesh>> ChunkManager::toRenderableChunkQueue(){
     std::queue<std::shared_ptr<RenderableChunkMesh>> chunkQueue;
