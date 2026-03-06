@@ -1,4 +1,4 @@
-#include <world/chunk.hpp>
+#include <world/chunk.hpp> // Chunk and ChunkManager include each other.
 #include <world/chunkManager.hpp>
 
 constexpr Chunk::GenerationPars generationPars = {
@@ -8,15 +8,21 @@ constexpr Chunk::GenerationPars generationPars = {
 };
 
 
-ChunkManager::ChunkManager(unsigned int seed){
-    noise = FastNoiseLite(seed);
-    const int nr_chunks_side = 20;
-
-    for(int x=-MAXCHUNKX*nr_chunks_side/2; x<MAXCHUNKX*nr_chunks_side/2; x+=MAXCHUNKX){
-        for(int z=-nr_chunks_side/2*MAXCHUNKZ; z<nr_chunks_side/2*MAXCHUNKZ; z+=MAXCHUNKZ){
-            addChunk({x,z});
+void ChunkManager::generateChunks(const LocInt& loc){
+    ChunkID chunkId = getChunkID(loc);
+    for(int dx=-chunkGenerationDistance; dx<=chunkGenerationDistance; dx++){
+        for(int dz=-chunkGenerationDistance; dz<=chunkGenerationDistance; dz++){
+            ChunkID chunkCandidate = {chunkId.x+dx*MAXCHUNKX,chunkId.z+dz*MAXCHUNKZ};
+            if(chunks.count(chunkCandidate)==0){
+                addChunk(chunkCandidate);
+            }
         }
     }
+}
+
+ChunkManager::ChunkManager(unsigned int seed){
+    noise = FastNoiseLite(seed);
+    generateChunks({0,0});
 }
 
 ChunkID ChunkManager::getChunkID(const LocInt& loc) const{
@@ -82,18 +88,26 @@ bool ChunkManager::isOpaque(const LocInt& loc) const {
     return false;
 }
 
-std::queue<std::shared_ptr<RenderableChunkMesh>> ChunkManager::toRenderableChunkQueue(){
+std::queue<std::shared_ptr<RenderableChunkMesh>> ChunkManager::toRenderableChunkQueue( const LocInt& loc){
+    ChunkID chunkId = getChunkID(loc);
     std::queue<std::shared_ptr<RenderableChunkMesh>> chunkQueue;
-    for(auto& c : chunks){
-        if(c.second->isDirty()){
-            c.second->update_mesh();
+    for(int dx=-chunkGenerationDistance; dx<=chunkGenerationDistance; dx++){
+        for(int dz=-chunkGenerationDistance; dz<=chunkGenerationDistance; dz++){
+            ChunkID chunkCandidate = {chunkId.x+dx*MAXCHUNKX,chunkId.z+dz*MAXCHUNKZ};
+            if( chunks[chunkCandidate]->isDirty() ){
+                std::cout << "Updating mesh:\n";
+                auto start = std::chrono::high_resolution_clock::now();
+                chunks[chunkCandidate]->update_mesh();
+                auto end = std::chrono::high_resolution_clock::now();
+                auto ms = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+                std::cout << "Took: " << ms << "microseconds" << std::endl;
+            }
+            chunkQueue.push(chunks[chunkCandidate]->getMeshPtr());
         }
-        chunkQueue.push(c.second->getMeshPtr());
     }
     return chunkQueue;
 }
 
 void ChunkManager::addChunk(const ChunkID& chunkID){
     chunks.try_emplace(chunkID, std::make_unique<Chunk>(noise,chunkID,generationPars, *this));
-
 }

@@ -18,7 +18,7 @@ static constexpr int MAXCHUNKY = 256;
 static constexpr int MAXCHUNKZ = 16;
 static constexpr int CHUNKSIZE = MAXCHUNKX*MAXCHUNKY*MAXCHUNKZ;
 
-class ChunkManager;
+class ChunkManager; // Chunk and ChunkManager include each other.
 
 class Chunk{
     public:

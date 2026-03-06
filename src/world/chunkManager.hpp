@@ -6,19 +6,21 @@
 #include <unordered_map>
 #include <memory>
 #include <queue>
+#include <chrono> // Just for measuring the time it takes to calculate the mesh of a chunk.
 
-class Chunk;
+class Chunk; // Chunk and ChunkManager include each other.
 
 class ChunkManager {
 public:
     ChunkManager(unsigned int seed);
+    void generateChunks(const LocInt& loc);
     BlockID checkBlock(const LocInt& loc) const;
     bool isSolid(const LocInt& loc) const;
     bool isOpaque(const LocInt& loc) const;
     void placeBlock(const LocInt& loc,const BlockID& blockId);
     void deleteBlock(const LocInt& loc);
 
-    std::queue<std::shared_ptr<RenderableChunkMesh>> toRenderableChunkQueue();
+    std::queue<std::shared_ptr<RenderableChunkMesh>> toRenderableChunkQueue( const LocInt& loc);
 
 private:
     ChunkID getChunkID(const LocInt& loc) const;
@@ -26,6 +28,10 @@ private:
     std::unordered_map<ChunkID, std::unique_ptr<Chunk>> chunks;
     FastNoiseLite noise;
     void addChunk(const ChunkID& chunkID);    
+
+    int chunkGenerationDistance = 10; // Currently also the renderDistance;
+    // int renderDistance;
+
 };
 
 #endif //BLOCK_MANAGER_HPP

@@ -14,7 +14,7 @@ World::World(unsigned int seed)
 
 
 std::queue<std::shared_ptr<RenderableChunkMesh>> World::toRenderableChunkQueue(){
-    return chunkManager.toRenderableChunkQueue();
+    return chunkManager.toRenderableChunkQueue(player.getBlockLoc());
 }
 
 
@@ -224,6 +224,7 @@ void World::update(Input_Handler& input_handler){
 
     calculatePlayerTarget();
     // std::cout << "BlockTargeted: " << blockTargeted << ", Location: " << targetedBlock.x << "," << targetedBlock.y << "," << targetedBlock.z << std::endl;  
+    chunkManager.generateChunks(player.getBlockLoc() );
 
 }
 

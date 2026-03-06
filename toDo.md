@@ -72,6 +72,8 @@ See through shizzle
 
 Wereld saven
 
+chunks als chunklets van 16x16x16 en dan als het helemaal leeg is gewoon als een air chunklet opslaan.
+
 
 ## Al gefixt/afgehandeld:
 <!-- input handling hybride:

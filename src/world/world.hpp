@@ -38,7 +38,7 @@ public:
 
 private:
     ChunkManager chunkManager;
-    void addChunk(const ChunkID& chunkID);    
+    // void addChunk(const ChunkID& chunkID);    
 
     bool blockTargeted = false;
     LocInt targetedBlock;

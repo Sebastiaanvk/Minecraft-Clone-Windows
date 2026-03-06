@@ -1,5 +1,5 @@
 #include <world/chunk.hpp>
-#include <world/chunkManager.hpp>
+#include <world/chunkManager.hpp> // Chunk and ChunkManager include each other.
 
 
 Chunk::Chunk(FastNoiseLite& noise, const ChunkID& loc, GenerationPars genPars,ChunkManager& chunkManager)
