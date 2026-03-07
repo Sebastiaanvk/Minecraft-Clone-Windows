@@ -14,7 +14,12 @@ void ChunkManager::generateChunks(const LocInt& loc){
         for(int dz=-chunkGenerationDistance; dz<=chunkGenerationDistance; dz++){
             ChunkID chunkCandidate = {chunkId.x+dx*MAXCHUNKX,chunkId.z+dz*MAXCHUNKZ};
             if(chunks.count(chunkCandidate)==0){
+                std::cout << "Generating chunk:\n";
+                auto start = std::chrono::high_resolution_clock::now();
                 addChunk(chunkCandidate);
+                auto end = std::chrono::high_resolution_clock::now();
+                auto ms = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+                std::cout << "Took: " << ms << " microseconds" << std::endl;
             }
         }
     }
@@ -104,7 +109,7 @@ std::queue<std::shared_ptr<RenderableChunkMesh>> ChunkManager::toRenderableChunk
                 chunks[chunkCandidate]->update_mesh();
                 auto end = std::chrono::high_resolution_clock::now();
                 auto ms = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-                std::cout << "Took: " << ms << "microseconds" << std::endl;
+                std::cout << "Took: " << ms << " microseconds" << std::endl;
             }
             chunkQueue.push(chunks[chunkCandidate]->getMeshPtr());
         }

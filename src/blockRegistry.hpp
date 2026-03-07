@@ -7,6 +7,7 @@
 
 enum FaceType {Side, Top, Bot};
 inline const FaceType faceTypeArr[] = {Side,Side,Top,Bot,Side,Side};
+inline const FaceType faceTypeArrIngoing[] = {Side,Side,Bot,Top,Side,Side};
 
 enum class BlockID : std::uint8_t {
     Air,

@@ -34,6 +34,9 @@ void Chunk::setBlockId(const LocInt& loc,BlockID id){
     dirty = true;
     if(id!=BlockID::Air){
         highestY = std::max(highestY,loc.y);
+        if(loc.x==0 || loc.x==MAXCHUNKX-1 || loc.z==0 || loc.z==MAXCHUNKZ-1){
+            highestYBorder = std::max(highestYBorder,loc.y);
+        }
     }
 }
 
@@ -72,6 +75,9 @@ bool Chunk::isDirty(){
 void Chunk::setDirty(){
     dirty = true;
 }
+int Chunk::getHighestYBorder() const{
+    return highestYBorder;
+}
 
 
 
@@ -99,6 +105,7 @@ void Chunk::update_mesh(){
     const Chunk& nbChunkPosX = chunkManager.getChunkPointer({chunkLoc.x+MAXCHUNKX,chunkLoc.z});
     const Chunk& nbChunkNegZ = chunkManager.getChunkPointer({chunkLoc.x,chunkLoc.z-MAXCHUNKZ});
     const Chunk& nbChunkPosZ = chunkManager.getChunkPointer({chunkLoc.x,chunkLoc.z+MAXCHUNKZ});
+    int maxYToCheck = std::max({highestY,nbChunkNegX.getHighestYBorder(),nbChunkPosX.getHighestYBorder(),nbChunkNegZ.getHighestYBorder(),nbChunkPosZ.getHighestYBorder()});
 
     auto locToIndex = [](int x, int y, int z) {
         return y*MAXCHUNKX*MAXCHUNKZ + z*MAXCHUNKX + x;
@@ -107,41 +114,51 @@ void Chunk::update_mesh(){
         return locInt.y*MAXCHUNKX*MAXCHUNKZ + locInt.z*MAXCHUNKX + locInt.x;
     };
     
-    for(int y=0; y<=highestY; y++){ for(int z=0; z<MAXCHUNKZ; z++){ for(int x=0; x< MAXCHUNKX; x++){
+    for(int y=-1; y<=maxYToCheck+1; y++){ for(int z=0; z<MAXCHUNKZ; z++){ for(int x=0; x< MAXCHUNKX; x++){
         
         // BlockID blockId = chunk[locToIndex(x,y,z)];
         
         // Change later for see through shizzle.
         // if( BlockRegistry::isOpaque(blockId)){
-        if( BlockRegistry::isOpaque(chunk[locToIndex(x,y,z)])){
+        if(y==-1 || y==MAXCHUNKY ||  !BlockRegistry::isOpaque(chunk[locToIndex(x,y,z)])){
             LocInt loc = {x,y,z};
             LocInt realLoc = chunkLoc+loc;
             for(int i=0; i<6;i++){
                 LocInt nb = loc+dirs[i];
-                bool nbOpaque = false;
+                if(nb.y<0||nb.y>=MAXCHUNKY){
+                    continue;
+                }
+                // bool nbOpaque = false;
+                BlockID nbBlockID = BlockID::Air; 
                 if(nb.x==-1){
-                    nbOpaque = BlockRegistry::isOpaque(nbChunkNegX.chunk[locToIndex(MAXCHUNKX-1,loc.y,loc.z)]);
+                    // nbOpaque = BlockRegistry::isOpaque(nbChunkNegX.chunk[locToIndex(MAXCHUNKX-1,loc.y,loc.z)]);
+                    nbBlockID = nbChunkNegX.chunk[locToIndex(MAXCHUNKX-1,loc.y,loc.z)];
                 } else if(nb.x==MAXCHUNKX){
-                    nbOpaque = BlockRegistry::isOpaque(nbChunkPosX.chunk[locToIndex(0,loc.y,loc.z)]);
+                    // nbOpaque = BlockRegistry::isOpaque(nbChunkPosX.chunk[locToIndex(0,loc.y,loc.z)]);
+                    nbBlockID = nbChunkPosX.chunk[locToIndex(0,loc.y,loc.z)];
                 } else if(nb.z==-1){
-                    nbOpaque = BlockRegistry::isOpaque(nbChunkNegZ.chunk[locToIndex(loc.x,loc.y,MAXCHUNKZ-1)]);
+                    // nbOpaque = BlockRegistry::isOpaque(nbChunkNegZ.chunk[locToIndex(loc.x,loc.y,MAXCHUNKZ-1)]);
+                    nbBlockID = nbChunkNegZ.chunk[locToIndex(loc.x,loc.y,MAXCHUNKZ-1)];
                 } else if(nb.z==MAXCHUNKZ){
-                    nbOpaque = BlockRegistry::isOpaque(nbChunkPosZ.chunk[locToIndex(loc.x,loc.y,0)]);
+                    // nbOpaque = BlockRegistry::isOpaque(nbChunkPosZ.chunk[locToIndex(loc.x,loc.y,0)]);
+                    nbBlockID = nbChunkPosZ.chunk[locToIndex(loc.x,loc.y,0)];
                 } else if(nb.y>=0 && nb.y<MAXCHUNKY){
-                    nbOpaque = BlockRegistry::isOpaque(chunk[locToIndexLoc(nb)]);
+                    // nbOpaque = BlockRegistry::isOpaque(chunk[locToIndexLoc(nb)]);
+                    nbBlockID = chunk[locToIndexLoc(nb)];
                 }
 
-                if(!nbOpaque){
+                if(BlockRegistry::isOpaque(nbBlockID)){
                     ChunkMeshElt meshElt;
-                    meshElt.corners[0] = realLoc + blockSides[i][0];
-                    meshElt.corners[1] = realLoc + blockSides[i][1];
-                    meshElt.corners[2] = realLoc + blockSides[i][2];
-                    meshElt.corners[3] = realLoc + blockSides[i][3];
+                    // We had to change the order, because we are now rendering the face of the neighbor instead of the current cube.
+                    meshElt.corners[0] = realLoc + blockSides[i][1];
+                    meshElt.corners[1] = realLoc + blockSides[i][0];
+                    meshElt.corners[2] = realLoc + blockSides[i][3];
+                    meshElt.corners[3] = realLoc + blockSides[i][2];
 
                     // meshElt.blockType = chunk[loc.y*MAXCHUNKX*MAXCHUNKZ + loc.z*MAXCHUNKX + loc.x];
-                    meshElt.blockType = chunk[locToIndex(x,y,z)];
+                    meshElt.blockType = nbBlockID;
                     // meshElt.blockType = blockId;
-                    meshElt.faceType = faceTypeArr[i];
+                    meshElt.faceType = faceTypeArrIngoing[i];
                     
                     //Fix this for general cases!!!!
                     // Also the color was kind of arbitrary

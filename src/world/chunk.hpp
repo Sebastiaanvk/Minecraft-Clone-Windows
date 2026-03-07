@@ -11,6 +11,7 @@
 #include <memory>
 #include <FastNoiseLite.h>
 #include <iostream>
+#include <algorithm>
 
 // If these constants are changed, make sure to update getChunkID and getLockWithinChunk in the chunkManager class
 static constexpr int MAXCHUNKX = 16;
@@ -40,6 +41,7 @@ class Chunk{
     void setBlockId(const LocInt& loc,BlockID id);
     bool isDirty();
     void setDirty();
+    int getHighestYBorder() const;
     std::array<BlockID,CHUNKSIZE> chunk; // This is for faster mesh creation. Kind of ugly though.
 
 
@@ -49,6 +51,7 @@ private:
     bool dirty = true;
     std::shared_ptr<RenderableChunkMesh> meshPtr;
     int highestY = 0;
+    int highestYBorder = 0;
 };
 
 
