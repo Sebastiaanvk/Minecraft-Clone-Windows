@@ -32,6 +32,9 @@ BlockID Chunk::getBlockId(const LocInt& loc) const{
 void Chunk::setBlockId(const LocInt& loc,BlockID id){
     chunk[loc.y*MAXCHUNKX*MAXCHUNKZ + loc.z*MAXCHUNKX + loc.x] = id;
     dirty = true;
+    if(id!=BlockID::Air){
+        highestY = std::max(highestY,loc.y);
+    }
 }
 
 bool Chunk::blockIsSolid(const LocInt& loc){
@@ -87,25 +90,57 @@ const std::vector<std::vector<LocInt>> blockSides = {
 };
 
 void Chunk::update_mesh(){
-    meshPtr->updated =true;
+    // Ok this function goes against all object oriented principles, but I really needed to optimize as much as possible.
+    // Manually check that the array indices are in range!
+    meshPtr->updated = true;
     meshPtr->mesh = {};
-    for(int x=0; x<MAXCHUNKX; x++){ for(int y=0; y<MAXCHUNKY; y++){ for(int z=0; z< MAXCHUNKZ; z++){
-        LocInt loc = {x,y,z};
-        // Change later for see through shizzle.
-        // std::cout << loc << std::endl;
-        // std::cout << loc.x << "," << loc.y << "," << loc.z << std::endl;
-        if(blockIsOpaque(loc)){
-            for(int i=0; i<6;i++){
-                // std::cout << i << std::endl;
-                LocInt dir = dirs[i];
-                if(!blockIsOpaque(loc+dir)){
-                    ChunkMeshElt meshElt;
-                    meshElt.corners[0] = chunkLoc + loc + blockSides[i][0];
-                    meshElt.corners[1] = chunkLoc + loc + blockSides[i][1];
-                    meshElt.corners[2] = chunkLoc + loc + blockSides[i][2];
-                    meshElt.corners[3] = chunkLoc + loc + blockSides[i][3];
+    meshPtr->mesh.reserve(MAXCHUNKX * MAXCHUNKY * MAXCHUNKZ * 6 / 4); // Arbitrary size, not sure if it matters for speed.
+    const Chunk& nbChunkNegX = chunkManager.getChunkPointer({chunkLoc.x-MAXCHUNKX,chunkLoc.z});
+    const Chunk& nbChunkPosX = chunkManager.getChunkPointer({chunkLoc.x+MAXCHUNKX,chunkLoc.z});
+    const Chunk& nbChunkNegZ = chunkManager.getChunkPointer({chunkLoc.x,chunkLoc.z-MAXCHUNKZ});
+    const Chunk& nbChunkPosZ = chunkManager.getChunkPointer({chunkLoc.x,chunkLoc.z+MAXCHUNKZ});
 
-                    meshElt.blockType = getBlockId(loc);
+    auto locToIndex = [](int x, int y, int z) {
+        return y*MAXCHUNKX*MAXCHUNKZ + z*MAXCHUNKX + x;
+    };
+    auto locToIndexLoc = [](const LocInt& locInt) {
+        return locInt.y*MAXCHUNKX*MAXCHUNKZ + locInt.z*MAXCHUNKX + locInt.x;
+    };
+    
+    for(int y=0; y<=highestY; y++){ for(int z=0; z<MAXCHUNKZ; z++){ for(int x=0; x< MAXCHUNKX; x++){
+        
+        // BlockID blockId = chunk[locToIndex(x,y,z)];
+        
+        // Change later for see through shizzle.
+        // if( BlockRegistry::isOpaque(blockId)){
+        if( BlockRegistry::isOpaque(chunk[locToIndex(x,y,z)])){
+            LocInt loc = {x,y,z};
+            LocInt realLoc = chunkLoc+loc;
+            for(int i=0; i<6;i++){
+                LocInt nb = loc+dirs[i];
+                bool nbOpaque = false;
+                if(nb.x==-1){
+                    nbOpaque = BlockRegistry::isOpaque(nbChunkNegX.chunk[locToIndex(MAXCHUNKX-1,loc.y,loc.z)]);
+                } else if(nb.x==MAXCHUNKX){
+                    nbOpaque = BlockRegistry::isOpaque(nbChunkPosX.chunk[locToIndex(0,loc.y,loc.z)]);
+                } else if(nb.z==-1){
+                    nbOpaque = BlockRegistry::isOpaque(nbChunkNegZ.chunk[locToIndex(loc.x,loc.y,MAXCHUNKZ-1)]);
+                } else if(nb.z==MAXCHUNKZ){
+                    nbOpaque = BlockRegistry::isOpaque(nbChunkPosZ.chunk[locToIndex(loc.x,loc.y,0)]);
+                } else if(nb.y>=0 && nb.y<MAXCHUNKY){
+                    nbOpaque = BlockRegistry::isOpaque(chunk[locToIndexLoc(nb)]);
+                }
+
+                if(!nbOpaque){
+                    ChunkMeshElt meshElt;
+                    meshElt.corners[0] = realLoc + blockSides[i][0];
+                    meshElt.corners[1] = realLoc + blockSides[i][1];
+                    meshElt.corners[2] = realLoc + blockSides[i][2];
+                    meshElt.corners[3] = realLoc + blockSides[i][3];
+
+                    // meshElt.blockType = chunk[loc.y*MAXCHUNKX*MAXCHUNKZ + loc.z*MAXCHUNKX + loc.x];
+                    meshElt.blockType = chunk[locToIndex(x,y,z)];
+                    // meshElt.blockType = blockId;
                     meshElt.faceType = faceTypeArr[i];
                     
                     //Fix this for general cases!!!!
@@ -115,15 +150,54 @@ void Chunk::update_mesh(){
                     } else {
                         meshElt.tint[0] = 255,meshElt.tint[1] = 255,meshElt.tint[2] = 255;
                     }
-
                     meshPtr->mesh.push_back(meshElt);
                 }
             }
         }
     }}}
+
     dirty = false;
 }
 
+
+// Before optimizations:
+// void Chunk::update_mesh(){
+//     meshPtr->updated =true;
+//     meshPtr->mesh = {};
+//     for(int x=0; x<MAXCHUNKX; x++){ for(int y=0; y<MAXCHUNKY; y++){ for(int z=0; z< MAXCHUNKZ; z++){
+//         LocInt loc = {x,y,z};
+//         // Change later for see through shizzle.
+//         // std::cout << loc << std::endl;
+//         // std::cout << loc.x << "," << loc.y << "," << loc.z << std::endl;
+//         if(blockIsOpaque(loc)){
+//             for(int i=0; i<6;i++){
+//                 // std::cout << i << std::endl;
+//                 LocInt dir = dirs[i];
+//                 if(!blockIsOpaque(loc+dir)){
+//                     ChunkMeshElt meshElt;
+//                     meshElt.corners[0] = chunkLoc + loc + blockSides[i][0];
+//                     meshElt.corners[1] = chunkLoc + loc + blockSides[i][1];
+//                     meshElt.corners[2] = chunkLoc + loc + blockSides[i][2];
+//                     meshElt.corners[3] = chunkLoc + loc + blockSides[i][3];
+
+//                     meshElt.blockType = getBlockId(loc);
+//                     meshElt.faceType = faceTypeArr[i];
+                    
+//                     //Fix this for general cases!!!!
+//                     // Also the color was kind of arbitrary
+//                     if(meshElt.faceType==FaceType::Top && meshElt.blockType==BlockID::Grass_Dirt){
+//                         meshElt.tint[0] = 190,meshElt.tint[1] = 255,meshElt.tint[2] = 120;
+//                     } else {
+//                         meshElt.tint[0] = 255,meshElt.tint[1] = 255,meshElt.tint[2] = 255;
+//                     }
+
+//                     meshPtr->mesh.push_back(meshElt);
+//                 }
+//             }
+//         }
+//     }}}
+//     dirty = false;
+// }
 
 
 std::shared_ptr<RenderableChunkMesh> Chunk::getMeshPtr(){

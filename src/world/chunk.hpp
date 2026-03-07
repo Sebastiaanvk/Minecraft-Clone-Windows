@@ -40,14 +40,15 @@ class Chunk{
     void setBlockId(const LocInt& loc,BlockID id);
     bool isDirty();
     void setDirty();
+    std::array<BlockID,CHUNKSIZE> chunk; // This is for faster mesh creation. Kind of ugly though.
 
 
 private:
     ChunkManager& chunkManager;
-    std::array<BlockID,CHUNKSIZE> chunk;
     LocInt chunkLoc;
     bool dirty = true;
     std::shared_ptr<RenderableChunkMesh> meshPtr;
+    int highestY = 0;
 };
 
 

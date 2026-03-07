@@ -57,6 +57,10 @@ void ChunkManager::deleteBlock(const LocInt& loc){
         chunks.at(chunkID)->deleteBlock(getLocWithinChunk(loc));
     }
 }
+const Chunk& ChunkManager::getChunkPointer(const ChunkID& chunkID){
+    assert(chunks.count(chunkID));
+    return *chunks.at(chunkID);
+}
 
 BlockID ChunkManager::checkBlock(const LocInt& loc) const {
 
@@ -91,8 +95,8 @@ bool ChunkManager::isOpaque(const LocInt& loc) const {
 std::queue<std::shared_ptr<RenderableChunkMesh>> ChunkManager::toRenderableChunkQueue( const LocInt& loc){
     ChunkID chunkId = getChunkID(loc);
     std::queue<std::shared_ptr<RenderableChunkMesh>> chunkQueue;
-    for(int dx=-chunkGenerationDistance; dx<=chunkGenerationDistance; dx++){
-        for(int dz=-chunkGenerationDistance; dz<=chunkGenerationDistance; dz++){
+    for(int dx=-renderDistance; dx<=renderDistance; dx++){
+        for(int dz=-renderDistance; dz<=renderDistance; dz++){
             ChunkID chunkCandidate = {chunkId.x+dx*MAXCHUNKX,chunkId.z+dz*MAXCHUNKZ};
             if( chunks[chunkCandidate]->isDirty() ){
                 std::cout << "Updating mesh:\n";

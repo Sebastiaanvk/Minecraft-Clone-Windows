@@ -9,10 +9,11 @@
 <!-- Change types, solid for when youre not able to walk through it
 opaque for when the block is not transparent. -->
 
+Fix the mesh creation times!
+So either optimize the process, do it in parallel or do queue for mesh creation and then spread it over multiple ticks.
+Right now Im considering doing the queue thing first(shouldnt be too hard) and obviously speeding up the process for a single mesh.
+Ok another idea: checking the six directions of non opaque blocks.
 
-Frame rate toevoegen aan ImGui.
-
-Chunk rendering and generation rond de speler.
 Physics.
 
 
@@ -37,12 +38,6 @@ Bomen toevoegen.
 
 
 
-### Inventory
-
-### Chunks rond speler rednerern
-Chunks spawnen rond de speler?
-Uitzoeken wie verantwoordelijk is voor het bijhouden van welk chunks we wel en niet renderen.(world of chunkManager?)
-De world checkt welke chunks in range van de player zijn.
 
 ### Entitities
 
@@ -149,3 +144,11 @@ Krijgt een locatie, width and height en een kleur. thats it.IN -->
 
 
 <!-- Render hotbar blocks -->
+
+<!-- ### Chunks rond speler rednerern
+Chunks spawnen rond de speler?
+Uitzoeken wie verantwoordelijk is voor het bijhouden van welk chunks we wel en niet renderen.(world of chunkManager?)
+De world checkt welke chunks in range van de player zijn. -->
+<!-- Frame rate toevoegen aan ImGui.
+
+Chunk rendering and generation rond de speler. -->
