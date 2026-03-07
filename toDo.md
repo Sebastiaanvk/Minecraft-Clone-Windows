@@ -3,11 +3,14 @@
 
 ## Nu aan werken:
 
-<!-- Change the chunk mesh generation with isOpaque instead of isSolid. -->
-<!-- Meer type blokjes toevoegen. -->
 
-<!-- Change types, solid for when youre not able to walk through it
-opaque for when the block is not transparent. -->
+
+chunk generation queue
+
+mesh render queue
+
+parallelization for both.
+
 
 Fix the mesh creation times!
 So either optimize the process, do it in parallel or do queue for mesh creation and then spread it over multiple ticks.
@@ -152,3 +155,9 @@ De world checkt welke chunks in range van de player zijn. -->
 <!-- Frame rate toevoegen aan ImGui.
 
 Chunk rendering and generation rond de speler. -->
+
+<!-- Change the chunk mesh generation with isOpaque instead of isSolid. -->
+<!-- Meer type blokjes toevoegen. -->
+
+<!-- Change types, solid for when youre not able to walk through it
+opaque for when the block is not transparent. -->
