@@ -5,9 +5,9 @@
 #include <string>
 #include <cstdint>
 
-enum FaceType {Side, Top, Bot};
-inline const FaceType faceTypeArr[] = {Side,Side,Top,Bot,Side,Side};
-inline const FaceType faceTypeArrIngoing[] = {Side,Side,Bot,Top,Side,Side};
+enum class FaceType : std::uint8_t {Side, Top, Bot};
+inline const FaceType faceTypeArr[] = {FaceType::Side,FaceType::Side,FaceType::Top,FaceType::Bot,FaceType::Side,FaceType::Side};
+inline const FaceType faceTypeArrIngoing[] = {FaceType::Side,FaceType::Side,FaceType::Bot,FaceType::Top,FaceType::Side,FaceType::Side};
 
 enum class BlockID : std::uint8_t {
     Air,
@@ -103,7 +103,7 @@ private:
         true,
         true,
         "oak_log.png",
-        "oal_log_top.png",
+        "oak_log_top.png",
         "oak_log_top.png"
     }
     }};

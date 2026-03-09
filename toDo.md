@@ -3,27 +3,6 @@
 
 ## Nu aan werken:
 
-Add a queue to the renderer class, so it doesnt process all new meshes at the same time.
-But instead a couple per game frame.
-Ok so we add a variable that gives the max amount of chunks to process per frame.
-We need to be pretty careful about how we do it though. For example, we always want to do the chunks that are closest to us.
-We could use a binary search tree that orders on the distance to the player and then take the chunks closest.
-Should be very fast.
-There are some caveats though. WE dont want to add things to the queue multiple times and we should remove things that are out of range.
-Ok so what we could do, is that each frame, we loop through what we need to render and then we just draw all the things that we 
-
-
-Wait lets restart. We have a range that indicates which chunks should be rendered ideally.
-of these, there are some that dont have a proper mesh yet. We throw these away, we dont even send them to the renderer.
-So the world class actually sends a queue of chunks who are in range and have a proper chunk mesh.
-Of these, some have the mesh loaded into the gpu already, some have a mesh loaded into the gpu, but its an old version,
-and some need to load the mesh to the gpu.
-The ones who have the proper gpu loaded already, we should just draw for sure.
-then for the closest ones, we update or add the new mesh to the gpu and render them.
-This should be a limit per frame, except maybe at the start.(we can add a bool parameter to the render function that says whether we should render all or not)
-Then we have a bunch of chunkIDs for chunks with a proper mesh that we should load in.
-We order these, by for example putting them in a vector and sorting by distance to the player.
-Take the chunks closest, update or make the chunk vbo and set the updated flags to false. This is a bool that only the renderer can set to false.
 
 
 
@@ -37,12 +16,13 @@ Physics.
 
 
 
-Optional: De hotbar texture naar de texture class sturen voor consistentie.
-Optional: De rendercode mooi encapsulaten zodat de main render functie Heel overzichtelijk wordt.
-Optional: Fix mipmap shizzzle
-Optional: Texture array instead of texture atlas.
-Optional: Rewrite Renderer function so I can understand what the f is going on and its easier to add other stuff.
-Optional: tick delay voor muis ingedrukt houden, maar geen delay voor muis spammen!
+- Optional (Optimization): Change the render mesh to use local coordinates, so we can use uint_8. Then in the shader, we can add the chunkID location in parallel.
+- Optional (Optimization): Change the renderQueue function to give, for example, raw pointers, and to maybe preserve information better. Like we can actually check if we move to a new chunk and then remove the exact ones or something. Hmmm not sure if that works though. lets see.
+- Optional (Cleaner Code): De hotbar texture naar de texture class sturen voor consistentie.
+- Optional (Cleaner Code): De rendercode mooi encapsulaten zodat de main render functie Heel overzichtelijk wordt.
+- Optional: Fix mipmap shizzzle
+- Optional: Texture array instead of texture atlas.
+- Optional: tick delay voor muis ingedrukt houden, maar geen delay voor muis spammen!
 
 
 And then for the raytracing, we simply need to check whether its not an air block.
@@ -234,3 +214,25 @@ parallelization for both.
 Changing rendering distance. -->
 
 <!-- Look into: the game crashed when I was placing blocks at the top of the chunk. What happens when you try to place above the max Y? -->
+
+<!-- Add a queue to the renderer class, so it doesnt process all new meshes at the same time.
+But instead a couple per game frame.
+Ok so we add a variable that gives the max amount of chunks to process per frame.
+We need to be pretty careful about how we do it though. For example, we always want to do the chunks that are closest to us.
+We could use a binary search tree that orders on the distance to the player and then take the chunks closest.
+Should be very fast.
+There are some caveats though. WE dont want to add things to the queue multiple times and we should remove things that are out of range.
+Ok so what we could do, is that each frame, we loop through what we need to render and then we just draw all the things that we 
+
+
+Wait lets restart. We have a range that indicates which chunks should be rendered ideally.
+of these, there are some that dont have a proper mesh yet. We throw these away, we dont even send them to the renderer.
+So the world class actually sends a queue of chunks who are in range and have a proper chunk mesh.
+Of these, some have the mesh loaded into the gpu already, some have a mesh loaded into the gpu, but its an old version,
+and some need to load the mesh to the gpu.
+The ones who have the proper gpu loaded already, we should just draw for sure.
+then for the closest ones, we update or add the new mesh to the gpu and render them.
+This should be a limit per frame, except maybe at the start.(we can add a bool parameter to the render function that says whether we should render all or not)
+Then we have a bunch of chunkIDs for chunks with a proper mesh that we should load in.
+We order these, by for example putting them in a vector and sorting by distance to the player.
+Take the chunks closest, update or make the chunk vbo and set the updated flags to false. This is a bool that only the renderer can set to false. -->

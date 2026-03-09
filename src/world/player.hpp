@@ -61,7 +61,7 @@ private:
         {true,BlockID::Grass_Dirt},
         {true,BlockID::Gravel},
         {true,BlockID::Stone},
-        {true,BlockID::Bedrock},
+        {true,BlockID::Oak_Log},
         {true,BlockID::White_Wool},
         {true,BlockID::Black_Wool},
         {false,BlockID::Air},

@@ -27,6 +27,7 @@ void Game::run(){
     }
 
     while( !glfwWindowShouldClose(renderer.getWindow()) ){
+        std::cout<< "\nNew game loop:\n";
 
 //        std::this_thread::sleep_for(std::chrono::milliseconds(13)); // This might cause input problems!
         float currentFrame = glfwGetTime();
