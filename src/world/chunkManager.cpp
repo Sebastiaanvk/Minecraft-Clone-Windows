@@ -8,21 +8,46 @@ constexpr Chunk::GenerationPars generationPars = {
 };
 
 
-void ChunkManager::generateChunks(const LocInt& loc){
+
+void ChunkManager::generateChunks(const LocInt& loc, int distance){
     ChunkID chunkId = getChunkID(loc);
-    for(int dx=-chunkGenerationDistance; dx<=chunkGenerationDistance; dx++){
-        for(int dz=-chunkGenerationDistance; dz<=chunkGenerationDistance; dz++){
+    for(int dx=-distance; dx<=distance; dx++){
+        for(int dz=-distance; dz<=distance; dz++){
             ChunkID chunkCandidate = {chunkId.x+dx*MAXCHUNKX,chunkId.z+dz*MAXCHUNKZ};
             if(chunks.count(chunkCandidate)==0){
-                std::cout << "Generating chunk:\n";
-                auto start = std::chrono::high_resolution_clock::now();
+                // std::cout << "Generating chunk:\n";
+                // auto start = std::chrono::high_resolution_clock::now();
                 addChunk(chunkCandidate);
-                auto end = std::chrono::high_resolution_clock::now();
-                auto ms = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-                std::cout << "Took: " << ms << " microseconds" << std::endl;
+                chunks[chunkCandidate]->generateChunk();
+                // auto end = std::chrono::high_resolution_clock::now();
+                // auto ms = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+                // std::cout << "Took: " << ms << " microseconds" << std::endl;
             }
         }
     }
+}
+
+void ChunkManager::generateChunks(const LocInt& loc){
+    generateChunks(loc,chunkGenerationDistance);
+}
+
+
+void ChunkManager::generateChunksAsync(const LocInt& loc, int distance){
+    ChunkID chunkId = getChunkID(loc);
+    for(int dx=-distance; dx<=distance; dx++){
+        for(int dz=-distance; dz<=distance; dz++){
+            ChunkID chunkCandidate = {chunkId.x+dx*MAXCHUNKX,chunkId.z+dz*MAXCHUNKZ};
+            if(chunks.count(chunkCandidate)==0){
+                addChunk(chunkCandidate);
+                // To do: add the chunk generation in async here!
+                futureDump.push_back(std::async(std::launch::async, &Chunk::generateChunk, chunks.at(chunkCandidate).get()));
+            }
+        }
+    }
+}
+
+void ChunkManager::generateChunksAsync(const LocInt& loc){
+    generateChunksAsync(loc,chunkGenerationDistance);
 }
 
 ChunkManager::ChunkManager(unsigned int seed){
@@ -70,6 +95,9 @@ void ChunkManager::deleteBlock(const LocInt& loc){
     }
 }
 const Chunk& ChunkManager::getChunkPointer(const ChunkID& chunkID){
+    if(chunks.count(chunkID)==0){
+        std::cout << "ChunkId not in chunks: " << chunkID.x << "," << chunkID.z << std::endl;
+    }
     assert(chunks.count(chunkID));
     return *chunks.at(chunkID);
 }
@@ -104,26 +132,83 @@ bool ChunkManager::isOpaque(const LocInt& loc) const {
     return false;
 }
 
+void ChunkManager::calculateMeshesAsync(const LocInt& loc,int distance){
+    ChunkID chunkId = getChunkID(loc);
+    std::queue<std::shared_ptr<RenderableChunkMesh>> chunkQueue;
+    for(int dx=-distance; dx<=distance; dx++){
+        for(int dz=-distance; dz<=distance; dz++){
+            ChunkID chunkCandidate = {chunkId.x+dx*MAXCHUNKX,chunkId.z+dz*MAXCHUNKZ};
+            assert(chunks.count(chunkCandidate));
+            if(chunks[chunkCandidate]->isGenerated()){
+                if( chunks[chunkCandidate]->isDirty() && neighborsGenerated(chunkCandidate) && !chunks[chunkCandidate]->getCalculatingMeshFlag()){
+                    // std::cout<< "Mesh creation asynchronously!" << std::endl;
+                    chunks[chunkCandidate]->setCalculatingMeshFlagTrue();
+                    Chunk* nbChunkNegX = chunks.at(chunkCandidate+nbDiffs[0]).get();
+                    Chunk* nbChunkPosX = chunks.at(chunkCandidate+nbDiffs[1]).get();
+                    Chunk* nbChunkNegZ = chunks.at(chunkCandidate+nbDiffs[2]).get();
+                    Chunk* nbChunkPosZ = chunks.at(chunkCandidate+nbDiffs[3]).get();
+
+                    futureDump.push_back(std::async(std::launch::async, &Chunk::update_mesh,chunks.at(chunkCandidate).get(),nbChunkNegX,nbChunkPosX,nbChunkNegZ,nbChunkPosZ));
+                }
+            }
+        }
+    }
+}
+
+void ChunkManager::calculateMeshesAsync(const LocInt& loc){
+    calculateMeshesAsync(loc,renderDistance);
+}
+
+void ChunkManager::calculateMeshes(const LocInt& loc, int distance){
+    ChunkID chunkId = getChunkID(loc);
+    std::queue<std::shared_ptr<RenderableChunkMesh>> chunkQueue;
+    for(int dx=-distance; dx<=distance; dx++){
+        for(int dz=-distance; dz<=distance; dz++){
+            ChunkID chunkCandidate = {chunkId.x+dx*MAXCHUNKX,chunkId.z+dz*MAXCHUNKZ};
+            assert(chunks.count(chunkCandidate));
+            if(chunks[chunkCandidate]->isGenerated()){
+                if( chunks[chunkCandidate]->isDirty() && neighborsGenerated(chunkCandidate) && !chunks[chunkCandidate]->getCalculatingMeshFlag()){
+                    // std::cout<< "Mesh creation in main thread!" << std::endl;
+                    chunks[chunkCandidate]->setCalculatingMeshFlagTrue();
+                    Chunk* nbChunkNegX = chunks.at(chunkCandidate+nbDiffs[0]).get();
+                    Chunk* nbChunkPosX = chunks.at(chunkCandidate+nbDiffs[1]).get();
+                    Chunk* nbChunkNegZ = chunks.at(chunkCandidate+nbDiffs[2]).get();
+                    Chunk* nbChunkPosZ = chunks.at(chunkCandidate+nbDiffs[3]).get();
+                    chunks[chunkCandidate]->update_mesh(nbChunkNegX,nbChunkPosX,nbChunkNegZ,nbChunkPosZ);
+                }
+            }
+        }
+    }
+}
+
+void ChunkManager::calculateMeshes(const LocInt& loc){
+    calculateMeshes(loc,renderDistance);
+}
+
 std::queue<std::shared_ptr<RenderableChunkMesh>> ChunkManager::toRenderableChunkQueue( const LocInt& loc){
     ChunkID chunkId = getChunkID(loc);
     std::queue<std::shared_ptr<RenderableChunkMesh>> chunkQueue;
     for(int dx=-renderDistance; dx<=renderDistance; dx++){
         for(int dz=-renderDistance; dz<=renderDistance; dz++){
             ChunkID chunkCandidate = {chunkId.x+dx*MAXCHUNKX,chunkId.z+dz*MAXCHUNKZ};
-            if( chunks[chunkCandidate]->isDirty() ){
-                std::cout << "Updating mesh:\n";
-                auto start = std::chrono::high_resolution_clock::now();
-                chunks[chunkCandidate]->update_mesh();
-                auto end = std::chrono::high_resolution_clock::now();
-                auto ms = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-                std::cout << "Took: " << ms << " microseconds" << std::endl;
+            assert(chunks.count(chunkCandidate));
+            if( !chunks[chunkCandidate]->isDirty() && !chunks[chunkCandidate]->getCalculatingMeshFlag()){
+                chunkQueue.push(chunks[chunkCandidate]->getMeshPtr());
             }
-            chunkQueue.push(chunks[chunkCandidate]->getMeshPtr());
         }
     }
     return chunkQueue;
 }
 
 void ChunkManager::addChunk(const ChunkID& chunkID){
-    chunks.try_emplace(chunkID, std::make_unique<Chunk>(noise,chunkID,generationPars, *this));
+    chunks.try_emplace(chunkID, std::make_unique<Chunk>(chunkID, *this, &generationPars, noise));
+}
+bool ChunkManager::neighborsGenerated(const ChunkID& chunkID){
+    for( int i=0; i<4; i++){
+        ChunkID nb = chunkID + nbDiffs[i];
+        if( chunks.count(nb)==0 || !chunks[nb]->isGenerated()){
+            return false;
+        }
+    }
+    return chunks[chunkID]->isGenerated();
 }

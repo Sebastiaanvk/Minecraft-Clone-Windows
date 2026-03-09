@@ -21,12 +21,12 @@ class World {
 public:
     // World();
     World(unsigned int seed);
+    void update(Input_Handler& input_handler);
 
     std::queue<std::shared_ptr<RenderableChunkMesh>> toRenderableChunkQueue();
     Player player;
     void deleteTarget();
     void placeBlock();
-    void update(Input_Handler& input_handler);
     bool hasBlockTargeted() const;
     LocInt getTargetedBlock() const;
     int getHotbarSelection() const;
@@ -44,10 +44,9 @@ private:
     LocInt targetedBlock;
     LocInt placementCandidate;
     void calculatePlayerTarget() ;
+    void updatePlayerLocation(Input_Handler& input_handler);
     int tick = 0;
     int ticksBetweenBlockManipulation = 6;
-
-
 };
 
 #endif //MODEL_HPP

@@ -164,7 +164,7 @@ void Renderer::render(World& world, Camera& camera, GameUIData gameData){
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
     glm::mat4 projection;
-    projection = glm::perspective(glm::radians(camera.getFov()),  (float)width / (float)height, 0.1f, 300.0f);
+    projection = glm::perspective(glm::radians(camera.getFov()),  (float)width / (float)height, 0.1f, projectionDistance);
 
     // Set the view and projection matrices to the right values in the chunk shader program
     chunkShaderProgram.use();
@@ -249,6 +249,7 @@ void Renderer::shutDown(){
 
 RendererUIData Renderer::getRendererUIData(){
     RendererUIData rendererUIData;
+    rendererUIData.projectionDistanceP = &projectionDistance;
     rendererUIData.textureMarginP = &textureMargin;
     rendererUIData.localOutlineOffsetP = &localOutlineOffset;
     rendererUIData.localOutlineWidthP = &localOutlineWidth;

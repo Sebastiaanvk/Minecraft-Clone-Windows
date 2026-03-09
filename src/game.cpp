@@ -53,7 +53,14 @@ void Game::run(){
         timeAccumulator += deltaTime;
         while(timeAccumulator>=world.tickTimeLength){
             if(!paused){
+                auto start = std::chrono::high_resolution_clock::now();
+
                 world.update(input_handler);        
+
+                auto end = std::chrono::high_resolution_clock::now();
+                auto ms = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+                // std::cout << "World update took: " << ms << " microseconds" << std::endl;;
+
             }
             timeAccumulator -= world.tickTimeLength;
         }
@@ -63,9 +70,15 @@ void Game::run(){
 
         camera.update(world.player,alpha);
 
+        auto start = std::chrono::high_resolution_clock::now();
+
         renderer.render(world,camera,getGameUIData());
 
-        // std::cout<< world.player.playerLocAsString() << std::endl;
+        auto end = std::chrono::high_resolution_clock::now();
+        auto ms = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+        // if(ms>20000)
+        //     std::cout << "The render method took: " << ms << " microseconds" << std::endl;;
+
 
     }
     renderer.shutDown();

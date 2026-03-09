@@ -31,6 +31,7 @@ struct GameUIData {
 };
 
 struct RendererUIData {
+    float* projectionDistanceP;
     float* textureMarginP;
     float* localOutlineOffsetP;
     float* localOutlineWidthP;

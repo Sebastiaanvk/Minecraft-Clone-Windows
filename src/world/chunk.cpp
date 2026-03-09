@@ -1,28 +1,31 @@
 #include <world/chunk.hpp>
 #include <world/chunkManager.hpp> // Chunk and ChunkManager include each other.
 
-
-Chunk::Chunk(FastNoiseLite& noise, const ChunkID& loc, GenerationPars genPars,ChunkManager& chunkManager)
-    : chunkManager(chunkManager), chunkLoc({loc.x,0,loc.z})
+Chunk::Chunk(const ChunkID& loc, ChunkManager& chunkManager, const GenerationPars* generationParsP,  FastNoiseLite fastNoiseLite)
+    : chunkManager(chunkManager), chunkLoc({loc.x,0,loc.z}), genParsP(generationParsP), noise(fastNoiseLite)
 {
     meshPtr = std::make_shared<RenderableChunkMesh>();
     meshPtr->chunkId = loc;
     // chunkLoc = {loc.x,0,loc.z};
+}
+
+void Chunk::generateChunk(){
     for(int i=0; i<CHUNKSIZE; i++){
         chunk[i] = BlockID::Air;
     }
     for(int x=0; x<MAXCHUNKX; x++){
         for(int z=0; z<MAXCHUNKZ; z++){
-            int dirtHeight = genPars.expected_dirt_height+ genPars.dirt_height_amplitude* noise.GetNoise((float)(x+loc.x),(float)(z+loc.z));
-            for(int y=0; y<genPars.bedrock_height; y++){
+            int dirtHeight = genParsP->expected_dirt_height+ genParsP->dirt_height_amplitude* noise.GetNoise((float)(x+chunkLoc.x),(float)(z+chunkLoc.z));
+            for(int y=0; y<genParsP->bedrock_height; y++){
                 setBlockId({x,y,z}, BlockID::Bedrock);
             }
-            for(int y=genPars.bedrock_height; y<dirtHeight-1; y++){
+            for(int y=genParsP->bedrock_height; y<dirtHeight-1; y++){
                 setBlockId({x,y,z}, BlockID::Dirt);
             }
             setBlockId({x,dirtHeight-1,z},BlockID::Grass_Dirt);
         }
     } 
+    chunkGeneratedFlag = true;
 }
 
 BlockID Chunk::getBlockId(const LocInt& loc) const{
@@ -31,7 +34,7 @@ BlockID Chunk::getBlockId(const LocInt& loc) const{
 
 void Chunk::setBlockId(const LocInt& loc,BlockID id){
     chunk[loc.y*MAXCHUNKX*MAXCHUNKZ + loc.z*MAXCHUNKX + loc.x] = id;
-    dirty = true;
+    dirtyFlag = true;
     if(id!=BlockID::Air){
         highestY = std::max(highestY,loc.y);
         if(loc.x==0 || loc.x==MAXCHUNKX-1 || loc.z==0 || loc.z==MAXCHUNKZ-1){
@@ -69,12 +72,23 @@ bool Chunk::blockIsOpaque(const LocInt& loc) const{
 }
 
 bool Chunk::isDirty(){
-    return dirty;
+    return dirtyFlag;
 }
 
 void Chunk::setDirty(){
-    dirty = true;
+    dirtyFlag = true;
 }
+
+
+bool Chunk::getCalculatingMeshFlag(){
+    return calculatingMeshFlag;
+}
+
+void Chunk::setCalculatingMeshFlagTrue(){
+    calculatingMeshFlag = true;
+}
+
+
 int Chunk::getHighestYBorder() const{
     return highestYBorder;
 }
@@ -95,17 +109,18 @@ const std::vector<std::vector<LocInt>> blockSides = {
     {{0,0,0},{1,0,0},{1,1,0},{0,1,0}},
 };
 
-void Chunk::update_mesh(){
+void Chunk::update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ, Chunk* nbChunkPosZ){
     // Ok this function goes against all object oriented principles, but I really needed to optimize as much as possible.
     // Manually check that the array indices are in range!
-    meshPtr->updated = true;
     meshPtr->mesh = {};
-    meshPtr->mesh.reserve(MAXCHUNKX * MAXCHUNKY * MAXCHUNKZ * 6 / 4); // Arbitrary size, not sure if it matters for speed.
-    const Chunk& nbChunkNegX = chunkManager.getChunkPointer({chunkLoc.x-MAXCHUNKX,chunkLoc.z});
-    const Chunk& nbChunkPosX = chunkManager.getChunkPointer({chunkLoc.x+MAXCHUNKX,chunkLoc.z});
-    const Chunk& nbChunkNegZ = chunkManager.getChunkPointer({chunkLoc.x,chunkLoc.z-MAXCHUNKZ});
-    const Chunk& nbChunkPosZ = chunkManager.getChunkPointer({chunkLoc.x,chunkLoc.z+MAXCHUNKZ});
-    int maxYToCheck = std::max({highestY,nbChunkNegX.getHighestYBorder(),nbChunkPosX.getHighestYBorder(),nbChunkNegZ.getHighestYBorder(),nbChunkPosZ.getHighestYBorder()});
+    // meshPtr->mesh.reserve(MAXCHUNKX * MAXCHUNKY * MAXCHUNKZ * 6 / 4); // Arbitrary size, not sure if it matters for speed.
+
+    // const Chunk& nbChunkNegX = chunkManager.getChunkPointer({chunkLoc.x-MAXCHUNKX,chunkLoc.z});
+    // const Chunk&  nbChunkPosX= chunkManager.getChunkPointer({chunkLoc.x+MAXCHUNKX,chunkLoc.z});
+    // const Chunk& nbChunkNegZ = chunkManager.getChunkPointer({chunkLoc.x,chunkLoc.z-MAXCHUNKZ});
+    // const Chunk& nbChunkPosZ = chunkManager.getChunkPointer({chunkLoc.x,chunkLoc.z+MAXCHUNKZ});
+
+    int maxYToCheck = std::max({highestY,nbChunkNegX->getHighestYBorder(),nbChunkPosX->getHighestYBorder(),nbChunkNegZ->getHighestYBorder(),nbChunkPosZ->getHighestYBorder()});
 
     auto locToIndex = [](int x, int y, int z) {
         return y*MAXCHUNKX*MAXCHUNKZ + z*MAXCHUNKX + x;
@@ -132,16 +147,16 @@ void Chunk::update_mesh(){
                 BlockID nbBlockID = BlockID::Air; 
                 if(nb.x==-1){
                     // nbOpaque = BlockRegistry::isOpaque(nbChunkNegX.chunk[locToIndex(MAXCHUNKX-1,loc.y,loc.z)]);
-                    nbBlockID = nbChunkNegX.chunk[locToIndex(MAXCHUNKX-1,loc.y,loc.z)];
+                    nbBlockID = nbChunkNegX->chunk[locToIndex(MAXCHUNKX-1,loc.y,loc.z)];
                 } else if(nb.x==MAXCHUNKX){
                     // nbOpaque = BlockRegistry::isOpaque(nbChunkPosX.chunk[locToIndex(0,loc.y,loc.z)]);
-                    nbBlockID = nbChunkPosX.chunk[locToIndex(0,loc.y,loc.z)];
+                    nbBlockID = nbChunkPosX->chunk[locToIndex(0,loc.y,loc.z)];
                 } else if(nb.z==-1){
                     // nbOpaque = BlockRegistry::isOpaque(nbChunkNegZ.chunk[locToIndex(loc.x,loc.y,MAXCHUNKZ-1)]);
-                    nbBlockID = nbChunkNegZ.chunk[locToIndex(loc.x,loc.y,MAXCHUNKZ-1)];
+                    nbBlockID = nbChunkNegZ->chunk[locToIndex(loc.x,loc.y,MAXCHUNKZ-1)];
                 } else if(nb.z==MAXCHUNKZ){
                     // nbOpaque = BlockRegistry::isOpaque(nbChunkPosZ.chunk[locToIndex(loc.x,loc.y,0)]);
-                    nbBlockID = nbChunkPosZ.chunk[locToIndex(loc.x,loc.y,0)];
+                    nbBlockID = nbChunkPosZ->chunk[locToIndex(loc.x,loc.y,0)];
                 } else if(nb.y>=0 && nb.y<MAXCHUNKY){
                     // nbOpaque = BlockRegistry::isOpaque(chunk[locToIndexLoc(nb)]);
                     nbBlockID = chunk[locToIndexLoc(nb)];
@@ -173,7 +188,9 @@ void Chunk::update_mesh(){
         }
     }}}
 
-    dirty = false;
+    dirtyFlag = false;
+    calculatingMeshFlag = false;
+    meshPtr->updated = true;
 }
 
 
@@ -218,11 +235,12 @@ void Chunk::update_mesh(){
 
 
 std::shared_ptr<RenderableChunkMesh> Chunk::getMeshPtr(){
-    if(dirty){
-        update_mesh();
-    } 
+    assert(!dirtyFlag);
     return meshPtr;
 }
 
+bool Chunk::isGenerated(){
+    return chunkGeneratedFlag;
+}
 
 

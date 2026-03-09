@@ -129,6 +129,11 @@ inline LocInt posToBlockLoc(const LocFloat& loc){
 
 typedef Loc2 ChunkID;
 
+inline ChunkID operator+(const ChunkID& chunkID1, const ChunkID& chunkID2){
+    return {chunkID1.x+chunkID2.x, chunkID1.z+chunkID2.z};
+}
+
+
 const glm::vec3 UP = {0.0f,1.0f,0.0f};
 
 

@@ -43,6 +43,10 @@ private:
         glm::vec2 uv;
         uint8_t tint[4];
     };
+    
+    float projectionDistance = 500.0f;
+    float textureMargin = 0.005f;
+
 
     GLFWwindow* window;
     Shader chunkShaderProgram;
@@ -60,8 +64,8 @@ private:
     unsigned int VAORectangle;
      
     bool showGameData = true;
-    float textureMargin = 0.005f;
     float hotbarWidthPortion = 0.7f;
+
 
     float crossHairLength = 0.05f; //These ratios are with respect to the height of the window.
     float crossHairWidth = 0.005f;

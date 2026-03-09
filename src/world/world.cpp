@@ -2,16 +2,68 @@
 
 
 
-// World::World(){
-
-// }
-
 World::World(unsigned int seed)
     : chunkManager(seed),player()
 {
+    chunkManager.generateChunks(player.getBlockLoc(),7);
+    chunkManager.calculateMeshes(player.getBlockLoc(),5);
 }
 
 
+void World::update(Input_Handler& input_handler){
+
+    tick += 1;
+    updatePlayerLocation(input_handler);
+
+    chunkManager.calculateMeshesAsync(player.getBlockLoc());
+    chunkManager.generateChunksAsync(player.getBlockLoc() );
+
+    if(input_handler.key_down(Key::LEFT_MOUSE_BUTTON)){
+        deleteTarget();
+    } else if(input_handler.key_down(Key::RIGHT_MOUSE_BUTTON)){
+        placeBlock();
+    }
+    float scrollDiff = input_handler.getScrollDiffWithReset();
+    if(scrollDiff>0.1f){
+        player.changeHotbarSelection(true);
+    } else if( scrollDiff<-0.1f){
+        player.changeHotbarSelection(false);
+    }
+
+    calculatePlayerTarget();
+    // chunkManager.generateChunks(player.getBlockLoc() );
+
+    chunkManager.calculateMeshes(player.getBlockLoc());
+}
+
+
+
+
+void World::updatePlayerLocation(Input_Handler& input_handler){
+    player.storePos(); // For interpolation of location between ticks.
+
+    if(input_handler.key_down(Key::FORWARD)){
+        player.move_forward(tickTimeLength);
+    }
+
+    if(input_handler.key_down(Key::BACKWARD)){
+        player.move_backward(tickTimeLength);
+    }
+
+    if(input_handler.key_down(Key::LEFT)){
+        player.move_left(tickTimeLength);
+    }
+
+    if(input_handler.key_down(Key::RIGHT)){
+        player.move_right(tickTimeLength);
+    }
+    if(input_handler.key_down(Key::SPACE)){
+        player.move_up(tickTimeLength);
+    }
+    if(input_handler.key_down(Key::LEFT_SHIFT)){
+        player.move_down(tickTimeLength);
+    }
+}
 
 std::queue<std::shared_ptr<RenderableChunkMesh>> World::toRenderableChunkQueue(){
     return chunkManager.toRenderableChunkQueue(player.getBlockLoc());
@@ -183,50 +235,6 @@ void World::placeBlock(){
     }
 }
 
-void World::update(Input_Handler& input_handler){
-
-    tick += 1;
-
-    player.storePos();
-
-    if(input_handler.key_down(Key::FORWARD)){
-        player.move_forward(tickTimeLength);
-    }
-
-    if(input_handler.key_down(Key::BACKWARD)){
-        player.move_backward(tickTimeLength);
-    }
-
-    if(input_handler.key_down(Key::LEFT)){
-        player.move_left(tickTimeLength);
-    }
-
-    if(input_handler.key_down(Key::RIGHT)){
-        player.move_right(tickTimeLength);
-    }
-    if(input_handler.key_down(Key::SPACE)){
-        player.move_up(tickTimeLength);
-    }
-    if(input_handler.key_down(Key::LEFT_SHIFT)){
-        player.move_down(tickTimeLength);
-    }
-    if(input_handler.key_down(Key::LEFT_MOUSE_BUTTON)){
-        deleteTarget();
-    } else if(input_handler.key_down(Key::RIGHT_MOUSE_BUTTON)){
-        placeBlock();
-    }
-    float scrollDiff = input_handler.getScrollDiffWithReset();
-    if(scrollDiff>0.1f){
-        player.changeHotbarSelection(true);
-    } else if( scrollDiff<-0.1f){
-        player.changeHotbarSelection(false);
-    }
-
-    calculatePlayerTarget();
-    // std::cout << "BlockTargeted: " << blockTargeted << ", Location: " << targetedBlock.x << "," << targetedBlock.y << "," << targetedBlock.z << std::endl;  
-    chunkManager.generateChunks(player.getBlockLoc() );
-
-}
 
 
 WorldUIData World::getUIData(){
