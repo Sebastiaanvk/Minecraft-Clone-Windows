@@ -20,7 +20,6 @@ void Game::run(){
     if(!renderer.init(1600,1000)){
         return;
     }
-    glfwSwapInterval(1); // Enables VSync
 
 
     if(!input_handler.init(renderer.getWindow())){
@@ -59,7 +58,7 @@ void Game::run(){
 
                 auto end = std::chrono::high_resolution_clock::now();
                 auto ms = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-                // std::cout << "World update took: " << ms << " microseconds" << std::endl;;
+                std::cout << "World update took: " << ms << " microseconds" << std::endl;;
 
             }
             timeAccumulator -= world.tickTimeLength;
@@ -77,7 +76,7 @@ void Game::run(){
         auto end = std::chrono::high_resolution_clock::now();
         auto ms = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
         // if(ms>20000)
-        //     std::cout << "The render method took: " << ms << " microseconds" << std::endl;;
+        std::cout << "The render method took: " << ms << " microseconds" << std::endl;;
 
 
     }

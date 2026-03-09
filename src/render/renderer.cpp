@@ -103,6 +103,7 @@ bool Renderer::init(int width, int height){
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  
 
 
+
     
 //    stbi_set_flip_vertically_on_load(true);  //This changes the texture to have 0,0 as top left instead of the default bottom left.
 // setup the large texture atlas for all block textures.
@@ -114,6 +115,10 @@ bool Renderer::init(int width, int height){
     chunkShaderProgram = Shader("src/shaders/chunkShader.vs","src/shaders/chunkShader.fs");
     chunkShaderProgram.use();
     chunkShaderProgram.setInt("textureAtlas",0);
+    viewLocChunks = glGetUniformLocation(chunkShaderProgram.ID, "view");
+    projectionLocChunks = glGetUniformLocation(chunkShaderProgram.ID, "projection");
+
+
 
     glEnable(GL_DEPTH_TEST);  
     // Only render triangles going counter clockwise.
@@ -138,6 +143,13 @@ bool Renderer::init(int width, int height){
         return false;
     }
 
+
+
+    if(vSync)
+        glfwSwapInterval(1); // Enables VSync
+    else
+        glfwSwapInterval(0); // Enables VSync
+
     return true;
 }
 
@@ -148,13 +160,10 @@ GLFWwindow* Renderer::getWindow(){
 
 
 void Renderer::render(World& world, Camera& camera, GameUIData gameData){
-
     getRendererUIData();
-
     CustomImGui::renderStart(camera.getUIData(), world.getUIData(), gameData, getRendererUIData());
 
     //Chunk rendering starts here:
-
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -166,77 +175,20 @@ void Renderer::render(World& world, Camera& camera, GameUIData gameData){
     glm::mat4 projection;
     projection = glm::perspective(glm::radians(camera.getFov()),  (float)width / (float)height, 0.1f, projectionDistance);
 
-    // Set the view and projection matrices to the right values in the chunk shader program
-    chunkShaderProgram.use();
-    TextureAtlas::bind();
-    unsigned int viewLoc = glGetUniformLocation(chunkShaderProgram.ID, "view");
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-    unsigned int projectionLoc = glGetUniformLocation(chunkShaderProgram.ID, "projection");
-    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-    // Loop through the renderable chunk meshes.
-    std::queue<std::shared_ptr<RenderableChunkMesh>> chunkQueue = world.toRenderableChunkQueue();
-    while(!chunkQueue.empty()){
-        std::shared_ptr<RenderableChunkMesh> chunkPtr = chunkQueue.front();
-        chunkQueue.pop();
-        ChunkID chunkID = chunkPtr->chunkId;
-        if(chunkMeshes.count(chunkID)==0){ // If we havent rendered the chunk before, we set up the VAO and VBO.
-            chunkMeshes[chunkID] = createRenderMesh(*chunkPtr);
-            glBindVertexArray(chunkMeshes[chunkID].VAO);
-        } else if(chunkPtr->updated){ // The chunk was updated so we recalculate the VBO.
-            std::vector<chunkVBOElt> vertices = updateVBOVector(*chunkPtr);
-            chunkMeshes[chunkID].nrVertices = 6*chunkPtr->mesh.size();
-            glBindVertexArray(chunkMeshes[chunkID].VAO);
-            glBindBuffer(GL_ARRAY_BUFFER,chunkMeshes[chunkID].VBO);
-            // glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size()*sizeof(chunkVBOElt), vertices.data());
-            glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(chunkVBOElt), vertices.data(), GL_STATIC_DRAW);
-            chunkPtr->updated = false;
-        } else {
-            glBindVertexArray(chunkMeshes[chunkID].VAO);
-        }
-
-        glDrawArrays(GL_TRIANGLES, 0, chunkMeshes[chunkID].nrVertices);
-    }
-
+    START_TIMING(renderChunksN)
+    renderChunks(world, view, projection);
+    END_TIMING(renderChunksN)
 
     // Highlight the selected cube.
     if( world.hasBlockTargeted()){
-        LocInt targetedBlock = world.getTargetedBlock();
-        glBindVertexArray(VAOBlockOutline);
-        outLineShaderProgram.use();
-
-        outLineShaderProgram.setMat4("view",view);
-        outLineShaderProgram.setMat4("projection",projection);
-
-        outLineShaderProgram.setLocInt("offset",worldLocToRenderLoc(targetedBlock));
-        glLineWidth(localOutlineWidth);
-        glm::vec3 localOffsets[] = {    glm::vec3(localOutlineOffset,localOutlineOffset,0),
-                                        glm::vec3(-localOutlineOffset,localOutlineOffset,0),
-                                        glm::vec3(-localOutlineOffset,-localOutlineOffset,0),
-                                        glm::vec3(localOutlineOffset,-localOutlineOffset,0),
-                                        glm::vec3(localOutlineOffset,0,localOutlineOffset),
-                                        glm::vec3(-localOutlineOffset,0,localOutlineOffset),
-                                        glm::vec3(-localOutlineOffset,0,-localOutlineOffset),
-                                        glm::vec3(localOutlineOffset,0,-localOutlineOffset),
-                                        glm::vec3(0,localOutlineOffset,localOutlineOffset),
-                                        glm::vec3(0,-localOutlineOffset,localOutlineOffset),
-                                        glm::vec3(0,-localOutlineOffset,-localOutlineOffset),
-                                        glm::vec3(0,localOutlineOffset,-localOutlineOffset)};
-        for(int i=0; i<12; i++){
-            outLineShaderProgram.setVec3("localOffset",localOffsets[i]);
-            glDrawElements(GL_LINES,24, GL_UNSIGNED_INT, 0);
-        }
-        glLineWidth(1.0f);
+        renderHighlightedCube(world, view, projection);
     }
 
-    
     // Render UI
     renderHotbar(world);
     renderCrosshair();
 
-
     CustomImGui::renderEnd();
-
 
     glfwSwapBuffers(window);
 }
@@ -246,9 +198,89 @@ void Renderer::shutDown(){
     CustomImGui::shutdown();
 }
 
+void Renderer::renderChunks(World& world, glm::mat4& view, glm::mat4& projection){
+    // Set the view and projection matrices to the right values in the chunk shader program
+    chunkShaderProgram.use();
+    TextureAtlas::bind();
+    glUniformMatrix4fv(viewLocChunks, 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(projectionLocChunks, 1, GL_FALSE, glm::value_ptr(projection));
+
+
+    std::vector<std::shared_ptr<RenderableChunkMesh>> chunksToUploadGPU;
+
+    // Loop through the renderable chunk meshes.
+
+    START_TIMING(renderableChunkQueue)
+    std::queue<std::shared_ptr<RenderableChunkMesh>> chunkQueue = world.toRenderableChunkQueue();
+    END_TIMING(renderableChunkQueue)
+
+    // START_TIMING(drawLoadedChunks)
+    while(!chunkQueue.empty()){
+        std::shared_ptr<RenderableChunkMesh> chunkPtr = chunkQueue.front();
+        chunkQueue.pop();
+        ChunkID chunkID = chunkPtr->chunkId;
+        if(chunkMeshes.count(chunkID)!=0 && !chunkPtr->updated){
+            glBindVertexArray(chunkMeshes[chunkID].VAO);
+            glDrawArrays(GL_TRIANGLES, 0, chunkMeshes[chunkID].nrVertices);
+        } else {
+            chunksToUploadGPU.push_back(chunkPtr);
+        }
+    }
+    // END_TIMING(drawLoadedChunks)
+    LocInt playerLoc = world.player.getBlockLoc();
+
+    if(chunksToUploadGPU.size()>maxNewMeshesPerFrame){
+        std::nth_element(chunksToUploadGPU.begin(),chunksToUploadGPU.begin()+maxNewMeshesPerFrame-1,chunksToUploadGPU.end(),
+            [playerLoc](const std::shared_ptr<RenderableChunkMesh>& m1, const std::shared_ptr<RenderableChunkMesh>& m2){
+                int dx1 = (m1->chunkId.x-playerLoc.x);
+                int dz1 = (m1->chunkId.z-playerLoc.z);
+                int dx2 = (m2->chunkId.x-playerLoc.x);
+                int dz2 = (m2->chunkId.z-playerLoc.z);
+                return dx1*dx1+dz1*dz1<dx2*dx2+dz2*dz2;
+            }
+        );
+    }
+
+    for(int i=0; i<maxNewMeshesPerFrame && i<chunksToUploadGPU.size(); i++){
+        std::shared_ptr<RenderableChunkMesh> chunkPtr = chunksToUploadGPU[i];
+        ChunkID chunkID = chunkPtr->chunkId;
+        if( chunkMeshes.count(chunkID) ){
+            std::vector<chunkVBOElt> vertices = updateVBOVector(*chunkPtr);
+            chunkMeshes[chunkID].nrVertices = 6*chunkPtr->mesh.size();
+            glBindVertexArray(chunkMeshes[chunkID].VAO);
+            glBindBuffer(GL_ARRAY_BUFFER,chunkMeshes[chunkID].VBO);
+            // glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size()*sizeof(chunkVBOElt), vertices.data());
+            glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(chunkVBOElt), vertices.data(), GL_STATIC_DRAW);
+            chunkPtr->updated = false;
+        } else {
+            chunkMeshes[chunkID] = createRenderMesh(*chunkPtr);
+            glBindVertexArray(chunkMeshes[chunkID].VAO);
+        }
+        glDrawArrays(GL_TRIANGLES, 0, chunkMeshes[chunkID].nrVertices);
+    }
+
+        // if(chunkMeshes.count(chunkID)==0){ // If we havent rendered the chunk before, we set up the VAO and VBO.
+        //     chunkMeshes[chunkID] = createRenderMesh(*chunkPtr);
+        //     glBindVertexArray(chunkMeshes[chunkID].VAO);
+        // } else if(chunkPtr->updated){ // The chunk was updated so we recalculate the VBO.
+        //     std::vector<chunkVBOElt> vertices = updateVBOVector(*chunkPtr);
+        //     chunkMeshes[chunkID].nrVertices = 6*chunkPtr->mesh.size();
+        //     glBindVertexArray(chunkMeshes[chunkID].VAO);
+        //     glBindBuffer(GL_ARRAY_BUFFER,chunkMeshes[chunkID].VBO);
+        //     // glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size()*sizeof(chunkVBOElt), vertices.data());
+        //     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(chunkVBOElt), vertices.data(), GL_STATIC_DRAW);
+        //     chunkPtr->updated = false;
+        // } else {
+        //     glBindVertexArray(chunkMeshes[chunkID].VAO);
+        // }
+
+        // glDrawArrays(GL_TRIANGLES, 0, chunkMeshes[chunkID].nrVertices);
+}
+
 
 RendererUIData Renderer::getRendererUIData(){
     RendererUIData rendererUIData;
+    rendererUIData.maxNewMeshesPerFrameP = &maxNewMeshesPerFrame;
     rendererUIData.projectionDistanceP = &projectionDistance;
     rendererUIData.textureMarginP = &textureMargin;
     rendererUIData.localOutlineOffsetP = &localOutlineOffset;
@@ -304,6 +336,35 @@ bool Renderer::setupCubeOutline(){
 
     outLineShaderProgram = Shader("src/shaders/cubeOutlineShader.vs","src/shaders/cubeOutlineShader.fs");
     return true;
+}
+
+void Renderer::renderHighlightedCube(const World& world, const glm::mat4& view, const glm::mat4& projection){
+    LocInt targetedBlock = world.getTargetedBlock();
+    glBindVertexArray(VAOBlockOutline);
+    outLineShaderProgram.use();
+
+    outLineShaderProgram.setMat4("view",view);
+    outLineShaderProgram.setMat4("projection",projection);
+
+    outLineShaderProgram.setLocInt("offset",worldLocToRenderLoc(targetedBlock));
+    glLineWidth(localOutlineWidth);
+    glm::vec3 localOffsets[] = {    glm::vec3(localOutlineOffset,localOutlineOffset,0),
+                                    glm::vec3(-localOutlineOffset,localOutlineOffset,0),
+                                    glm::vec3(-localOutlineOffset,-localOutlineOffset,0),
+                                    glm::vec3(localOutlineOffset,-localOutlineOffset,0),
+                                    glm::vec3(localOutlineOffset,0,localOutlineOffset),
+                                    glm::vec3(-localOutlineOffset,0,localOutlineOffset),
+                                    glm::vec3(-localOutlineOffset,0,-localOutlineOffset),
+                                    glm::vec3(localOutlineOffset,0,-localOutlineOffset),
+                                    glm::vec3(0,localOutlineOffset,localOutlineOffset),
+                                    glm::vec3(0,-localOutlineOffset,localOutlineOffset),
+                                    glm::vec3(0,-localOutlineOffset,-localOutlineOffset),
+                                    glm::vec3(0,localOutlineOffset,-localOutlineOffset)};
+    for(int i=0; i<12; i++){
+        outLineShaderProgram.setVec3("localOffset",localOffsets[i]);
+        glDrawElements(GL_LINES,24, GL_UNSIGNED_INT, 0);
+    }
+    glLineWidth(1.0f);
 }
 
 

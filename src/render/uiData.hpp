@@ -31,6 +31,7 @@ struct GameUIData {
 };
 
 struct RendererUIData {
+    int* maxNewMeshesPerFrameP;
     float* projectionDistanceP;
     float* textureMarginP;
     float* localOutlineOffsetP;

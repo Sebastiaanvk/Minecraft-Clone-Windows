@@ -17,6 +17,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <render/customImGui.hpp>
 #include <render/textures.hpp>
+#include <algorithm>
+#include <chrono>
+#include <util/macros.hpp>
 
 class RenderMesh{
     public:
@@ -44,48 +47,52 @@ private:
         uint8_t tint[4];
     };
     
+    bool showGameData = true;
     float projectionDistance = 500.0f;
     float textureMargin = 0.005f;
-
+    int maxNewMeshesPerFrame = 10;
+    bool vSync =false;
 
     GLFWwindow* window;
-    Shader chunkShaderProgram;
 
-    unsigned int VAOBlockOutline;
-    Shader outLineShaderProgram;
+    LocInt worldLocToRenderLoc(const LocInt& loc);
+
+    Shader chunkShaderProgram;
+    unsigned int viewLocChunks;
+    unsigned int projectionLocChunks;
+    std::map<ChunkID,RenderMesh> chunkMeshes;
+    std::vector<chunkVBOElt> updateVBOVector(const RenderableChunkMesh& worldMesh);
+    RenderMesh createRenderMesh(const RenderableChunkMesh& worldMesh);
+    void renderChunks(World& world, glm::mat4& view, glm::mat4& projection);
+
     float localOutlineOffset = 0.002f;
     float localOutlineWidth = 7.0f;
-
-    unsigned int hotbarTextureAtlas;
-    Shader uiTextureShaderProgram;
-    unsigned int VAO2dTexture;
+    unsigned int VAOBlockOutline;
+    Shader outLineShaderProgram;
+    bool setupCubeOutline();
+    void renderHighlightedCube(const World& world, const glm::mat4& view, const glm::mat4& projection);
 
     Shader rectangleShaderProgram;
     unsigned int VAORectangle;
-     
-    bool showGameData = true;
+    bool setupRectangleRenderer();
+
+    Shader uiTextureShaderProgram;
+    unsigned int VAO2dTexture;
+    bool setup2dRenderer();
+
     float hotbarWidthPortion = 0.7f;
-
-
+    unsigned int hotbarTextureAtlas;
+    bool setupHotbarTexture();
+    void renderHotbar(const World& world);
+     
     float crossHairLength = 0.05f; //These ratios are with respect to the height of the window.
     float crossHairWidth = 0.005f;
-
-    std::vector<chunkVBOElt> updateVBOVector(const RenderableChunkMesh& worldMesh);
-    RenderMesh createRenderMesh(const RenderableChunkMesh& worldMesh);
-    std::map<ChunkID,RenderMesh> chunkMeshes;
-    // void setupTestMeshes( int atlasWidth, int atlasHeight);
-    bool setupCubeOutline();
-    LocInt worldLocToRenderLoc(const LocInt& loc);
-
-    bool setup2dRenderer();
-    bool setupHotbarTexture();
-    bool setupRectangleRenderer();
+    void renderCrosshair();
 
     RendererUIData getRendererUIData();
 
-    void renderHotbar(const World& world);
     // void renderHotbarTest();
-    void renderCrosshair();
+    // void setupTestMeshes( int atlasWidth, int atlasHeight);
 
 };
 

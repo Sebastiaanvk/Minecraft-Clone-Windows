@@ -3,82 +3,38 @@
 
 ## Nu aan werken:
 
-Add a flag to the chunks, so we dont start another thread to calculate the mesh. so two flags: dirty and calculating mesh (atomic maken?)
-The calculating mesh moet door de chunkmanager gezet worden in de main thread (important).
-Add: calculate meshes and calculate meshesAsync.
-We have to separate the functions that give the calculated meshes to the renderer and that start the chunk mesh calculation.
-So we like I said, I write the calculateMeshes and calculateMeshesAsync functions. Both of these check an area around the player and if the chunk is dirty and is not currently generating we start the mesh creation.
-The async doesn this asynchronously and we can call this after calculating the new position of the player, at the start of the world update function.
-The non async does it in the main thread after all the game logic. This is important, because these chunks are close to the player, so need to be rendered.
-Then the get chunkmeshes function loops through the chunks and checks which ones are not dirty and finished generating and we send it to the renderer.
-Question: We need to make sure that the renderer only renders the chunks that are indeed finished. hmmmm.
-So the renderer can check whether a mesh has changed. otherwise it just uses the old vbo. 
-Ooh I need to double check this.
-Oh right, the renderable mesh has an updated flag, which only the renderer can turn off again I think.
-So the renderer actually changes the chunkmeshes. 
-Thats quite clever.
-And the chunk mesh creation changes the flag to updated and the renderer turns the flag off right?
-Also, the world only puts the chunkID's in the queue of what needs to be rendered. 
-Hmm, the chunk mesh creator puts the updated flag to true at the start of the function. Can this cause problems?
-Dont think so, the chunkmanager sets the generatingChunkFlag to true and the chunk should put that to false at the end of generating. 
-Just to be safe, I put the chunk updated flag to the end of the function, so the renderer only updates the mesh when the chunk is actually done.
+Add a queue to the renderer class, so it doesnt process all new meshes at the same time.
+But instead a couple per game frame.
+Ok so we add a variable that gives the max amount of chunks to process per frame.
+We need to be pretty careful about how we do it though. For example, we always want to do the chunks that are closest to us.
+We could use a binary search tree that orders on the distance to the player and then take the chunks closest.
+Should be very fast.
+There are some caveats though. WE dont want to add things to the queue multiple times and we should remove things that are out of range.
+Ok so what we could do, is that each frame, we loop through what we need to render and then we just draw all the things that we 
+
+
+Wait lets restart. We have a range that indicates which chunks should be rendered ideally.
+of these, there are some that dont have a proper mesh yet. We throw these away, we dont even send them to the renderer.
+So the world class actually sends a queue of chunks who are in range and have a proper chunk mesh.
+Of these, some have the mesh loaded into the gpu already, some have a mesh loaded into the gpu, but its an old version,
+and some need to load the mesh to the gpu.
+The ones who have the proper gpu loaded already, we should just draw for sure.
+then for the closest ones, we update or add the new mesh to the gpu and render them.
+This should be a limit per frame, except maybe at the start.(we can add a bool parameter to the render function that says whether we should render all or not)
+Then we have a bunch of chunkIDs for chunks with a proper mesh that we should load in.
+We order these, by for example putting them in a vector and sorting by distance to the player.
+Take the chunks closest, update or make the chunk vbo and set the updated flags to false. This is a bool that only the renderer can set to false.
 
 
 
 
 
-Wat we need to do for asynchronous generating and mesh calculation:
-- A check for a chunk whether all surrounding chunks have been generated.
-- A chunk generation funciton that can be parallelized.
-- We first construct the chunk normally though
-- Then we let the chunks be generated asynchronously. We have an std::atomic<bool> flag to indicate that a chunk is done generating.
-- A rendermesh function that can be parallelized.
-- When we move into a new chunk, we check whether there are chunks in the renderrange whose mesh still needs to be rendered.
- We check whether all adjacent chunks have been generated. If yes, we do the mesh creation function asynchronously
- If not, we add the chunk the an ordered set and we attempt next iteration.
- For the pending data structure, we also check whether the chunk is still in rendering range.
-- At the end of the game loop, we check all the dirty chunks and calculate the mesh in the main loop.
-This is important, because these chunk are close to the player, so its very important that they are rendered.
-
-To do now: Change the chunk class, so we have a constructor and a separate generation function.
-We need a flag for when the chunk is done generating. 
-and a flag for when the chunk is dirty and for when the chunk is peding mesh rendering
-
-Brainstorm:
-Ok so I have a chunk constructor and a separate chunk generator. Thats good. So the 
-
-
-
-
-
-
-
-Idea for parallelizing the chunk generation and chunk rendering:
-We start the game loop by deciding the new position of the player.
-Then we use the new position to determine whether there are chunks that need to be generated and meshes that need to be rendered.
-These are then added to asynchronous threads and run in the background. Afterwards, we do all the game logic.
-
-
-
-chunk generation queue
-
-mesh render queue
-
-parallelization for both.
-
-Changing rendering distance.
 
 Important: Adding an unloading distance for the chunks and the meshes!
 
 
-Fix the mesh creation times!
-So either optimize the process, do it in parallel or do queue for mesh creation and then spread it over multiple ticks.
-Right now Im considering doing the queue thing first(shouldnt be too hard) and obviously speeding up the process for a single mesh.
-Ok another idea: checking the six directions of non opaque blocks.
-
 Physics.
 
-Look into: the game crashed when I was placing blocks at the top of the chunk. What happens when you try to place above the max Y?
 
 
 Optional: De hotbar texture naar de texture class sturen voor consistentie.
@@ -86,8 +42,8 @@ Optional: De rendercode mooi encapsulaten zodat de main render functie Heel over
 Optional: Fix mipmap shizzzle
 Optional: Texture array instead of texture atlas.
 Optional: Rewrite Renderer function so I can understand what the f is going on and its easier to add other stuff.
+Optional: tick delay voor muis ingedrukt houden, maar geen delay voor muis spammen!
 
-zwarte lijn blijk blokjes weg als ik vanuit een hoek kijk. Ja wat de hek is dit? Its like a circle around the player where you get these lines and de blocks get darker as well.
 
 And then for the raytracing, we simply need to check whether its not an air block.
 But Im gonna change the raytracing anyways, for entity and hitbox detection and stuff.
@@ -220,3 +176,61 @@ Chunk rendering and generation rond de speler. -->
 
 <!-- Change types, solid for when youre not able to walk through it
 opaque for when the block is not transparent. -->
+
+<!-- zwarte lijn blijk blokjes weg als ik vanuit een hoek kijk. Ja wat de hek is dit? Its like a circle around the player where you get these lines and de blocks get darker as well. -->
+<!-- Add a flag to the chunks, so we dont start another thread to calculate the mesh. so two flags: dirty and calculating mesh (atomic maken?)
+The calculating mesh moet door de chunkmanager gezet worden in de main thread (important).
+Add: calculate meshes and calculate meshesAsync.
+We have to separate the functions that give the calculated meshes to the renderer and that start the chunk mesh calculation.
+So we like I said, I write the calculateMeshes and calculateMeshesAsync functions. Both of these check an area around the player and if the chunk is dirty and is not currently generating we start the mesh creation.
+The async doesn this asynchronously and we can call this after calculating the new position of the player, at the start of the world update function.
+The non async does it in the main thread after all the game logic. This is important, because these chunks are close to the player, so need to be rendered.
+Then the get chunkmeshes function loops through the chunks and checks which ones are not dirty and finished generating and we send it to the renderer.
+Question: We need to make sure that the renderer only renders the chunks that are indeed finished. hmmmm.
+So the renderer can check whether a mesh has changed. otherwise it just uses the old vbo. 
+Ooh I need to double check this.
+Oh right, the renderable mesh has an updated flag, which only the renderer can turn off again I think.
+So the renderer actually changes the chunkmeshes. 
+Thats quite clever.
+And the chunk mesh creation changes the flag to updated and the renderer turns the flag off right?
+Also, the world only puts the chunkID's in the queue of what needs to be rendered. 
+Hmm, the chunk mesh creator puts the updated flag to true at the start of the function. Can this cause problems?
+Dont think so, the chunkmanager sets the generatingChunkFlag to true and the chunk should put that to false at the end of generating. 
+Just to be safe, I put the chunk updated flag to the end of the function, so the renderer only updates the mesh when the chunk is actually done.
+
+
+
+Wat we need to do for asynchronous generating and mesh calculation:
+- A check for a chunk whether all surrounding chunks have been generated.
+- A chunk generation funciton that can be parallelized.
+- We first construct the chunk normally though
+- Then we let the chunks be generated asynchronously. We have an std::atomic<bool> flag to indicate that a chunk is done generating.
+- A rendermesh function that can be parallelized.
+- When we move into a new chunk, we check whether there are chunks in the renderrange whose mesh still needs to be rendered.
+ We check whether all adjacent chunks have been generated. If yes, we do the mesh creation function asynchronously
+ If not, we add the chunk the an ordered set and we attempt next iteration.
+ For the pending data structure, we also check whether the chunk is still in rendering range.
+- At the end of the game loop, we check all the dirty chunks and calculate the mesh in the main loop.
+This is important, because these chunk are close to the player, so its very important that they are rendered.
+
+To do now: Change the chunk class, so we have a constructor and a separate generation function.
+We need a flag for when the chunk is done generating. 
+and a flag for when the chunk is dirty and for when the chunk is peding mesh rendering
+
+Brainstorm:
+Ok so I have a chunk constructor and a separate chunk generator. Thats good. So the  -->
+
+<!-- Idea for parallelizing the chunk generation and chunk rendering:
+We start the game loop by deciding the new position of the player.
+Then we use the new position to determine whether there are chunks that need to be generated and meshes that need to be rendered.
+These are then added to asynchronous threads and run in the background. Afterwards, we do all the game logic.
+
+chunk generation queue
+
+mesh render queue
+
+parallelization for both.
+
+Changing rendering distance. -->
+
+<!-- Look into: the game crashed when I was placing blocks at the top of the chunk. What happens when you try to place above the max Y? -->
