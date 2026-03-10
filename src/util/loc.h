@@ -4,6 +4,7 @@
 #include <utility>
 #include <glm/glm.hpp>
 #include <functional>
+#include <cstdint>
 
 struct Loc2{
     int x;
@@ -43,11 +44,22 @@ struct LocInt{
     inline bool operator==(const LocInt& loc2) const {
         return x==loc2.x && y==loc2.y && z==loc2.z;
     }
-
     inline bool operator!=(const LocInt& loc2) const {
         return x!=loc2.x || y!=loc2.y || z!=loc2.z;
     }
+};
 
+struct LocInt8{
+    uint8_t x;
+    uint8_t y;
+    uint8_t z;
+
+    inline bool operator==(const LocInt8& loc2) const {
+        return x==loc2.x && y==loc2.y && z==loc2.z;
+    }
+    inline bool operator!=(const LocInt8& loc2) const {
+        return x!=loc2.x || y!=loc2.y || z!=loc2.z;
+    }
 };
 
 // I copied this hash function from chatgpt

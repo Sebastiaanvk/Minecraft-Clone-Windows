@@ -2,9 +2,31 @@
 
 
 ## Nu aan werken:
+World Generation!
+
+Bloemen -> Water -> bomen
 
 
+Bloemen: Gewoon eerst een flat kans om te spawnen?
+We make a mesh for the flowers per chunk. 
 
+Question 1: When do we update the cutoutMesh? Same as dirty. It doesnt matter for the optimization I guess, because we dont change chunks that often.
+Question 2: Do we store the cutoutMesh in the same data structure? And then we have an extra VAO and VBO for the cutoutMesh.
+We can do the diagonal locations. Only difference is, we need a different shader for the cutOutMEsht and we need to set the culling setting off.
+Idea: In the renderer, we fill the vector with the ChunkID's we want to render, and then first, we render the normal chunks and afterwards we render the cutouts. Yeah great idea!
+I want to add the chunkID offset to the mesh, so that we only need the u_int8 for the locations. And then we set the uniform variable chunkID in the shader. Parallelization, yeah!
+So I guess in the renderable, we could maybe even use the same. No we wont. We will make a special cutOut data structure.
+Making the new mesh should be easy enough actually. 
+
+
+Alrigh! What Im going to do tomorrow: IN the renderer, I will first update all the chunk vaos. So they contain the proper mesh.
+Then afterwards, I first render all the solid meshes and afterwards render all the cutoutMeshes. Sounds like the plan for me!
+Need to continue with the renderChunks function then.
+So plan: fix the renderChunks function. 
+Make two functions for initializing the cutout VAO and one for updating the cutout VAO.
+Write the shaders for the cutout meshes. 
+Test if the flowers will render from the inventory.
+Add the flowers to the chunk generation.
 
 
 
@@ -15,7 +37,7 @@ Important: Adding an unloading distance for the chunks and the meshes!
 Physics.
 
 
-
+- Optional (Optimization): Calculate the uv coordinates and stuff in the mesh creation function, since it can run in parallel. Good idea dude! But for later I guess.
 - Optional (Optimization): Change the render mesh to use local coordinates, so we can use uint_8. Then in the shader, we can add the chunkID location in parallel.
 - Optional (Optimization): Change the renderQueue function to give, for example, raw pointers, and to maybe preserve information better. Like we can actually check if we move to a new chunk and then remove the exact ones or something. Hmmm not sure if that works though. lets see.
 - Optional (Cleaner Code): De hotbar texture naar de texture class sturen voor consistentie.
@@ -48,14 +70,9 @@ Bomen toevoegen.
 
 ## Misc en langetermijn ideeen
 
-Rode lijnen rond geselecteerd blokje? JA nu aan werken
 Camera mode en speler mode? Dus de handling bepaalt de player locatie en waar die naar kijkt en dan wordt de camera geupdate?
 Raytracing aanpassen voor ofwel klein stapje, of elke keer door de dichtsbijzijnde surface ipv drie verschillende loops.
-Add imgui debug files.(No idea if necessary, but they do exist or something)
-Frame rate vastzettn
-
 Water
-Bomen
 biomes
 Coolere world Generation
 

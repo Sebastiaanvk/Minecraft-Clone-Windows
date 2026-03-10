@@ -19,6 +19,8 @@ enum class BlockID : std::uint8_t {
     White_Wool,
     Black_Wool,
     Oak_Log,
+    Dandelion,
+    Poppy,
     TYPE_COUNT
 };
 
@@ -28,6 +30,7 @@ private:
     struct BlockData {
         bool solid;
         bool opaque;
+        bool flower;
         std::string_view textureNameSide;
         std::string_view textureNameTop;
         std::string_view textureNameBottom;
@@ -35,6 +38,7 @@ private:
     inline static constexpr std::array<BlockData,static_cast<std::size_t>(BlockID::TYPE_COUNT)> registry = {{
         //Air:
     {
+        false,
         false,
         false,
         "",
@@ -45,6 +49,7 @@ private:
     {
         true,
         true,
+        false,
         "dirt.png",
         "dirt.png",
         "dirt.png"
@@ -54,6 +59,7 @@ private:
 {
         true,
         true,
+        false,
         "gravel.png",
         "gravel.png",
         "gravel.png"
@@ -62,6 +68,7 @@ private:
 {
         true,
         true,
+        false,
         "cobblestone.png",
         "cobblestone.png",
         "cobblestone.png"
@@ -70,6 +77,7 @@ private:
 {
         true,
         true,
+        false,
         "grass_block_side.png",
         "grass_block_top.png",
         "dirt.png"
@@ -78,6 +86,7 @@ private:
 {
         true,
         true,
+        false,
         "bedrock.png",
         "bedrock.png",
         "bedrock.png"
@@ -86,6 +95,7 @@ private:
 {
         true,
         true,
+        false,
         "white_wool.png",
         "white_wool.png",
         "white_wool.png"
@@ -94,6 +104,7 @@ private:
 {
         true,
         true,
+        false,
         "black_wool.png",
         "black_wool.png",
         "black_wool.png"
@@ -102,9 +113,28 @@ private:
 {
         true,
         true,
+        false,
         "oak_log.png",
         "oak_log_top.png",
         "oak_log_top.png"
+    },
+        //Dandelion:
+{
+        false,
+        false,
+        true,
+        "dandelion.png",
+        "dandelion.png",
+        "dandelion.png"
+    },
+        //Poppy:
+{
+        false,
+        false,
+        true,
+        "poppy.png",
+        "poppy.png",
+        "poppy.png"
     }
     }};
 
@@ -112,6 +142,7 @@ public:
     BlockRegistry() = delete;
     static bool is_solid(const BlockID& id);
     static bool isOpaque(const BlockID& id);
+    static bool isFlower(const BlockID& id);
     static std::string getTextureName(const BlockID id, const FaceType faceType);
 };
 

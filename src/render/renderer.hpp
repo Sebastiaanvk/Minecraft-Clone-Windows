@@ -21,12 +21,18 @@
 #include <chrono>
 #include <util/macros.hpp>
 
+
+
 class RenderMesh{
     public:
     unsigned int VAO;
     unsigned int VBO;
     GLsizei nrVertices;
 };
+// class ChunkMeshes{
+//     RenderMesh solidMesh;
+//     RenderMesh cutoutMesh;
+// };
 
 class Renderer {
 public:
@@ -46,7 +52,13 @@ private:
         glm::vec2 uv;
         uint8_t tint[4];
     };
-    
+
+    struct CutoutVBOElt{
+        glm::vec3 pos;
+        glm::vec2 uv;
+        // uint8_t tint[4];
+    };
+
     bool showGameData = true;
     float projectionDistance = 500.0f;
     float textureMargin = 0.005f;
@@ -60,7 +72,8 @@ private:
     Shader chunkShaderProgram;
     unsigned int viewLocChunks;
     unsigned int projectionLocChunks;
-    std::map<ChunkID,RenderMesh> chunkMeshes;
+    std::map<ChunkID,RenderMesh> solidMeshes;
+    std::map<ChunkID,RenderMesh> cutoutMeshes;
     std::vector<chunkVBOElt> updateVBOVector(const RenderableChunkMesh& worldMesh);
     RenderMesh createRenderMesh(const RenderableChunkMesh& worldMesh);
     void renderChunks(World& world, glm::mat4& view, glm::mat4& projection);

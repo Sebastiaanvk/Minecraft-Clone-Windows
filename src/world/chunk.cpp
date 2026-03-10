@@ -112,7 +112,8 @@ const std::vector<std::vector<LocInt>> blockSides = {
 void Chunk::update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ, Chunk* nbChunkPosZ){
     // Ok this function goes against all object oriented principles, but I really needed to optimize as much as possible.
     // Manually check that the array indices are in range!
-    meshPtr->mesh = {};
+    meshPtr->solidMesh = {};
+    meshPtr->cutoutMesh = {};
     // meshPtr->mesh.reserve(MAXCHUNKX * MAXCHUNKY * MAXCHUNKZ * 6 / 4); // Arbitrary size, not sure if it matters for speed.
 
     // const Chunk& nbChunkNegX = chunkManager.getChunkPointer({chunkLoc.x-MAXCHUNKX,chunkLoc.z});
@@ -133,9 +134,7 @@ void Chunk::update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ
     for(int y=0; y<=maxYToCheck+1; y++){ for(int z=0; z<MAXCHUNKZ; z++){ for(int x=0; x< MAXCHUNKX; x++){
         
         // BlockID blockId = chunk[locToIndex(x,y,z)];
-        
         // Change later for see through shizzle.
-        // if( BlockRegistry::isOpaque(blockId)){
 
         // if(y==-1 || y==MAXCHUNKY ||  !BlockRegistry::isOpaque(chunk[locToIndex(x,y,z)])){
         if(y==MAXCHUNKY ||  !BlockRegistry::isOpaque(chunk[locToIndex(x,y,z)])){
@@ -185,9 +184,29 @@ void Chunk::update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ
                     } else {
                         meshElt.tint[0] = 255,meshElt.tint[1] = 255,meshElt.tint[2] = 255;
                     }
-                    meshPtr->mesh.push_back(meshElt);
+                    meshPtr->solidMesh.push_back(meshElt);
                 }
             }
+        }
+    }}}
+
+    for(int y=0; y<=maxYToCheck; y++){ for(int z=0; z<MAXCHUNKZ; z++){ for(int x=0; x< MAXCHUNKX; x++){
+
+        if(BlockRegistry::isFlower(chunk[locToIndex(x,y,z)])){
+            CutoutMeshElt cutoutMeshElt;
+            cutoutMeshElt.corners[0] = {x,y,z};
+            cutoutMeshElt.corners[1] = {x+1,y,z+1};
+            cutoutMeshElt.corners[2] = {x+1,y+1,z+1};
+            cutoutMeshElt.corners[3] = {x,y+1,z};
+            cutoutMeshElt.blockType = chunk[locToIndex(x,y,z)];
+            CutoutMeshElt cutoutMeshElt2;
+            cutoutMeshElt2.corners[0] = {x+1,y,z};
+            cutoutMeshElt2.corners[1] = {x,y,z+1};
+            cutoutMeshElt2.corners[2] = {x,y+1,z+1};
+            cutoutMeshElt2.corners[3] = {x+1,y+1,z};
+            cutoutMeshElt2.blockType = chunk[locToIndex(x,y,z)];
+            meshPtr->cutoutMesh.push_back(cutoutMeshElt);
+            meshPtr->cutoutMesh.push_back(cutoutMeshElt2);
         }
     }}}
 

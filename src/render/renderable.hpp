@@ -17,13 +17,20 @@ struct ChunkMeshElt{
     FaceType faceType;
     //Chatgpt suggested this datatype:
     uint8_t tint[3];
-    uint8_t padding;
+    uint8_t padding; // This is there to give the struct a round number of bytes. Probably not necessary anymore!
+};
+
+struct CutoutMeshElt{
+    LocFloat corners[4];
+    BlockID blockType;
+    // uint8_t tint[3];
 };
 
 // One chunk mesh as a vector of sides of blocks
 struct RenderableChunkMesh{
     ChunkID chunkId;
-    std::vector<ChunkMeshElt> mesh;
+    std::vector<ChunkMeshElt> solidMesh;
+    std::vector<CutoutMeshElt> cutoutMesh;
     bool updated;
 };
 

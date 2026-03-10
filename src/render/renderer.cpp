@@ -3,6 +3,11 @@
 Renderer::Renderer(){
 }
 
+void framebuffer_size_callback(GLFWwindow* , int width, int height)
+{
+    glViewport(0, 0, width, height);
+} 
+
 void Renderer::render(World& world, Camera& camera, GameUIData gameData){
     getRendererUIData();
     CustomImGui::renderStart(camera.getUIData(), world.getUIData(), gameData, getRendererUIData());
@@ -119,10 +124,6 @@ GLFWwindow* Renderer::getWindow(){
     return window;
 }
 
-void framebuffer_size_callback(GLFWwindow* , int width, int height)
-{
-    glViewport(0, 0, width, height);
-} 
 
 LocInt Renderer::worldLocToRenderLoc(const LocInt& loc){
     return {loc.x,loc.y,-loc.z};
@@ -141,6 +142,7 @@ void Renderer::renderChunks(World& world, glm::mat4& view, glm::mat4& projection
 
 
     std::vector<std::shared_ptr<RenderableChunkMesh>> chunksToUploadGPU;
+    std::vector<ChunkID> chunksToRender;
 
     // Loop through the renderable chunk meshes.
 
@@ -153,9 +155,10 @@ void Renderer::renderChunks(World& world, glm::mat4& view, glm::mat4& projection
         std::shared_ptr<RenderableChunkMesh> chunkPtr = chunkQueue.front();
         chunkQueue.pop();
         ChunkID chunkID = chunkPtr->chunkId;
-        if(chunkMeshes.count(chunkID)!=0 && !chunkPtr->updated){
-            glBindVertexArray(chunkMeshes[chunkID].VAO);
-            glDrawArrays(GL_TRIANGLES, 0, chunkMeshes[chunkID].nrVertices);
+        if(solidMeshes.count(chunkID)!=0 && !chunkPtr->updated){
+            glBindVertexArray(solidMeshes[chunkID].VAO);
+            glDrawArrays(GL_TRIANGLES, 0, solidMeshes[chunkID].nrVertices);
+            chunksToRender.push_back(chunkID);
         } else {
             chunksToUploadGPU.push_back(chunkPtr);
         }
@@ -178,19 +181,20 @@ void Renderer::renderChunks(World& world, glm::mat4& view, glm::mat4& projection
     for(int i=0; i<maxNewMeshesPerFrame && i<chunksToUploadGPU.size(); i++){
         std::shared_ptr<RenderableChunkMesh> chunkPtr = chunksToUploadGPU[i];
         ChunkID chunkID = chunkPtr->chunkId;
-        if( chunkMeshes.count(chunkID) ){
+        if( solidMeshes.count(chunkID) ){
             std::vector<chunkVBOElt> vertices = updateVBOVector(*chunkPtr);
-            chunkMeshes[chunkID].nrVertices = 6*chunkPtr->mesh.size();
-            glBindVertexArray(chunkMeshes[chunkID].VAO);
-            glBindBuffer(GL_ARRAY_BUFFER,chunkMeshes[chunkID].VBO);
+            solidMeshes[chunkID].nrVertices = 6*chunkPtr->solidMesh.size();
+            glBindVertexArray(solidMeshes[chunkID].VAO);
+            glBindBuffer(GL_ARRAY_BUFFER,solidMeshes[chunkID].VBO);
             // glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size()*sizeof(chunkVBOElt), vertices.data());
             glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(chunkVBOElt), vertices.data(), GL_STATIC_DRAW);
             chunkPtr->updated = false;
         } else {
-            chunkMeshes[chunkID] = createRenderMesh(*chunkPtr);
-            glBindVertexArray(chunkMeshes[chunkID].VAO);
+            solidMeshes[chunkID] = createRenderMesh(*chunkPtr);
+            glBindVertexArray(solidMeshes[chunkID].VAO);
         }
-        glDrawArrays(GL_TRIANGLES, 0, chunkMeshes[chunkID].nrVertices);
+        chunksToRender.push_back(chunkID);
+        glDrawArrays(GL_TRIANGLES, 0, solidMeshes[chunkID].nrVertices);
     }
     END_TIMING(drawUnloadedChunks)
 
@@ -219,7 +223,7 @@ std::vector<Renderer::chunkVBOElt> Renderer::updateVBOVector(const RenderableChu
     const int cornerOrder[6] = {0,1,3,1,2,3};
     // The uv diffs that correspond to the four corners of the face.
     const std::pair<int,int> uvDiff[] = {{0,1},{1,1},{1,0},{0,0}};
-    for( auto face: worldMesh.mesh){
+    for( auto face: worldMesh.solidMesh){
         // Triangles counter-clockwise
         glm::vec2 uvCoord = TextureAtlas::getUVCoord(face.blockType,face.faceType);
         for(int i=0;i<6;i++){
@@ -251,7 +255,7 @@ RenderMesh Renderer::createRenderMesh(const RenderableChunkMesh& worldMesh){
     glBindBuffer(GL_ARRAY_BUFFER, renderMesh.VBO);
     std::vector<chunkVBOElt> vertices = updateVBOVector(worldMesh);
     glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(chunkVBOElt), vertices.data(), GL_STATIC_DRAW);
-    renderMesh.nrVertices = worldMesh.mesh.size()*6;
+    renderMesh.nrVertices = worldMesh.solidMesh.size()*6;
     // Position attribute:
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(chunkVBOElt), (void*)offsetof(chunkVBOElt, pos));
     glEnableVertexAttribArray(0);
