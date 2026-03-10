@@ -23,7 +23,7 @@ struct ChunkMeshElt{
 struct CutoutMeshElt{
     LocFloat corners[4];
     BlockID blockType;
-    // uint8_t tint[3];
+    uint8_t tint[3];
 };
 
 // One chunk mesh as a vector of sides of blocks

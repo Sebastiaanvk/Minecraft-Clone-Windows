@@ -6,6 +6,22 @@
 ### march 10 2026
 Add leaves, then add water.
 First only from the inventory, afterwards add water to chunk generation (just add a water level), then add vegetation to generation
+Keep face culling disabled, but add both sides of the flower texture to the mesh
+
+Which categories should I have for blocks?
+I mean there's solid, which means we cant walk through it.
+There's opaque so it's not transparent.
+Then there blocks that are not opaque, but they are solid and not translucent.
+There are also block that are solid, not opaque and not translucent.
+I guess we can add a translucent flag.
+water is translucent, not opaque and not solid
+glass is solid and translucent
+leaves are solid and neither translucent nor opaque.
+
+
+add a tint to the cutoutMesh, because leaves have tints apparently.
+
+
 
 Add water!
 
@@ -17,9 +33,10 @@ Bloemen -> Water -> bomen -> Tweak generation
 
 
 
-### Other dates
+### Other 
 Important: Adding an unloading distance for the chunks and the meshes!
 
+We need to some kind of centralized tint registry, for block with tints.
 
 
 We should change the block targeting algorithm and also check whether the block is the type that can be placed unto.

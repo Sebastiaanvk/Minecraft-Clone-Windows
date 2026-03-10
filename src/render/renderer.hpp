@@ -56,7 +56,7 @@ private:
     struct CutoutVBOElt{
         glm::vec3 pos;
         glm::vec2 uv;
-        // uint8_t tint[4];
+        uint8_t tint[4];
     };
 
     bool showGameData = true;

@@ -42,7 +42,7 @@ public:
 
 private:
 
-    float playerSpeed = 50.0f;
+    float playerSpeed = 20.0f;
 
     float yaw = 90.0f;
     float pitch = 0.0f;
@@ -61,11 +61,11 @@ private:
         {true,BlockID::Gravel},
         {true,BlockID::Stone},
         {true,BlockID::Oak_Log},
+        {true,BlockID::Oak_Leaves},
         {true,BlockID::White_Wool},
         {true,BlockID::Black_Wool},
         {true,BlockID::Dandelion},
-        {true,BlockID::Poppy},
-        {false,BlockID::Air}
+        {true,BlockID::Poppy}
     }};
 };
 

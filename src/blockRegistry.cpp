@@ -9,9 +9,12 @@ bool BlockRegistry::is_solid(const BlockID& id){
 bool BlockRegistry::isOpaque(const BlockID& id){
     return registry[static_cast<std::size_t>(id)].opaque;
 }
+bool BlockRegistry::isTranslucent(const BlockID& id){
+    return registry[static_cast<std::size_t>(id)].translucent;
+}
 
-bool BlockRegistry::isFlower(const BlockID& id){
-    return registry[static_cast<std::size_t>(id)].flower;
+bool BlockRegistry::isCross(const BlockID& id){
+    return registry[static_cast<std::size_t>(id)].cross;
 }
 
 std::string BlockRegistry::getTextureName(const BlockID id, const FaceType faceType){

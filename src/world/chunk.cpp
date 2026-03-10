@@ -118,12 +118,11 @@ const std::vector<std::vector<LocInt>> blockSides = {
     {{0,0,0},{1,0,0},{1,1,0},{0,1,0}},
 };
 
-const std::vector<LocInt> diagonal1 = {
-    {0,0,0},{1,0,1},{1,1,1},{0,1,0}
-};
-
-const std::vector<LocInt> diagonal2 = {
-    {1,0,0},{0,0,1},{0,1,1},{1,1,0}
+const std::vector<std::vector<LocInt>> diagonals = {
+    {{0,0,0},{1,0,1},{1,1,1},{0,1,0}},
+    {{1,0,0},{0,0,1},{0,1,1},{1,1,0}},
+    {{1,0,1},{0,0,0},{0,1,0},{1,1,1}},
+    {{0,0,1},{1,0,0},{1,1,0},{0,1,1}}
 };
 
 void Chunk::update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ, Chunk* nbChunkPosZ){
@@ -197,11 +196,21 @@ void Chunk::update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ
                     //Fix this for general cases!!!!
                     // Also the color was kind of arbitrary
                     if(meshElt.faceType==FaceType::Top && meshElt.blockType==BlockID::Grass_Dirt){
-                        meshElt.tint[0] = 190,meshElt.tint[1] = 255,meshElt.tint[2] = 120;
+                        meshElt.tint[0] = 180,meshElt.tint[1] = 255-15,meshElt.tint[2] = 100;
                     } else {
                         meshElt.tint[0] = 255,meshElt.tint[1] = 255,meshElt.tint[2] = 255;
                     }
                     meshPtr->solidMesh.push_back(meshElt);
+                // } else if(nbBlockID!=BlockID::Air && !BlockRegistry::isCross(nbBlockID) && !BlockRegistry::isTranslucent(nbBlockID)){ // I think I need to revise the blockRegistry flags, but this should work for now.
+                } else if(nbBlockID==BlockID::Oak_Leaves){ 
+                    CutoutMeshElt meshElt;
+                    meshElt.corners[0] = locIntToLocFloat(realLoc + blockSides[i][1]);
+                    meshElt.corners[1] = locIntToLocFloat(realLoc + blockSides[i][0]);
+                    meshElt.corners[2] = locIntToLocFloat(realLoc + blockSides[i][3]);
+                    meshElt.corners[3] = locIntToLocFloat(realLoc + blockSides[i][2]);
+                    meshElt.blockType = nbBlockID;
+                    meshElt.tint[0] = 140,meshElt.tint[1] = 210,meshElt.tint[2] = 70;
+                    meshPtr->cutoutMesh.push_back(meshElt);
                 }
             }
         }
@@ -210,22 +219,17 @@ void Chunk::update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ
     for(int y=0; y<=maxYToCheck; y++){ for(int z=0; z<MAXCHUNKZ; z++){ for(int x=0; x< MAXCHUNKX; x++){
         LocInt loc = {x,y,z};
         LocInt realLoc = chunkLoc+loc;
-        if(BlockRegistry::isFlower(chunk[locToIndex(x,y,z)])){
-            // std::cout << "Flower found in update mesh!" << std::endl;
-            CutoutMeshElt cutoutMeshElt1;
-            CutoutMeshElt cutoutMeshElt2;
-            cutoutMeshElt1.corners[0] = locIntToLocFloat( realLoc + diagonal1[0]);
-            cutoutMeshElt1.corners[1] = locIntToLocFloat( realLoc + diagonal1[1]);
-            cutoutMeshElt1.corners[2] = locIntToLocFloat( realLoc + diagonal1[2]);
-            cutoutMeshElt1.corners[3] = locIntToLocFloat( realLoc + diagonal1[3]);
-            cutoutMeshElt2.corners[0] = locIntToLocFloat( realLoc + diagonal2[0]);
-            cutoutMeshElt2.corners[1] = locIntToLocFloat( realLoc + diagonal2[1]);
-            cutoutMeshElt2.corners[2] = locIntToLocFloat( realLoc + diagonal2[2]);
-            cutoutMeshElt2.corners[3] = locIntToLocFloat( realLoc + diagonal2[3]);
-            cutoutMeshElt1.blockType = chunk[locToIndex(x,y,z)];
-            cutoutMeshElt2.blockType = chunk[locToIndex(x,y,z)];
-            meshPtr->cutoutMesh.push_back(cutoutMeshElt1);
-            meshPtr->cutoutMesh.push_back(cutoutMeshElt2);
+        if(BlockRegistry::isCross(chunk[locToIndex(x,y,z)])){
+            for(int i=0; i<4; i++){
+                CutoutMeshElt cutoutMeshElt;
+                cutoutMeshElt.corners[0] = locIntToLocFloat( realLoc + diagonals[i][0]);
+                cutoutMeshElt.corners[1] = locIntToLocFloat( realLoc + diagonals[i][1]);
+                cutoutMeshElt.corners[2] = locIntToLocFloat( realLoc + diagonals[i][2]);
+                cutoutMeshElt.corners[3] = locIntToLocFloat( realLoc + diagonals[i][3]);
+                cutoutMeshElt.blockType = chunk[locToIndex(x,y,z)];
+                cutoutMeshElt.tint[0] = 255,cutoutMeshElt.tint[1] = 255,cutoutMeshElt.tint[2] = 255;
+                meshPtr->cutoutMesh.push_back(cutoutMeshElt);
+            }
         }
     }}}
 

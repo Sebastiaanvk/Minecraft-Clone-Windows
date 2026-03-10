@@ -192,7 +192,6 @@ void Renderer::renderChunks(World& world, glm::mat4& view, glm::mat4& projection
         glDrawArrays(GL_TRIANGLES, 0, solidMeshes[chunkID].nrVertices);
     }
 
-    glDisable(GL_CULL_FACE);
     cutoutChunkShaderProgram.use();
     glUniformMatrix4fv(viewLocChunksCutout, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(projectionLocChunksCutout, 1, GL_FALSE, glm::value_ptr(projection));
@@ -200,7 +199,6 @@ void Renderer::renderChunks(World& world, glm::mat4& view, glm::mat4& projection
         glBindVertexArray(cutoutMeshes[chunkID].VAO);
         glDrawArrays(GL_TRIANGLES, 0, cutoutMeshes[chunkID].nrVertices);
     }
-    glEnable(GL_CULL_FACE);
 }
 
 std::vector<Renderer::SolidVBOElt> Renderer::updateSolidVBOVector(const RenderableChunkMesh& worldMesh){
@@ -255,6 +253,10 @@ std::vector<Renderer::CutoutVBOElt> Renderer::updateCutoutVBOVector(const Render
             // vboElt.uv[1] = uvCoord.y+(textureMargin+(1.0f-2.0f*textureMargin)*uvDiff[corner].second)*TextureAtlas::getTextureSizeHeight();
             vboElt.uv[0] = uvCoord.x+uvDiff[corner].first*TextureAtlas::getTextureSizeWidth();
             vboElt.uv[1] = uvCoord.y+uvDiff[corner].second*TextureAtlas::getTextureSizeHeight();
+            vboElt.tint[0] = face.tint[0];
+            vboElt.tint[1] = face.tint[1];
+            vboElt.tint[2] = face.tint[2];
+            vboElt.tint[3] = 255;
             vertices.push_back(vboElt);
         }
     }
@@ -264,21 +266,21 @@ std::vector<Renderer::CutoutVBOElt> Renderer::updateCutoutVBOVector(const Render
 
 
 void Renderer::updateRenderMesh(const ChunkID& chunkID, RenderableChunkMesh& worldMesh){
-            std::vector<SolidVBOElt> solidVertices = updateSolidVBOVector(worldMesh);
-            solidMeshes[chunkID].nrVertices = 6*worldMesh.solidMesh.size(); 
-            glBindVertexArray(solidMeshes[chunkID].VAO);
-            glBindBuffer(GL_ARRAY_BUFFER,solidMeshes[chunkID].VBO);
-            // glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size()*sizeof(chunkVBOElt), vertices.data());
-            glBufferData(GL_ARRAY_BUFFER, solidVertices.size() * sizeof(SolidVBOElt), solidVertices.data(), GL_STATIC_DRAW);
+    std::vector<SolidVBOElt> solidVertices = updateSolidVBOVector(worldMesh);
+    solidMeshes[chunkID].nrVertices = 6*worldMesh.solidMesh.size(); 
+    glBindVertexArray(solidMeshes[chunkID].VAO);
+    glBindBuffer(GL_ARRAY_BUFFER,solidMeshes[chunkID].VBO);
+    // glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size()*sizeof(chunkVBOElt), vertices.data());
+    glBufferData(GL_ARRAY_BUFFER, solidVertices.size() * sizeof(SolidVBOElt), solidVertices.data(), GL_STATIC_DRAW);
 
-            std::vector<CutoutVBOElt> cutoutVertices = updateCutoutVBOVector(worldMesh);
-            cutoutMeshes[chunkID].nrVertices = 6*worldMesh.cutoutMesh.size(); 
-            glBindVertexArray(cutoutMeshes[chunkID].VAO);
-            glBindBuffer(GL_ARRAY_BUFFER,cutoutMeshes[chunkID].VBO);
-            // glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size()*sizeof(chunkVBOElt), vertices.data());
-            glBufferData(GL_ARRAY_BUFFER, cutoutVertices.size() * sizeof(CutoutVBOElt), cutoutVertices.data(), GL_STATIC_DRAW);
+    std::vector<CutoutVBOElt> cutoutVertices = updateCutoutVBOVector(worldMesh);
+    cutoutMeshes[chunkID].nrVertices = 6*worldMesh.cutoutMesh.size(); 
+    glBindVertexArray(cutoutMeshes[chunkID].VAO);
+    glBindBuffer(GL_ARRAY_BUFFER,cutoutMeshes[chunkID].VBO);
+    // glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size()*sizeof(chunkVBOElt), vertices.data());
+    glBufferData(GL_ARRAY_BUFFER, cutoutVertices.size() * sizeof(CutoutVBOElt), cutoutVertices.data(), GL_STATIC_DRAW);
 
-            worldMesh.updated = false;
+    worldMesh.updated = false;
 }
 
 
@@ -320,9 +322,9 @@ void Renderer::createRenderMesh(const ChunkID& chunkID, RenderableChunkMesh& wor
     // texture attribute
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(CutoutVBOElt), (void*)offsetof(CutoutVBOElt, uv));
     glEnableVertexAttribArray(1);
-    // // tint attribute
-    // glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(CutoutVBOElt), (void*)offsetof(CutoutVBOElt, tint));
-    // glEnableVertexAttribArray(2);
+    // tint attribute
+    glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(CutoutVBOElt), (void*)offsetof(CutoutVBOElt, tint));
+    glEnableVertexAttribArray(2);
     cutoutMeshes[chunkID] = cutoutRenderMesh;
     worldMesh.updated = false;
 }
@@ -448,6 +450,7 @@ bool Renderer::setup2dRenderer(){
 
     uiTextureShaderProgram = Shader("src/shaders/uiShader.vs","src/shaders/uiShader.fs");
     uiTextureShaderProgram.setInt("textureAtlas",blockTextureSlotOffset);
+    uiTextureShaderProgram.setVec4("tint",glm::vec4(1.0f,1.0f,1.0f,1.0f)); // We leave the tint at (1.0,1.0,1.0,1.0) as default.
 
     return true;
 }
@@ -536,7 +539,16 @@ void Renderer::renderHotbar(const World& world){
             uiTextureShaderProgram.setVec2("loc",glm::vec2(cornerX+(float)i*20/182*size.x,cornerY));
             uiTextureShaderProgram.setVec2("textureLoc",TextureAtlas::getUVCoord(renderableInventory.slotContents[i],FaceType::Side));
             uiTextureShaderProgram.setVec2("textureSize",TextureAtlas::getTextureSize());
-            glDrawElements(GL_TRIANGLES,6, GL_UNSIGNED_INT, 0);
+            if(renderableInventory.slotContents[i]==BlockID::Oak_Leaves){
+                uiTextureShaderProgram.setVec4("tint",glm::vec4((float)140/255.0f,(float)210/255.0f,(float)70/255.0f,1.0f)); // This should align with the tint in chunks.cpp
+                glDrawElements(GL_TRIANGLES,6, GL_UNSIGNED_INT, 0);
+                uiTextureShaderProgram.setVec4("tint",glm::vec4(1.0f,1.0f,1.0f,1.0f));
+
+            } else { 
+                glDrawElements(GL_TRIANGLES,6, GL_UNSIGNED_INT, 0);
+            }
+
+
         }
     }
 
