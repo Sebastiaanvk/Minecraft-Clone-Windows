@@ -27,7 +27,7 @@ void Game::run(){
     }
 
     while( !glfwWindowShouldClose(renderer.getWindow()) ){
-        std::cout<< "\nNew game loop:\n";
+        // std::cout<< "\nNew game loop:\n";
 
 //        std::this_thread::sleep_for(std::chrono::milliseconds(13)); // This might cause input problems!
         float currentFrame = glfwGetTime();
@@ -53,14 +53,7 @@ void Game::run(){
         timeAccumulator += deltaTime;
         while(timeAccumulator>=world.tickTimeLength){
             if(!paused){
-                auto start = std::chrono::high_resolution_clock::now();
-
                 world.update(input_handler);        
-
-                auto end = std::chrono::high_resolution_clock::now();
-                auto ms = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-                std::cout << "World update took: " << ms << " microseconds" << std::endl;;
-
             }
             timeAccumulator -= world.tickTimeLength;
         }
@@ -70,15 +63,7 @@ void Game::run(){
 
         camera.update(world.player,alpha);
 
-        auto start = std::chrono::high_resolution_clock::now();
-
         renderer.render(world,camera,getGameUIData());
-
-        auto end = std::chrono::high_resolution_clock::now();
-        auto ms = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-        // if(ms>20000)
-        std::cout << "The render method took: " << ms << " microseconds" << std::endl;;
-
 
     }
     renderer.shutDown();

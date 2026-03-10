@@ -64,11 +64,20 @@ bool Chunk::blockIsOpaque(const LocInt& loc) const{
     }
     if(loc.x<0||loc.z<0||loc.x>=MAXCHUNKX || loc.z>=MAXCHUNKZ ){
         LocInt newloc = loc+LocInt{chunkLoc.x,0,chunkLoc.z};
-        // std::cout << newloc.x << ", " << newloc.y << ", " << newloc.z << std::endl;
-        // return false;
         return chunkManager.isOpaque(newloc);
     }
     return BlockRegistry::isOpaque( getBlockId(loc) );
+}
+
+bool Chunk::notAir(const LocInt& loc) const{
+    if(loc.y<0||loc.y>=MAXCHUNKY){
+        return false;
+    }
+    if(loc.x<0||loc.z<0||loc.x>=MAXCHUNKX || loc.z>=MAXCHUNKZ ){
+        LocInt newloc = loc+LocInt{chunkLoc.x,0,chunkLoc.z};
+        return chunkManager.notAir(newloc);
+    }
+    return getBlockId(loc)!=BlockID::Air;
 }
 
 bool Chunk::isDirty(){
@@ -107,6 +116,14 @@ const std::vector<std::vector<LocInt>> blockSides = {
     {{0,0,1},{1,0,1},{1,0,0},{0,0,0}},
     {{1,0,1},{0,0,1},{0,1,1},{1,1,1}},
     {{0,0,0},{1,0,0},{1,1,0},{0,1,0}},
+};
+
+const std::vector<LocInt> diagonal1 = {
+    {0,0,0},{1,0,1},{1,1,1},{0,1,0}
+};
+
+const std::vector<LocInt> diagonal2 = {
+    {1,0,0},{0,0,1},{0,1,1},{1,1,0}
 };
 
 void Chunk::update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ, Chunk* nbChunkPosZ){
@@ -191,21 +208,23 @@ void Chunk::update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ
     }}}
 
     for(int y=0; y<=maxYToCheck; y++){ for(int z=0; z<MAXCHUNKZ; z++){ for(int x=0; x< MAXCHUNKX; x++){
-
+        LocInt loc = {x,y,z};
+        LocInt realLoc = chunkLoc+loc;
         if(BlockRegistry::isFlower(chunk[locToIndex(x,y,z)])){
-            CutoutMeshElt cutoutMeshElt;
-            cutoutMeshElt.corners[0] = {x,y,z};
-            cutoutMeshElt.corners[1] = {x+1,y,z+1};
-            cutoutMeshElt.corners[2] = {x+1,y+1,z+1};
-            cutoutMeshElt.corners[3] = {x,y+1,z};
-            cutoutMeshElt.blockType = chunk[locToIndex(x,y,z)];
+            // std::cout << "Flower found in update mesh!" << std::endl;
+            CutoutMeshElt cutoutMeshElt1;
             CutoutMeshElt cutoutMeshElt2;
-            cutoutMeshElt2.corners[0] = {x+1,y,z};
-            cutoutMeshElt2.corners[1] = {x,y,z+1};
-            cutoutMeshElt2.corners[2] = {x,y+1,z+1};
-            cutoutMeshElt2.corners[3] = {x+1,y+1,z};
+            cutoutMeshElt1.corners[0] = locIntToLocFloat( realLoc + diagonal1[0]);
+            cutoutMeshElt1.corners[1] = locIntToLocFloat( realLoc + diagonal1[1]);
+            cutoutMeshElt1.corners[2] = locIntToLocFloat( realLoc + diagonal1[2]);
+            cutoutMeshElt1.corners[3] = locIntToLocFloat( realLoc + diagonal1[3]);
+            cutoutMeshElt2.corners[0] = locIntToLocFloat( realLoc + diagonal2[0]);
+            cutoutMeshElt2.corners[1] = locIntToLocFloat( realLoc + diagonal2[1]);
+            cutoutMeshElt2.corners[2] = locIntToLocFloat( realLoc + diagonal2[2]);
+            cutoutMeshElt2.corners[3] = locIntToLocFloat( realLoc + diagonal2[3]);
+            cutoutMeshElt1.blockType = chunk[locToIndex(x,y,z)];
             cutoutMeshElt2.blockType = chunk[locToIndex(x,y,z)];
-            meshPtr->cutoutMesh.push_back(cutoutMeshElt);
+            meshPtr->cutoutMesh.push_back(cutoutMeshElt1);
             meshPtr->cutoutMesh.push_back(cutoutMeshElt2);
         }
     }}}

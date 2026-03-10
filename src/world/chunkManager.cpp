@@ -132,6 +132,15 @@ bool ChunkManager::isOpaque(const LocInt& loc) const {
     return false;
 }
 
+
+bool ChunkManager::notAir(const LocInt& loc) const{
+    ChunkID chunkID = getChunkID(loc);
+    if(chunks.count(chunkID)!=0){
+        return chunks.at(chunkID)->notAir(getLocWithinChunk(loc));
+    }
+    return false;
+}
+
 void ChunkManager::calculateMeshesAsync(const LocInt& loc,int distance){
     ChunkID chunkId = getChunkID(loc);
     std::queue<std::shared_ptr<RenderableChunkMesh>> chunkQueue;
@@ -194,6 +203,9 @@ std::queue<std::shared_ptr<RenderableChunkMesh>> ChunkManager::toRenderableChunk
             assert(chunks.count(chunkCandidate));
             if( !chunks[chunkCandidate]->isDirty() && !chunks[chunkCandidate]->getCalculatingMeshFlag()){
                 chunkQueue.push(chunks[chunkCandidate]->getMeshPtr());
+                // if(chunks[chunkCandidate]->getMeshPtr()->cutoutMesh.size()>0){
+                //     std::cout << "Flowers in mesh in chunkmanager!" << std::endl;
+                // }
             }
         }
     }

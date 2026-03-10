@@ -46,6 +46,7 @@ class Chunk{
     BlockID getBlockId(const LocInt& loc) const;
     bool blockIsSolid(const LocInt& loc);
     bool blockIsOpaque(const LocInt& loc) const;
+    bool notAir(const LocInt& loc) const;
     void setBlockId(const LocInt& loc,BlockID id);
     bool isDirty();
     void setDirty();

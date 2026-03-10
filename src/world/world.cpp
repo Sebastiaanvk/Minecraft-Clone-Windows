@@ -92,7 +92,7 @@ void World::calculatePlayerTarget() {
         while(  dist <= maxReach ){
             LocFloat intersect = pos + dist*forward;
             LocInt blockCandidate = {(int)floor(intersect.x+0.5f),(int)floor(intersect.y),(int)floor(intersect.z)};
-            if(chunkManager.isSolid(blockCandidate)){
+            if(chunkManager.notAir(blockCandidate)){
                 closestSolidX = blockCandidate;
                 placementCandidateX = blockCandidate + LocInt{-1,0,0};
                 distSolidX = dist;
@@ -107,7 +107,7 @@ void World::calculatePlayerTarget() {
         while(  dist <= maxReach ){
             LocFloat intersect = pos + dist*forward;
             LocInt blockCandidate = {(int)floor(intersect.x-0.5f),(int)floor(intersect.y),(int)floor(intersect.z)};
-            if(chunkManager.isSolid(blockCandidate)){
+            if(chunkManager.notAir(blockCandidate)){
                 closestSolidX = blockCandidate;
                 placementCandidateX = blockCandidate + LocInt{1,0,0};
                 distSolidX = dist;
@@ -128,7 +128,7 @@ void World::calculatePlayerTarget() {
         while(  dist <= maxReach ){
             LocFloat intersect = pos + dist*forward;
             LocInt blockCandidate = {(int)floor(intersect.x),(int)floor(intersect.y+0.5f),(int)floor(intersect.z)};
-            if(chunkManager.isSolid(blockCandidate)){
+            if(chunkManager.notAir(blockCandidate)){
                 closestSolidY = blockCandidate;
                 placementCandidateY = blockCandidate + LocInt{0,-1,0};
                 distSolidY = dist;
@@ -143,7 +143,7 @@ void World::calculatePlayerTarget() {
         while(  dist <= maxReach ){
             LocFloat intersect = pos + dist*forward;
             LocInt blockCandidate = {(int)floor(intersect.x),(int)floor(intersect.y-0.5f),(int)floor(intersect.z)};
-            if(chunkManager.isSolid(blockCandidate)){
+            if(chunkManager.notAir(blockCandidate)){
                 closestSolidY = blockCandidate;
                 placementCandidateY = blockCandidate + LocInt{0,1,0};
                 distSolidY = dist;
@@ -164,7 +164,7 @@ void World::calculatePlayerTarget() {
         while(  dist <= maxReach ){
             LocFloat intersect = pos + dist*forward;
             LocInt blockCandidate = {(int)floor(intersect.x),(int)floor(intersect.y),(int)floor(intersect.z+0.5f)};
-            if(chunkManager.isSolid(blockCandidate)){
+            if(chunkManager.notAir(blockCandidate)){
                 closestSolidZ = blockCandidate;
                 placementCandidateZ = blockCandidate + LocInt{0,0,-1};
                 distSolidZ = dist;
@@ -179,7 +179,7 @@ void World::calculatePlayerTarget() {
         while(  dist <= maxReach ){
             LocFloat intersect = pos + dist*forward;
             LocInt blockCandidate = {(int)floor(intersect.x),(int)floor(intersect.y),(int)floor(intersect.z-0.5f)};
-            if(chunkManager.isSolid(blockCandidate)){
+            if(chunkManager.notAir(blockCandidate)){
                 closestSolidZ = blockCandidate;
                 placementCandidateZ = blockCandidate + LocInt{0,0,1};
                 distSolidZ = dist;

@@ -22,6 +22,7 @@ public:
     BlockID checkBlock(const LocInt& loc) const;
     bool isSolid(const LocInt& loc) const;
     bool isOpaque(const LocInt& loc) const;
+    bool notAir(const LocInt& loc) const;
     void placeBlock(const LocInt& loc,const BlockID& blockId);
     void deleteBlock(const LocInt& loc);
     const Chunk& getChunkPointer(const ChunkID& chunkID);

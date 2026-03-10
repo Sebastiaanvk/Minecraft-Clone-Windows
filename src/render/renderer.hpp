@@ -47,7 +47,7 @@ public:
 
 private:
 // Chatgpt suggested using a struct for the data of the vbo.
-    struct chunkVBOElt{
+    struct SolidVBOElt{
         glm::vec3 pos;
         glm::vec2 uv;
         uint8_t tint[4];
@@ -65,17 +65,27 @@ private:
     int maxNewMeshesPerFrame = 3;
     bool vSync =false;
 
+    const int blockTextureSlotOffset = 0;
+    const int hotbarTextureSlotOffset = 1;
+
     GLFWwindow* window;
 
     LocInt worldLocToRenderLoc(const LocInt& loc);
 
-    Shader chunkShaderProgram;
-    unsigned int viewLocChunks;
-    unsigned int projectionLocChunks;
-    std::map<ChunkID,RenderMesh> solidMeshes;
+    Shader solidChunkShaderProgram;
+    unsigned int viewLocChunksSolid;
+    unsigned int projectionLocChunksSolid;
+
+    Shader cutoutChunkShaderProgram;
+    unsigned int viewLocChunksCutout;
+    unsigned int projectionLocChunksCutout;
+
+    std::map<ChunkID,RenderMesh> solidMeshes; // Considering changing this to a map that contains all meshes.
     std::map<ChunkID,RenderMesh> cutoutMeshes;
-    std::vector<chunkVBOElt> updateVBOVector(const RenderableChunkMesh& worldMesh);
-    RenderMesh createRenderMesh(const RenderableChunkMesh& worldMesh);
+    std::vector<SolidVBOElt> updateSolidVBOVector(const RenderableChunkMesh& worldMesh);
+    std::vector<CutoutVBOElt> updateCutoutVBOVector(const RenderableChunkMesh& worldMesh);
+    void updateRenderMesh(const ChunkID& chunkID, RenderableChunkMesh& worldMesh);
+    void createRenderMesh(const ChunkID& chunkID, RenderableChunkMesh& worldMesh);
     void renderChunks(World& world, glm::mat4& view, glm::mat4& projection);
 
     float localOutlineOffset = 0.002f;

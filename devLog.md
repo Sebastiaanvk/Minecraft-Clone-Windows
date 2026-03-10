@@ -41,3 +41,13 @@ I also did a lot of other optimizations.
 Seems to be running very smoothly now. 
 Also removed the rendering of the bottom of the map, which speeds up quite a bit as well.
 Guess I will start on other things now, such as water and flowers.
+
+## 10/3/2026
+Working on rendering the flowers.
+Alright I added the possibility to place flowers and they show up in the hotbar as well.
+Problem is that we can place blocks unto flowers, I think I will fix that later, its not a problem for now.
+Did need to change the block Targeting algorithms so now it just check whether the block is anything other than air.
+I still dont render the flowers though.
+Refactored the chunkRender function in the Renderer class and I think I found a major speed up: I didnt set the updated flag to false when creating the VBO, which meant it would update the VBO in the next frame, even if nothing changed.
+
+Yay, I added the flower rendering. There were some hiccups naturally, but it works perfectly in the end. Plus, I refactored the render class, so adding the translucent rendering should be quite natural.

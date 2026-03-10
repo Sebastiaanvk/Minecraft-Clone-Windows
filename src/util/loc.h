@@ -138,6 +138,9 @@ inline LocInt posToBlockLoc(const LocFloat& loc){
         static_cast<int>(floor(loc.z))
     };
 }   
+inline LocFloat locIntToLocFloat(const LocInt& locInt ){
+    return glm::vec3(locInt.x,locInt.y,locInt.z);
+}
 
 typedef Loc2 ChunkID;
 

@@ -63,8 +63,8 @@ private:
         {true,BlockID::Oak_Log},
         {true,BlockID::White_Wool},
         {true,BlockID::Black_Wool},
-        {false,BlockID::Dandelion},
-        {false,BlockID::Poppy},
+        {true,BlockID::Dandelion},
+        {true,BlockID::Poppy},
         {false,BlockID::Air}
     }};
 };
