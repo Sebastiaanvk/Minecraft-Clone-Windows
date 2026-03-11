@@ -4,30 +4,12 @@
 ## Nu aan werken:
 
 ### march 10 2026
-Add leaves, then add water.
-First only from the inventory, afterwards add water to chunk generation (just add a water level), then add vegetation to generation
-Keep face culling disabled, but add both sides of the flower texture to the mesh
-
-Which categories should I have for blocks?
-I mean there's solid, which means we cant walk through it.
-There's opaque so it's not transparent.
-Then there blocks that are not opaque, but they are solid and not translucent.
-There are also block that are solid, not opaque and not translucent.
-I guess we can add a translucent flag.
-water is translucent, not opaque and not solid
-glass is solid and translucent
-leaves are solid and neither translucent nor opaque.
-
-
-add a tint to the cutoutMesh, because leaves have tints apparently.
-
-
-
+Water!
 Add water!
 
 
 ### march 9 2026
-Bloemen -> Water -> bomen -> Tweak generation 
+Bloemen -> Water -> bomen -> Generation 
 
 
 
@@ -292,3 +274,20 @@ Make two functions for initializing the cutout VAO and one for updating the cuto
 Write the shaders for the cutout meshes. 
 Test if the flowers will render from the inventory.
 Add the flowers to the chunk generation. -->
+
+<!-- Add leaves, then add water.
+First only from the inventory, afterwards add water to chunk generation (just add a water level), then add vegetation to generation
+Keep face culling disabled, but add both sides of the flower texture to the mesh
+
+Which categories should I have for blocks?
+I mean there's solid, which means we cant walk through it.
+There's opaque so it's not transparent.
+Then there blocks that are not opaque, but they are solid and not translucent.
+There are also block that are solid, not opaque and not translucent.
+I guess we can add a translucent flag.
+water is translucent, not opaque and not solid
+glass is solid and translucent
+leaves are solid and neither translucent nor opaque.
+
+
+add a tint to the cutoutMesh, because leaves have tints apparently. -->
