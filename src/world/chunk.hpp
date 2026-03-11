@@ -31,7 +31,7 @@ class Chunk{
     // Chunk(const ChunkID& loc,  ChunkManager& chunkManager, const GenerationPars* generationParsP, FastNoiseLite fastNoiseLite);
     Chunk(const ChunkID& loc,  ChunkManager& chunkManager);
     void generateChunkTerrain();
-    void generateTrees(Chunk* nbChunks[8]);
+    void generateTrees(std::array<Chunk*,8> nbChunks);
     void update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ, Chunk* nbChunkPosZ);
 
     std::array<BlockID,CHUNKSIZE> chunk; // This is for faster mesh creation. Kind of ugly though to have no get function.
@@ -73,7 +73,7 @@ class Chunk{
     std::shared_ptr<RenderableChunkMesh> meshPtr;
     int highestY = 0;
     int highestYBorder = 0;
-    void setBlockIdNbs(const LocInt& loc,BlockID id,Chunk* nbs[8]);
+    void setBlockIdNbs(const LocInt& loc,BlockID id,std::array<Chunk*,8> nbs);
 
     // const GenerationPars* genParsP;
     // const FastNoiseLite noise;

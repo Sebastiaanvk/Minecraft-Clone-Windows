@@ -48,9 +48,10 @@ void ChunkManager::generateTrees(const LocInt& loc, int distance){
             // std::cout << (chunks.count(chunkCandidate)==0) << chunks[chunkCandidate]->terrainIsGenerated() << !chunks[chunkCandidate]->treesAreGenerated() << !chunks[chunkCandidate]->generatingTrees() << allowedToStartGeneratingTrees(chunkCandidate) << std::endl;
             if(chunks.count(chunkCandidate) && chunks[chunkCandidate]->terrainIsGenerated() && !chunks[chunkCandidate]->treesAreGenerated() && !chunks[chunkCandidate]->generatingTrees() && allowedToStartGeneratingTrees(chunkCandidate)){
                 chunks[chunkCandidate]->setGeneratingTreesFlagTrue();
-                Chunk* nbChunks[8];
+                std::array<Chunk*,8> nbChunks;
                 for( int i=0; i<8; i++){
                     nbChunks[i] = chunks.at(chunkCandidate+nbDiffsDiag[i]).get();
+                    assert(nbChunks[i]->terrainIsGenerated());
                 }
                 chunks[chunkCandidate]->generateTrees(nbChunks);
             }
@@ -68,9 +69,10 @@ void ChunkManager::generateTreesAsync(const LocInt& loc, int distance){
             ChunkID chunkCandidate = {chunkId.x+dx*MAXCHUNKX,chunkId.z+dz*MAXCHUNKZ};
             if(chunks.count(chunkCandidate) && chunks[chunkCandidate]->terrainIsGenerated() && !chunks[chunkCandidate]->treesAreGenerated() && !chunks[chunkCandidate]->generatingTrees() && allowedToStartGeneratingTrees(chunkCandidate)){
                 chunks[chunkCandidate]->setGeneratingTreesFlagTrue();
-                Chunk* nbChunks[8];
+                std::array<Chunk*,8> nbChunks;
                 for( int i=0; i<8; i++){
                     nbChunks[i] = chunks.at(chunkCandidate+nbDiffsDiag[i]).get();
+                    assert(nbChunks[i]->terrainIsGenerated());
                 }
                 futureDump.push_back(std::async(std::launch::async, &Chunk::generateTrees,chunks.at(chunkCandidate).get(),nbChunks));
             }
@@ -174,8 +176,8 @@ bool ChunkManager::allowedToStartGeneratingTrees(const ChunkID& chunkID){
     return chunks[chunkID]->terrainIsGenerated();
 }
 bool ChunkManager::allowedToStartCalculatingMesh(const ChunkID& chunkID){
-    for( int i=0; i<4; i++){
-        ChunkID nb = chunkID + nbDiffs[i];
+    for( int i=0; i<8; i++){
+        ChunkID nb = chunkID + nbDiffsDiag[i];
         if( chunks.count(nb)==0 || !chunks[nb]->treesAreGenerated()){
             return false;
         }

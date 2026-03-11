@@ -45,6 +45,16 @@ Ok its looking quite nice now.
 The trees are rendering. And the underwater plants are nice as well.
 There's one problem, the program crashes when I try to do the tree generation asynchronously.
 
+Wooow found the bug to why the tree generation was crashing.
+That was some real cpp type shit. 
+I move the pointers to the chunks to a c array, but of course then the pointers dont get copied.
+So I changed it to std::array and that solved the problem.
+I got pretty far with debugging, because I found that the neighboring chunks had a flag set to false that was previously true and there was no way set it back to false.
+So I knew something was up with the pointers.
+And then Claude came in clutch and told me about the problem with the c style array( which is basically just a pointer as well).
+
+Tomorrow, I will make the trees check that there is not already a block on spot where they want to place the leaves.
+
 
 ## 10/3/2026
 Working on rendering the flowers.

@@ -39,13 +39,19 @@ void Chunk::generateChunkTerrain(){
     terrainGeneratedFlag = true;
 }
 
-void Chunk::generateTrees(Chunk* nbChunks[8]){
+void Chunk::generateTrees(std::array<Chunk*,8> nbChunks){
     for(int x=0; x<MAXCHUNKX; x++){
         for(int z=0; z<MAXCHUNKZ; z++){
             int dirtHeight = ChunkGeneration::getDirtHeight({x+chunkID.x,z+chunkID.z});
             int waterLevel = ChunkGeneration::getWaterLevel();
             if(dirtHeight>=waterLevel){
                 if(ChunkGeneration::containsTree({chunkID.x+x,chunkID.z+z})){
+                    for(int i=0; i<8; i++){
+                        assert(!nbChunks[i]->generatingTrees());
+                        assert(!nbChunks[i]->getCalculatingMeshFlag());
+                        assert(nbChunks[i]->terrainIsGenerated());
+                        assert(nbChunks[i]->terrainIsGenerated());
+                    }
                     for(int y=dirtHeight; y<dirtHeight+6 && y<MAXCHUNKY; y++){
                         setBlockId({x,y,z},BlockID::Oak_Log);
                     }
@@ -79,7 +85,7 @@ void Chunk::setBlockId(const LocInt& loc,BlockID id){
         }
     }
 }
-void Chunk::setBlockIdNbs(const LocInt& loc,BlockID id,Chunk* nbs[8]){
+void Chunk::setBlockIdNbs(const LocInt& loc,BlockID id,std::array<Chunk*,8> nbs){
     // The nbs go in clockwise order, starting in the bottom left (negative x, negative z)
     // 2 3 4
     // 1 x 5
