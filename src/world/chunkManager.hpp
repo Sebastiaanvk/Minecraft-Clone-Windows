@@ -2,6 +2,7 @@
 #define BLOCK_MANAGER_HPP
 
 #include <blockRegistry.hpp>
+#include <world/chunkGeneration.hpp>
 #include <util/loc.h>
 #include <unordered_map>
 #include <memory>
@@ -40,7 +41,6 @@ private:
     ChunkID getChunkID(const LocInt& loc) const;
     LocInt getLocWithinChunk(const LocInt& loc) const;
     std::unordered_map<ChunkID, std::unique_ptr<Chunk>> chunks;
-    FastNoiseLite noise;
     void addChunk(const ChunkID& chunkID);    
 
     int renderDistance = 20;

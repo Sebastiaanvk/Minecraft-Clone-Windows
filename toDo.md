@@ -4,26 +4,21 @@
 ## Nu aan werken:
 
 ### march 11 2026
-Water blocks kunnen renderen.
-Wat moet hiervoor gebeuren?
-We moeten een translucent shader toevoegen
-Een translucent VBO constructor en VAO constructor
-Met texture en tint!
-Water block. translucentMesh creator, probably same way as leaves, should be easy I think, for now we just check whether the neighboring block is water. Lets start with that.
-So add water to blockregistry->add water to player inventory -> add water to mesh creation -> water at correct tint for inventory.
-TranslucentVBOElt, translucentMesh, translucentMeshes, 
-Kijken hoe we die translucent mesh creeeren.
+Terrain generation!
+First fix the elevation and we can add a water level easily.
+Im thinking of adding two perlin noises. One with a higher amplitude and greater distance and another with smaller amplitude and more local.
+
+So first we need to make a struct that contains everything required for chunk generation. Im thinking of writing a header and cpp file as well so its not all contained in the chunk class.
+The thing, though, is to make sure that the chunk generation can run in parallel.
+So we want to copy this whole chunk generation struct for each chunk, thats fine.
+We only need some perlin noise thingies I guess.
+And then in the chunk generation class we could add some static functions, or put functions in a namespace.
+Its very important that it doesnt contain any state, because that complicates asynchronous generation.
+I guess a namespace with the generation is a good idea.
 
 
 
-sort the translucent boxes? Yes!
-Camera underwater should make the whole thing more blue.
-Maybe tint the entire screen?
 
-
-Water is rendering!
-Todo: dont add water face if its next to another water! Yes did this!
-Sort the translucent blocks.
 
 
 ### march 10 2026
@@ -43,6 +38,7 @@ Important: Adding an unloading distance for the chunks and the meshes!
 
 We need to some kind of centralized tint registry, for block with tints.
 
+Sort the translucent blocks.
 
 We should change the block targeting algorithm and also check whether the block is the type that can be placed unto.
 After we change the block targeting algorithm, we can also change the hitbox of objects such as flowers and change the shape of the indicator box for that case.
@@ -314,3 +310,23 @@ leaves are solid and neither translucent nor opaque.
 
 
 add a tint to the cutoutMesh, because leaves have tints apparently. -->
+
+<!-- Water blocks kunnen renderen.
+Wat moet hiervoor gebeuren?
+We moeten een translucent shader toevoegen
+Een translucent VBO constructor en VAO constructor
+Met texture en tint!
+Water block. translucentMesh creator, probably same way as leaves, should be easy I think, for now we just check whether the neighboring block is water. Lets start with that.
+So add water to blockregistry->add water to player inventory -> add water to mesh creation -> water at correct tint for inventory.
+TranslucentVBOElt, translucentMesh, translucentMeshes, 
+Kijken hoe we die translucent mesh creeeren.
+
+
+
+sort the translucent boxes? Yes!
+Camera underwater should make the whole thing more blue.
+Maybe tint the entire screen?
+
+
+Water is rendering!
+Todo: dont add water face if its next to another water! Yes did this! -->

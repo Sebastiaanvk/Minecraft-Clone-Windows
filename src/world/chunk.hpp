@@ -9,10 +9,11 @@
 #include <vector>
 #include <set>
 #include <memory>
-#include <FastNoiseLite.h>
+// #include <FastNoiseLite.h>
 #include <iostream>
 #include <algorithm>
 #include <atomic>
+#include <world/chunkGeneration.hpp>
 
 // If these constants are changed, make sure to update getChunkID and getLockWithinChunk in the chunkManager class
 static constexpr int MAXCHUNKX = 16;
@@ -26,15 +27,9 @@ class ChunkManager; // Chunk and ChunkManager include each other.
 
 class Chunk{
     public:
-
-    struct GenerationPars{
-        int expected_dirt_height;
-        int dirt_height_amplitude;
-        int bedrock_height;
-    };
-
-    Chunk(const ChunkID& loc,  ChunkManager& chunkManager, const GenerationPars* generationParsP, FastNoiseLite fastNoiseLite);
-    void generateChunk();
+    // Chunk(const ChunkID& loc,  ChunkManager& chunkManager, const GenerationPars* generationParsP, FastNoiseLite fastNoiseLite);
+    Chunk(const ChunkID& loc,  ChunkManager& chunkManager);
+    void generateChunkTerrain();
 
     std::array<BlockID,CHUNKSIZE> chunk; // This is for faster mesh creation. Kind of ugly though to have no get function.
 
@@ -58,17 +53,18 @@ class Chunk{
     
     private:
     std::atomic<bool> dirtyFlag = true;
-    std::atomic<bool> chunkGeneratedFlag = false;
+    std::atomic<bool> terrainGeneratedFlag = false;
     std::atomic<bool> calculatingMeshFlag = false;
 
     ChunkManager& chunkManager;
     LocInt chunkLoc;
+    ChunkID chunkID;
     std::shared_ptr<RenderableChunkMesh> meshPtr;
     int highestY = 0;
     int highestYBorder = 0;
 
-    const GenerationPars* genParsP;
-    const FastNoiseLite noise;
+    // const GenerationPars* genParsP;
+    // const FastNoiseLite noise;
 };
 
 

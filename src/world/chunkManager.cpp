@@ -1,13 +1,12 @@
 #include <world/chunk.hpp> // Chunk and ChunkManager include each other.
 #include <world/chunkManager.hpp>
 
-constexpr Chunk::GenerationPars generationPars = {
-    128,
-    20,
-    5 
-};
 
 
+ChunkManager::ChunkManager(unsigned int seed){
+    ChunkGeneration::init(seed);
+    generateChunks({0,0});
+}
 
 void ChunkManager::generateChunks(const LocInt& loc, int distance){
     ChunkID chunkId = getChunkID(loc);
@@ -18,7 +17,7 @@ void ChunkManager::generateChunks(const LocInt& loc, int distance){
                 // std::cout << "Generating chunk:\n";
                 // auto start = std::chrono::high_resolution_clock::now();
                 addChunk(chunkCandidate);
-                chunks[chunkCandidate]->generateChunk();
+                chunks[chunkCandidate]->generateChunkTerrain();
                 // auto end = std::chrono::high_resolution_clock::now();
                 // auto ms = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
                 // std::cout << "Took: " << ms << " microseconds" << std::endl;
@@ -40,7 +39,7 @@ void ChunkManager::generateChunksAsync(const LocInt& loc, int distance){
             if(chunks.count(chunkCandidate)==0){
                 addChunk(chunkCandidate);
                 // To do: add the chunk generation in async here!
-                futureDump.push_back(std::async(std::launch::async, &Chunk::generateChunk, chunks.at(chunkCandidate).get()));
+                futureDump.push_back(std::async(std::launch::async, &Chunk::generateChunkTerrain, chunks.at(chunkCandidate).get()));
             }
         }
     }
@@ -50,10 +49,6 @@ void ChunkManager::generateChunksAsync(const LocInt& loc){
     generateChunksAsync(loc,chunkGenerationDistance);
 }
 
-ChunkManager::ChunkManager(unsigned int seed){
-    noise = FastNoiseLite(seed);
-    generateChunks({0,0});
-}
 
 ChunkID ChunkManager::getChunkID(const LocInt& loc) const{
     // Neat trick to round down to the nearest multiple of 16.
@@ -213,7 +208,7 @@ std::queue<std::shared_ptr<RenderableChunkMesh>> ChunkManager::toRenderableChunk
 }
 
 void ChunkManager::addChunk(const ChunkID& chunkID){
-    chunks.try_emplace(chunkID, std::make_unique<Chunk>(chunkID, *this, &generationPars, noise));
+    chunks.try_emplace(chunkID, std::make_unique<Chunk>(chunkID, *this));
 }
 bool ChunkManager::neighborsGenerated(const ChunkID& chunkID){
     for( int i=0; i<4; i++){

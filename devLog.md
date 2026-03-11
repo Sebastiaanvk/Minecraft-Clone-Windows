@@ -16,7 +16,15 @@ This means we have to sort all the water blocks every time a player moves and up
 That's a lot of work. I will leave that to later.
 For now I want to focus on world generation, because with water, trees and flowers I can generate super cools landscapes.
 
+Currently thinking about how to do the chunk generation so that we can still run it all asynchronously.
+Currently all the chunks have an attribute that contains the generation data.
+But since we are only reading, its apparently safe to read from the same data as long as it never changes.
+So I was considering making like a static class or a namespace.
+I think I will do a namespace actually, seems perfect for this scenario.
 
+<img src="assets\media\terrain water 11-3-2026.gif" width="900" >
+
+I refactored the terrain generation code and I got water working! Looks really cool.
 
 ## 10/3/2026
 Working on rendering the flowers.

@@ -1,31 +1,39 @@
 #include <world/chunk.hpp>
 #include <world/chunkManager.hpp> // Chunk and ChunkManager include each other.
 
-Chunk::Chunk(const ChunkID& loc, ChunkManager& chunkManager, const GenerationPars* generationParsP,  FastNoiseLite fastNoiseLite)
-    : chunkManager(chunkManager), chunkLoc({loc.x,0,loc.z}), genParsP(generationParsP), noise(fastNoiseLite)
+Chunk::Chunk(const ChunkID& loc, ChunkManager& chunkManager)
+    : chunkManager(chunkManager), chunkLoc({loc.x,0,loc.z}), chunkID(loc)
 {
     meshPtr = std::make_shared<RenderableChunkMesh>();
     meshPtr->chunkId = loc;
     // chunkLoc = {loc.x,0,loc.z};
 }
 
-void Chunk::generateChunk(){
+void Chunk::generateChunkTerrain(){
     for(int i=0; i<CHUNKSIZE; i++){
         chunk[i] = BlockID::Air;
     }
     for(int x=0; x<MAXCHUNKX; x++){
         for(int z=0; z<MAXCHUNKZ; z++){
-            int dirtHeight = genParsP->expected_dirt_height+ genParsP->dirt_height_amplitude* noise.GetNoise((float)(x+chunkLoc.x),(float)(z+chunkLoc.z));
-            for(int y=0; y<genParsP->bedrock_height; y++){
+            int dirtHeight = ChunkGeneration::getDirtHeight({x+chunkID.x,z+chunkID.z});
+            int bedrockHeight = ChunkGeneration::getBedrockHeight();
+            int waterLevel = ChunkGeneration::getWaterLevel();
+
+            for(int y=0; y<bedrockHeight; y++){
                 setBlockId({x,y,z}, BlockID::Bedrock);
             }
-            for(int y=genParsP->bedrock_height; y<dirtHeight-1; y++){
+            for(int y=bedrockHeight; y<dirtHeight; y++){
                 setBlockId({x,y,z}, BlockID::Dirt);
             }
-            setBlockId({x,dirtHeight-1,z},BlockID::Grass_Dirt);
+            if(dirtHeight>=waterLevel){
+                setBlockId({x,dirtHeight-1,z},BlockID::Grass_Dirt);
+            }
+            for(int y=dirtHeight; y<waterLevel; y++){
+                setBlockId({x,y,z}, BlockID::Water);
+            }
         }
     } 
-    chunkGeneratedFlag = true;
+    terrainGeneratedFlag = true;
 }
 
 BlockID Chunk::getBlockId(const LocInt& loc) const{
@@ -297,7 +305,7 @@ std::shared_ptr<RenderableChunkMesh> Chunk::getMeshPtr(){
 }
 
 bool Chunk::isGenerated(){
-    return chunkGeneratedFlag;
+    return terrainGeneratedFlag;
 }
 
 

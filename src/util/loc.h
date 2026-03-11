@@ -144,7 +144,10 @@ inline LocFloat locIntToLocFloat(const LocInt& locInt ){
 
 typedef Loc2 ChunkID;
 
-inline ChunkID operator+(const ChunkID& chunkID1, const ChunkID& chunkID2){
+// inline ChunkID operator+(const ChunkID& chunkID1, const ChunkID& chunkID2){
+//     return {chunkID1.x+chunkID2.x, chunkID1.z+chunkID2.z};
+// }
+inline Loc2 operator+(const Loc2& chunkID1, const Loc2& chunkID2){
     return {chunkID1.x+chunkID2.x, chunkID1.z+chunkID2.z};
 }
 
