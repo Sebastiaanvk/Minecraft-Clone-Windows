@@ -23,8 +23,9 @@ void World::update(Input_Handler& input_handler){
     updatePlayerLocation(input_handler);
 
     chunkManager.generateTerrainsAsync(player.getBlockLoc() );
-    chunkManager.generateTreesAsync(player.getBlockLoc());
-    chunkManager.calculateMeshesAsync(player.getBlockLoc());
+    // chunkManager.generateTreesAsync(player.getBlockLoc());
+    chunkManager.generateTrees(player.getBlockLoc());
+    // chunkManager.calculateMeshesAsync(player.getBlockLoc());
 
     if(input_handler.key_down(Key::LEFT_MOUSE_BUTTON)){
         deleteTarget();

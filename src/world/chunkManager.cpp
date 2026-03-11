@@ -48,11 +48,11 @@ void ChunkManager::generateTrees(const LocInt& loc, int distance){
             // std::cout << (chunks.count(chunkCandidate)==0) << chunks[chunkCandidate]->terrainIsGenerated() << !chunks[chunkCandidate]->treesAreGenerated() << !chunks[chunkCandidate]->generatingTrees() << allowedToStartGeneratingTrees(chunkCandidate) << std::endl;
             if(chunks.count(chunkCandidate) && chunks[chunkCandidate]->terrainIsGenerated() && !chunks[chunkCandidate]->treesAreGenerated() && !chunks[chunkCandidate]->generatingTrees() && allowedToStartGeneratingTrees(chunkCandidate)){
                 chunks[chunkCandidate]->setGeneratingTreesFlagTrue();
-                Chunk* nbChunkNegX = chunks.at(chunkCandidate+nbDiffs[0]).get();
-                Chunk* nbChunkPosX = chunks.at(chunkCandidate+nbDiffs[1]).get();
-                Chunk* nbChunkNegZ = chunks.at(chunkCandidate+nbDiffs[2]).get();
-                Chunk* nbChunkPosZ = chunks.at(chunkCandidate+nbDiffs[3]).get();
-                chunks[chunkCandidate]->generateTrees(nbChunkNegX,nbChunkPosX,nbChunkNegZ,nbChunkPosZ);
+                Chunk* nbChunks[8];
+                for( int i=0; i<8; i++){
+                    nbChunks[i] = chunks.at(chunkCandidate+nbDiffsDiag[i]).get();
+                }
+                chunks[chunkCandidate]->generateTrees(nbChunks);
             }
         }
     }
@@ -68,11 +68,11 @@ void ChunkManager::generateTreesAsync(const LocInt& loc, int distance){
             ChunkID chunkCandidate = {chunkId.x+dx*MAXCHUNKX,chunkId.z+dz*MAXCHUNKZ};
             if(chunks.count(chunkCandidate) && chunks[chunkCandidate]->terrainIsGenerated() && !chunks[chunkCandidate]->treesAreGenerated() && !chunks[chunkCandidate]->generatingTrees() && allowedToStartGeneratingTrees(chunkCandidate)){
                 chunks[chunkCandidate]->setGeneratingTreesFlagTrue();
-                Chunk* nbChunkNegX = chunks.at(chunkCandidate+nbDiffs[0]).get();
-                Chunk* nbChunkPosX = chunks.at(chunkCandidate+nbDiffs[1]).get();
-                Chunk* nbChunkNegZ = chunks.at(chunkCandidate+nbDiffs[2]).get();
-                Chunk* nbChunkPosZ = chunks.at(chunkCandidate+nbDiffs[3]).get();
-                futureDump.push_back(std::async(std::launch::async, &Chunk::generateTrees,chunks.at(chunkCandidate).get(),nbChunkNegX,nbChunkPosX,nbChunkNegZ,nbChunkPosZ));
+                Chunk* nbChunks[8];
+                for( int i=0; i<8; i++){
+                    nbChunks[i] = chunks.at(chunkCandidate+nbDiffsDiag[i]).get();
+                }
+                futureDump.push_back(std::async(std::launch::async, &Chunk::generateTrees,chunks.at(chunkCandidate).get(),nbChunks));
             }
         }
     }

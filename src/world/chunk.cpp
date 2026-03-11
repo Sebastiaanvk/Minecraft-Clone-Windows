@@ -39,16 +39,21 @@ void Chunk::generateChunkTerrain(){
     terrainGeneratedFlag = true;
 }
 
-void Chunk::generateTrees(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ, Chunk* nbChunkPosZ){
+void Chunk::generateTrees(Chunk* nbChunks[8]){
     for(int x=0; x<MAXCHUNKX; x++){
         for(int z=0; z<MAXCHUNKZ; z++){
             int dirtHeight = ChunkGeneration::getDirtHeight({x+chunkID.x,z+chunkID.z});
             int waterLevel = ChunkGeneration::getWaterLevel();
             if(dirtHeight>=waterLevel){
                 if(ChunkGeneration::containsTree({chunkID.x+x,chunkID.z+z})){
-                    for(int y=dirtHeight; y<dirtHeight+5 && y<MAXCHUNKY; y++){
+                    for(int y=dirtHeight; y<dirtHeight+6 && y<MAXCHUNKY; y++){
                         setBlockId({x,y,z},BlockID::Oak_Log);
                     }
+                    for(int i=0; i<ChunkGeneration::treeLeaves.size(); i++){
+                        // std::cout << x+ChunkGeneration::treeLeaves[i].x << "," << dirtHeight+ChunkGeneration::treeLeaves[i].y << "," << z+ChunkGeneration::treeLeaves[i].z << std::endl;
+                        setBlockIdNbs({x+ChunkGeneration::treeLeaves[i].x,dirtHeight+ChunkGeneration::treeLeaves[i].y,z+ChunkGeneration::treeLeaves[i].z},BlockID::Oak_Leaves,nbChunks);
+                    }
+                    
                 }
             }
         }
@@ -62,6 +67,9 @@ BlockID Chunk::getBlockId(const LocInt& loc) const{
 }
 
 void Chunk::setBlockId(const LocInt& loc,BlockID id){
+    assert(loc.x>=0 && loc.x<MAXCHUNKX);
+    assert(loc.y>=0 && loc.y<MAXCHUNKY);
+    assert(loc.z>=0 && loc.z<MAXCHUNKZ);
     chunk[loc.y*MAXCHUNKX*MAXCHUNKZ + loc.z*MAXCHUNKX + loc.x] = id;
     dirtyFlag = true;
     if(id!=BlockID::Air){
@@ -72,8 +80,40 @@ void Chunk::setBlockId(const LocInt& loc,BlockID id){
     }
 }
 void Chunk::setBlockIdNbs(const LocInt& loc,BlockID id,Chunk* nbs[8]){
-
-
+    // The nbs go in clockwise order, starting in the bottom left (negative x, negative z)
+    // 2 3 4
+    // 1 x 5
+    // 0 7 6
+    if(loc.y>=MAXCHUNKY || loc.y<0){
+        return;
+    }
+    if(loc.x<0){
+        int newX = loc.x+MAXCHUNKX;
+        if(loc.z<0){
+            nbs[0]->setBlockId({newX,loc.y,loc.z+MAXCHUNKZ},id);
+        } else if(loc.z<MAXCHUNKZ){
+            nbs[1]->setBlockId({newX,loc.y,loc.z},id);
+        } else {
+            nbs[2]->setBlockId({newX,loc.y,loc.z-MAXCHUNKZ},id);
+        }
+    } else if(loc.x>=MAXCHUNKX){
+        int newX = loc.x-MAXCHUNKX;
+        if(loc.z<0){
+            nbs[6]->setBlockId({newX,loc.y,loc.z+MAXCHUNKZ},id);
+        } else if(loc.z<MAXCHUNKZ){
+            nbs[5]->setBlockId({newX,loc.y,loc.z},id);
+        } else {
+            nbs[4]->setBlockId({newX,loc.y,loc.z-MAXCHUNKZ},id);
+        }
+    } else {
+        if(loc.z<0){
+            nbs[7]->setBlockId({loc.x,loc.y,loc.z+MAXCHUNKZ},id);
+        } else if(loc.z<MAXCHUNKZ){
+            setBlockId(loc,id);
+        } else {
+            nbs[3]->setBlockId({loc.x,loc.y,loc.z-MAXCHUNKZ},id);
+        }
+    }
 }
 
 bool Chunk::blockIsSolid(const LocInt& loc){

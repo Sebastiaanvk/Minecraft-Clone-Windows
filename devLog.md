@@ -36,6 +36,16 @@ The game did slow down a lot though. Still aroun 60 fps, but drops are frequent.
 I know one way I can speed it up by a lot.
 I also realized that I need to consider all 8 neighbors when making the tree and not just the four adjacent chunk neighbors. That will be a bit annoying to add.
 
+In the middle of doing the trees, I added underwater plants.
+It took a surprisingly short time, even though I add a bunch of things, for example: the I added a new underwater block flag, so water would also render on the face of a block containing an underwater plant.
+
+<img src="assets\media\trees and underwater plants 11-3-2026.png" width="900">
+
+Ok its looking quite nice now.
+The trees are rendering. And the underwater plants are nice as well.
+There's one problem, the program crashes when I try to do the tree generation asynchronously.
+
+
 ## 10/3/2026
 Working on rendering the flowers.
 Alright I added the possibility to place flowers and they show up in the hotbar as well.

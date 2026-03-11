@@ -38,6 +38,10 @@ Yeah sounds doable.
 
 
 
+Checken of het blokje niet solid is als ik de boom bouw!
+
+
+
 ### march 10 2026
 Water!
 Add water!
