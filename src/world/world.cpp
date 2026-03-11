@@ -5,8 +5,15 @@
 World::World(unsigned int seed)
     : chunkManager(seed),player()
 {
-    chunkManager.generateChunks(player.getBlockLoc(),7);
-    chunkManager.calculateMeshes(player.getBlockLoc(),5);
+    START_TIMING(Terrain)
+    chunkManager.generateTerrains(player.getBlockLoc(),10);
+    END_TIMING(Terrain)
+    START_TIMING(Trees)
+    chunkManager.generateTrees(player.getBlockLoc(),9);
+    END_TIMING(Trees)
+    START_TIMING(Meshes)
+    chunkManager.calculateMeshes(player.getBlockLoc(),8);
+    END_TIMING(Meshes)
 }
 
 
@@ -15,8 +22,9 @@ void World::update(Input_Handler& input_handler){
     tick += 1;
     updatePlayerLocation(input_handler);
 
+    chunkManager.generateTerrainsAsync(player.getBlockLoc() );
+    chunkManager.generateTreesAsync(player.getBlockLoc());
     chunkManager.calculateMeshesAsync(player.getBlockLoc());
-    chunkManager.generateChunksAsync(player.getBlockLoc() );
 
     if(input_handler.key_down(Key::LEFT_MOUSE_BUTTON)){
         deleteTarget();

@@ -26,6 +26,16 @@ I think I will do a namespace actually, seems perfect for this scenario.
 
 I refactored the terrain generation code and I got water working! Looks really cool.
 
+<img src="assets\media\flowers and grass 11-3-2026.png" width="900" >
+
+Alright I also added flowers and grass to the chunk generation.
+
+
+cool I added the tree generation. So far its just tree trunks though, I will add a tree model as a queue of offsets containing leaves I think.
+The game did slow down a lot though. Still aroun 60 fps, but drops are frequent.
+I know one way I can speed it up by a lot.
+I also realized that I need to consider all 8 neighbors when making the tree and not just the four adjacent chunk neighbors. That will be a bit annoying to add.
+
 ## 10/3/2026
 Working on rendering the flowers.
 Alright I added the possibility to place flowers and they show up in the hotbar as well.

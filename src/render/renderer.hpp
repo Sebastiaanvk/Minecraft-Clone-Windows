@@ -66,7 +66,7 @@ private:
     };
 
     bool showGameData = true;
-    float projectionDistance = 500.0f;
+    float projectionDistance = 1000.0f;
     float textureMargin = 0.005f;
     int maxNewMeshesPerFrame = 3;
     bool vSync =false;

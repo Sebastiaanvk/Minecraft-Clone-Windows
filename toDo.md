@@ -4,20 +4,37 @@
 ## Nu aan werken:
 
 ### march 11 2026
-Terrain generation!
-First fix the elevation and we can add a water level easily.
-Im thinking of adding two perlin noises. One with a higher amplitude and greater distance and another with smaller amplitude and more local.
-
-So first we need to make a struct that contains everything required for chunk generation. Im thinking of writing a header and cpp file as well so its not all contained in the chunk class.
-The thing, though, is to make sure that the chunk generation can run in parallel.
-So we want to copy this whole chunk generation struct for each chunk, thats fine.
-We only need some perlin noise thingies I guess.
-And then in the chunk generation class we could add some static functions, or put functions in a namespace.
-Its very important that it doesnt contain any state, because that complicates asynchronous generation.
-I guess a namespace with the generation is a good idea.
 
 
+Ok adding trees might be tricky, because of asynchronous.
+But I think I have a solution: We can only add trees when all neighbors are done generating chunks
+And then we can only renderMeshes when all neighbors are done generating trees.
+But what if two threads are simultaneously generating trees?
+We need an atomic flag indicating that they are not currently adding vegetation.
 
+Ok so the point is, we can only create meshes when trees are created in all the surrounding chunks: easy enough.
+Creating trees: We can only create trees when all neighbors have generated the terrain.
+Ok so we need two extra flags for the chunks: generatedTrees and currentlyGeneratingTrees.
+
+So we really need to focus on the flags now and not forget anything, because it can destroy stuff!!!!
+
+
+Ok so we need to write a generateFlags function that can run asynchronously ( so with pointers to its neighbors).
+For the generateFlags function, we need to check that all neighbors are done generating chunks and are not currently generating the tree or generating the mesh.
+(Calculating the mesh is not possible, because we only allow starting the mesh when all neighbors are done generating trees)
+
+We then need to change the mesh creation kick off to check that the chunks are done creating trees.
+
+Alright the tree generation is working! The game did slow down a lot though.
+right now Im just placing logs, but Im adding leaves as we speak.
+The tree shape Im going for: I think I'll make a queue that contains the offsets of the leaves and then loop through those. yeah the shape is like: 6 logs on top of each other. 3 empty layers, 5x5, 5x5,3x3 and a plus on top
+
+Shiiiiiiieeeet, the tree generation needs 8 neighbors! Ok I think thats easy to handle actually.
+First, I will make a new struct with the 8 neighborOffsets.
+Then, I will change the allow tree generation function.
+Then I will make sure that the tree generation function takes in an array of size 8 of chunk Pointers.
+then I will add the setBlockID chunk functions that can place in the spots of the neighbors.
+Yeah sounds doable.
 
 
 
@@ -330,3 +347,15 @@ Maybe tint the entire screen?
 
 Water is rendering!
 Todo: dont add water face if its next to another water! Yes did this! -->
+
+<!-- Terrain generation!
+First fix the elevation and we can add a water level easily.
+Im thinking of adding two perlin noises. One with a higher amplitude and greater distance and another with smaller amplitude and more local.
+
+So first we need to make a struct that contains everything required for chunk generation. Im thinking of writing a header and cpp file as well so its not all contained in the chunk class.
+The thing, though, is to make sure that the chunk generation can run in parallel.
+So we want to copy this whole chunk generation struct for each chunk, thats fine.
+We only need some perlin noise thingies I guess.
+And then in the chunk generation class we could add some static functions, or put functions in a namespace.
+Its very important that it doesnt contain any state, because that complicates asynchronous generation.
+I guess a namespace with the generation is a good idea. -->

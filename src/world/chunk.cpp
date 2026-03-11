@@ -25,15 +25,36 @@ void Chunk::generateChunkTerrain(){
             for(int y=bedrockHeight; y<dirtHeight; y++){
                 setBlockId({x,y,z}, BlockID::Dirt);
             }
-            if(dirtHeight>=waterLevel){
-                setBlockId({x,dirtHeight-1,z},BlockID::Grass_Dirt);
-            }
             for(int y=dirtHeight; y<waterLevel; y++){
                 setBlockId({x,y,z}, BlockID::Water);
+            }
+            if(dirtHeight>=waterLevel){
+                setBlockId({x,dirtHeight-1,z},BlockID::Grass_Dirt);
+                setBlockId({x,dirtHeight,z},ChunkGeneration::getOptionalPlant({x,z}));
+            } else {
+                setBlockId({x,dirtHeight,z},ChunkGeneration::getOptionalUnderwaterPlant({x,z}));
             }
         }
     } 
     terrainGeneratedFlag = true;
+}
+
+void Chunk::generateTrees(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ, Chunk* nbChunkPosZ){
+    for(int x=0; x<MAXCHUNKX; x++){
+        for(int z=0; z<MAXCHUNKZ; z++){
+            int dirtHeight = ChunkGeneration::getDirtHeight({x+chunkID.x,z+chunkID.z});
+            int waterLevel = ChunkGeneration::getWaterLevel();
+            if(dirtHeight>=waterLevel){
+                if(ChunkGeneration::containsTree({chunkID.x+x,chunkID.z+z})){
+                    for(int y=dirtHeight; y<dirtHeight+5 && y<MAXCHUNKY; y++){
+                        setBlockId({x,y,z},BlockID::Oak_Log);
+                    }
+                }
+            }
+        }
+    } 
+    treesGeneratedFlag = true;
+    generatingTreesFlag = false;
 }
 
 BlockID Chunk::getBlockId(const LocInt& loc) const{
@@ -49,6 +70,10 @@ void Chunk::setBlockId(const LocInt& loc,BlockID id){
             highestYBorder = std::max(highestYBorder,loc.y);
         }
     }
+}
+void Chunk::setBlockIdNbs(const LocInt& loc,BlockID id,Chunk* nbs[8]){
+
+
 }
 
 bool Chunk::blockIsSolid(const LocInt& loc){
@@ -96,11 +121,22 @@ void Chunk::setDirty(){
     dirtyFlag = true;
 }
 
+bool Chunk::terrainIsGenerated(){
+    return terrainGeneratedFlag;
+}
+bool Chunk::treesAreGenerated(){
+    return treesGeneratedFlag;
+}
+bool Chunk::generatingTrees(){
+    return generatingTreesFlag;
+}
+void Chunk::setGeneratingTreesFlagTrue(){
+    generatingTreesFlag = true;
+}
 
 bool Chunk::getCalculatingMeshFlag(){
     return calculatingMeshFlag;
 }
-
 void Chunk::setCalculatingMeshFlagTrue(){
     calculatingMeshFlag = true;
 }
@@ -220,13 +256,13 @@ void Chunk::update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ
                     meshElt.blockType = nbBlockID;
                     meshElt.tint[0] = leavesTint[0],meshElt.tint[1] = leavesTint[1],meshElt.tint[2] = leavesTint[2];
                     meshPtr->cutoutMesh.push_back(meshElt);
-                } else if(nbBlockID==BlockID::Water && (y==MAXCHUNKY || chunk[locToIndex(x,y,z)]!=BlockID::Water)){ 
+                } else if( BlockRegistry::isUnderwater(nbBlockID) && (y==MAXCHUNKY || !BlockRegistry::isUnderwater(chunk[locToIndex(x,y,z)]))){ 
                     TranslucentMeshElt meshElt;
                     meshElt.corners[0] = locIntToLocFloat(realLoc + blockSides[i][1]);
                     meshElt.corners[1] = locIntToLocFloat(realLoc + blockSides[i][0]);
                     meshElt.corners[2] = locIntToLocFloat(realLoc + blockSides[i][3]);
                     meshElt.corners[3] = locIntToLocFloat(realLoc + blockSides[i][2]);
-                    meshElt.blockType = nbBlockID;
+                    meshElt.blockType = BlockID::Water;
                     meshElt.faceType = faceTypeArrIngoing[i];
                     meshElt.tint[0] = waterTint[0],meshElt.tint[1] = waterTint[1],meshElt.tint[2] = waterTint[2];
                     meshPtr->translucentMesh.push_back(meshElt);
@@ -247,7 +283,12 @@ void Chunk::update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ
                 cutoutMeshElt.corners[2] = locIntToLocFloat( realLoc + diagonals[i][2]);
                 cutoutMeshElt.corners[3] = locIntToLocFloat( realLoc + diagonals[i][3]);
                 cutoutMeshElt.blockType = chunk[locToIndex(x,y,z)];
-                cutoutMeshElt.tint[0] = 255,cutoutMeshElt.tint[1] = 255,cutoutMeshElt.tint[2] = 255;
+                if(chunk[locToIndex(x,y,z)]==BlockID::Short_Grass){
+                    cutoutMeshElt.tint[0] = grassTint[0],cutoutMeshElt.tint[1] =grassTint[1],cutoutMeshElt.tint[2] = grassTint[2];
+                }
+                else {
+                    cutoutMeshElt.tint[0] = 255,cutoutMeshElt.tint[1] = 255,cutoutMeshElt.tint[2] = 255;
+                }
                 meshPtr->cutoutMesh.push_back(cutoutMeshElt);
             }
         }
@@ -304,8 +345,5 @@ std::shared_ptr<RenderableChunkMesh> Chunk::getMeshPtr(){
     return meshPtr;
 }
 
-bool Chunk::isGenerated(){
-    return terrainGeneratedFlag;
-}
 
 

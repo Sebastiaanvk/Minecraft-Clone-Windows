@@ -16,6 +16,7 @@
 #include <world/player.hpp>
 #include <input/input_handler.hpp>
 #include <render/uiData.hpp>
+#include <util/macros.hpp>
 
 class World {
 public:

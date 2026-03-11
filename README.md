@@ -47,4 +47,8 @@ Then I put the glfw3.lib file (in the build/src/release folder ) in a newly made
 I put a path to both these folders in the cmake file as can be seen in the cmake file. 
 Also I put the path to this include folder in the vscode c_cpp_properties.json file.
 
+## Debugger
+I use the mingw debugger.
+To install type: "pacman -S mingw-w64-x86_64-gdb" in MSYS2.
+
 

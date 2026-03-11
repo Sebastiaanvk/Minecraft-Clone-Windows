@@ -16,10 +16,6 @@ class Chunk; // Chunk and ChunkManager include each other.
 class ChunkManager {
 public:
     ChunkManager(unsigned int seed);
-    void generateChunks(const LocInt& loc, int distance);
-    void generateChunksAsync(const LocInt& loc, int distance);
-    void generateChunks(const LocInt& loc);
-    void generateChunksAsync(const LocInt& loc);
     BlockID checkBlock(const LocInt& loc) const;
     bool isSolid(const LocInt& loc) const;
     bool isOpaque(const LocInt& loc) const;
@@ -28,6 +24,15 @@ public:
     void deleteBlock(const LocInt& loc);
     const Chunk& getChunkPointer(const ChunkID& chunkID);
 
+    void generateTerrains(const LocInt& loc, int distance);
+    void generateTerrains(const LocInt& loc);
+    void generateTerrainsAsync(const LocInt& loc, int distance);
+    void generateTerrainsAsync(const LocInt& loc);
+
+    void generateTrees(const LocInt& loc, int distance);
+    void generateTrees(const LocInt& loc);
+    void generateTreesAsync(const LocInt& loc, int distance);
+    void generateTreesAsync(const LocInt& loc);
 
     void calculateMeshesAsync(const LocInt& loc,int distance);
     void calculateMeshesAsync(const LocInt& loc);
@@ -35,7 +40,7 @@ public:
     void calculateMeshes(const LocInt& loc);
     std::queue<std::shared_ptr<RenderableChunkMesh>> toRenderableChunkQueue( const LocInt& loc);
 
-    bool neighborsGenerated(const ChunkID& chunkID);
+
 
 private:
     ChunkID getChunkID(const LocInt& loc) const;
@@ -43,8 +48,12 @@ private:
     std::unordered_map<ChunkID, std::unique_ptr<Chunk>> chunks;
     void addChunk(const ChunkID& chunkID);    
 
-    int renderDistance = 20;
+    int renderDistance = 30;
+    int treeGenerationDistance = renderDistance+1;
     int chunkGenerationDistance = renderDistance+2; // Needs to be higher than the renderDistance or the game breaks!
+
+    bool allowedToStartGeneratingTrees(const ChunkID& chunkID);
+    bool allowedToStartCalculatingMesh(const ChunkID& chunkID);
 
     std::vector<std::future<void>> futureDump;
 

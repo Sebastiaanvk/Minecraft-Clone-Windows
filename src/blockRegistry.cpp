@@ -17,6 +17,10 @@ bool BlockRegistry::isCross(const BlockID& id){
     return registry[static_cast<std::size_t>(id)].cross;
 }
 
+bool BlockRegistry::isUnderwater(const BlockID& id){
+    return registry[static_cast<std::size_t>(id)].underwater;
+}
+
 std::string BlockRegistry::getTextureName(const BlockID id, const FaceType faceType){
     switch(faceType){
         case FaceType::Side: return std::string(registry[static_cast<std::size_t>(id)].textureNameSide);
