@@ -59,6 +59,12 @@ private:
         uint8_t tint[4];
     };
 
+    struct TranslucentVBOElt{
+        glm::vec3 pos;
+        glm::vec2 uv;
+        uint8_t tint[4];
+    };
+
     bool showGameData = true;
     float projectionDistance = 500.0f;
     float textureMargin = 0.005f;
@@ -80,10 +86,16 @@ private:
     unsigned int viewLocChunksCutout;
     unsigned int projectionLocChunksCutout;
 
+    Shader translucentChunkShaderProgram;
+    unsigned int viewLocChunksTranslucent;
+    unsigned int projectionLocChunksTranslucent;
+
     std::map<ChunkID,RenderMesh> solidMeshes; // Considering changing this to a map that contains all meshes.
     std::map<ChunkID,RenderMesh> cutoutMeshes;
+    std::map<ChunkID,RenderMesh> translucentMeshes;
     std::vector<SolidVBOElt> updateSolidVBOVector(const RenderableChunkMesh& worldMesh);
     std::vector<CutoutVBOElt> updateCutoutVBOVector(const RenderableChunkMesh& worldMesh);
+    std::vector<TranslucentVBOElt> updateTranslucentVBOVector(const RenderableChunkMesh& worldMesh);
     void updateRenderMesh(const ChunkID& chunkID, RenderableChunkMesh& worldMesh);
     void createRenderMesh(const ChunkID& chunkID, RenderableChunkMesh& worldMesh);
     void renderChunks(World& world, glm::mat4& view, glm::mat4& projection);

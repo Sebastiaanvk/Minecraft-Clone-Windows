@@ -91,6 +91,12 @@ bool Renderer::init(int width, int height){
     viewLocChunksCutout = glGetUniformLocation(cutoutChunkShaderProgram.ID, "view");
     projectionLocChunksCutout = glGetUniformLocation(cutoutChunkShaderProgram.ID, "projection");
 
+    translucentChunkShaderProgram = Shader("src/shaders/translucentChunkShader.vs","src/shaders/translucentChunkShader.fs");
+    translucentChunkShaderProgram.use();
+    translucentChunkShaderProgram.setInt("textureAtlas",blockTextureSlotOffset);
+    viewLocChunksTranslucent = glGetUniformLocation(translucentChunkShaderProgram.ID, "view");
+    projectionLocChunksTranslucent = glGetUniformLocation(translucentChunkShaderProgram.ID, "projection");
+
 
     // Both of these are the defaults! For some renders we disable, but make sure to enable again.
     glEnable(GL_DEPTH_TEST);  
@@ -199,6 +205,19 @@ void Renderer::renderChunks(World& world, glm::mat4& view, glm::mat4& projection
         glBindVertexArray(cutoutMeshes[chunkID].VAO);
         glDrawArrays(GL_TRIANGLES, 0, cutoutMeshes[chunkID].nrVertices);
     }
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
+    translucentChunkShaderProgram.use();
+    glUniformMatrix4fv(viewLocChunksTranslucent, 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(projectionLocChunksTranslucent, 1, GL_FALSE, glm::value_ptr(projection));
+    for(auto chunkID : chunksToRender){
+        glBindVertexArray(translucentMeshes[chunkID].VAO);
+        glDrawArrays(GL_TRIANGLES, 0, translucentMeshes[chunkID].nrVertices);
+    }
+
+
+    glDisable(GL_BLEND);
 }
 
 std::vector<Renderer::SolidVBOElt> Renderer::updateSolidVBOVector(const RenderableChunkMesh& worldMesh){
@@ -261,7 +280,36 @@ std::vector<Renderer::CutoutVBOElt> Renderer::updateCutoutVBOVector(const Render
         }
     }
     return vertices;
+}
 
+std::vector<Renderer::TranslucentVBOElt> Renderer::updateTranslucentVBOVector(const RenderableChunkMesh& worldMesh){
+    std::vector<TranslucentVBOElt> vertices;
+    // The face has numbered corners starting in the bottom left corner and going counter clockwise.
+    // The corners that correspond to the two triangles that make up the face.
+    const int cornerOrder[6] = {0,1,3,1,2,3};
+    // The uv diffs that correspond to the four corners of the face.
+    const std::pair<int,int> uvDiff[] = {{0,1},{1,1},{1,0},{0,0}};
+    for( auto face: worldMesh.translucentMesh){
+        // Triangles counter-clockwise
+        glm::vec2 uvCoord = TextureAtlas::getUVCoord(face.blockType,face.faceType);
+        for(int i=0;i<6;i++){
+            TranslucentVBOElt vboElt;
+            int corner = cornerOrder[i];
+            
+            vboElt.pos[0] = face.corners[corner].x;
+            vboElt.pos[1] = face.corners[corner].y;
+            vboElt.pos[2] = -face.corners[corner].z; // Mirror the z!
+            vboElt.uv[0] = uvCoord.x+(textureMargin+(1.0f-2.0f*textureMargin)*uvDiff[corner].first)*TextureAtlas::getTextureSizeWidth();
+            vboElt.uv[1] = uvCoord.y+(textureMargin+(1.0f-2.0f*textureMargin)*uvDiff[corner].second)*TextureAtlas::getTextureSizeHeight();
+            vboElt.tint[0] = face.tint[0];
+            vboElt.tint[1] = face.tint[1];
+            vboElt.tint[2] = face.tint[2];
+            vboElt.tint[3] = 255;
+
+            vertices.push_back(vboElt);
+        }
+    }
+    return vertices;
 }
 
 
@@ -279,6 +327,13 @@ void Renderer::updateRenderMesh(const ChunkID& chunkID, RenderableChunkMesh& wor
     glBindBuffer(GL_ARRAY_BUFFER,cutoutMeshes[chunkID].VBO);
     // glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size()*sizeof(chunkVBOElt), vertices.data());
     glBufferData(GL_ARRAY_BUFFER, cutoutVertices.size() * sizeof(CutoutVBOElt), cutoutVertices.data(), GL_STATIC_DRAW);
+
+    std::vector<TranslucentVBOElt> translucentVertices = updateTranslucentVBOVector(worldMesh);
+    translucentMeshes[chunkID].nrVertices = 6*worldMesh.translucentMesh.size(); 
+    glBindVertexArray(translucentMeshes[chunkID].VAO);
+    glBindBuffer(GL_ARRAY_BUFFER,translucentMeshes[chunkID].VBO);
+    // glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size()*sizeof(chunkVBOElt), vertices.data());
+    glBufferData(GL_ARRAY_BUFFER, translucentVertices.size() * sizeof(TranslucentVBOElt), translucentVertices.data(), GL_STATIC_DRAW);
 
     worldMesh.updated = false;
 }
@@ -326,6 +381,28 @@ void Renderer::createRenderMesh(const ChunkID& chunkID, RenderableChunkMesh& wor
     glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(CutoutVBOElt), (void*)offsetof(CutoutVBOElt, tint));
     glEnableVertexAttribArray(2);
     cutoutMeshes[chunkID] = cutoutRenderMesh;
+
+
+    RenderMesh translucentRenderMesh;
+    glGenVertexArrays(1, &translucentRenderMesh.VAO);
+    glBindVertexArray(translucentRenderMesh.VAO);
+
+    glGenBuffers(1, &translucentRenderMesh.VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, translucentRenderMesh.VBO);
+    std::vector<TranslucentVBOElt> translucentVertices = updateTranslucentVBOVector(worldMesh);
+    glBufferData(GL_ARRAY_BUFFER, translucentVertices.size()*sizeof(TranslucentVBOElt), translucentVertices.data(), GL_STATIC_DRAW);
+    translucentRenderMesh.nrVertices = worldMesh.translucentMesh.size()*6;
+    // Position attribute:
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(TranslucentVBOElt), (void*)offsetof(TranslucentVBOElt, pos));
+    glEnableVertexAttribArray(0);
+    // texture attribute
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(TranslucentVBOElt), (void*)offsetof(TranslucentVBOElt, uv));
+    glEnableVertexAttribArray(1);
+    // tint attribute
+    glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(TranslucentVBOElt), (void*)offsetof(TranslucentVBOElt, tint));
+    glEnableVertexAttribArray(2);
+    translucentMeshes[chunkID] = translucentRenderMesh;
+
     worldMesh.updated = false;
 }
 
@@ -540,10 +617,13 @@ void Renderer::renderHotbar(const World& world){
             uiTextureShaderProgram.setVec2("textureLoc",TextureAtlas::getUVCoord(renderableInventory.slotContents[i],FaceType::Side));
             uiTextureShaderProgram.setVec2("textureSize",TextureAtlas::getTextureSize());
             if(renderableInventory.slotContents[i]==BlockID::Oak_Leaves){
-                uiTextureShaderProgram.setVec4("tint",glm::vec4((float)140/255.0f,(float)210/255.0f,(float)70/255.0f,1.0f)); // This should align with the tint in chunks.cpp
+                uiTextureShaderProgram.setVec4("tint",glm::vec4((float)leavesTint[0]/255.0f,(float)leavesTint[1]/255.0f,(float)leavesTint[2]/255.0f,1.0f)); 
                 glDrawElements(GL_TRIANGLES,6, GL_UNSIGNED_INT, 0);
                 uiTextureShaderProgram.setVec4("tint",glm::vec4(1.0f,1.0f,1.0f,1.0f));
-
+            } else if(renderableInventory.slotContents[i]==BlockID::Water){
+                uiTextureShaderProgram.setVec4("tint",glm::vec4((float)waterTint[0]/255.0f,(float)waterTint[1]/255.0f,(float)waterTint[2]/255.0f,1.0f)); 
+                glDrawElements(GL_TRIANGLES,6, GL_UNSIGNED_INT, 0);
+                uiTextureShaderProgram.setVec4("tint",glm::vec4(1.0f,1.0f,1.0f,1.0f));
             } else { 
                 glDrawElements(GL_TRIANGLES,6, GL_UNSIGNED_INT, 0);
             }

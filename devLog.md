@@ -1,5 +1,23 @@
 # DevLog
 
+## 11/3/2026
+Ok I spent the morning trying to get everything to run on another computer.
+Apparently some setups were not as universal as I thought, so I had to install the mingw gcc compiler and re compile the glfw and everything.
+Of course this stuff is always more work than you expected, but at least I can tell I'm getting faster at dealing with problems and understanding how this all works.
+Quite dependent on AI to help me brainstorm the possible problems...
+
+Anyways, going to work on adding and rendering water now.
+
+Yay, added the translucent rendering and have see through water blocks now!
+First I was also rendering the faces between water blocks, but I fixes that now.
+Looks really good. The problem is that I actually need to sort all the translucent blocks in distance from the camera, because if you have two block behind each other with a gap, it wont always show the one in the back.
+There is still depth testing for translucent blocks, so we ideally render the ones in the back first.
+This means we have to sort all the water blocks every time a player moves and upload those to the gpu.
+That's a lot of work. I will leave that to later.
+For now I want to focus on world generation, because with water, trees and flowers I can generate super cools landscapes.
+
+
+
 ## 10/3/2026
 Working on rendering the flowers.
 Alright I added the possibility to place flowers and they show up in the hotbar as well.

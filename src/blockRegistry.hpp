@@ -9,6 +9,10 @@ enum class FaceType : std::uint8_t {Side, Top, Bot};
 inline const FaceType faceTypeArr[] = {FaceType::Side,FaceType::Side,FaceType::Top,FaceType::Bot,FaceType::Side,FaceType::Side};
 inline const FaceType faceTypeArrIngoing[] = {FaceType::Side,FaceType::Side,FaceType::Bot,FaceType::Top,FaceType::Side,FaceType::Side};
 
+// I will formalize this later on:
+inline const uint8_t waterTint[3] = {0,128,190};
+inline const uint8_t leavesTint[3] = {140,210,70};
+
 enum class BlockID : std::uint8_t {
     Air,
     Dirt,
@@ -22,6 +26,7 @@ enum class BlockID : std::uint8_t {
     Oak_Leaves,
     Dandelion,
     Poppy,
+    Water,
     TYPE_COUNT
 };
 
@@ -29,7 +34,7 @@ enum class BlockID : std::uint8_t {
 class BlockRegistry{
 private:
     struct BlockData {
-        bool solid;
+        bool solid; // Is this the same as being able to place a box next to it?
         bool opaque;
         bool translucent;
         bool cross;
@@ -151,13 +156,23 @@ private:
     },
         //Poppy:
 {
-        false,
-        false,
-        false,
-        true,
-        "poppy.png",
-        "poppy.png",
-        "poppy.png"
+        false, // solid
+        false, // opaque
+        false, // translucent
+        true, // cross
+        "poppy.png", // texture name side
+        "poppy.png", // texture name top
+        "poppy.png" // texture name bottom
+    },
+        //Water:
+{
+        false, // solid
+        false, // opaque
+        true, // translucent
+        false, // cross
+        "water_overlay.png", // texture name side
+        "water_still.png", // texture name top
+        "water_overlay.png" // texture name bottom
     }
     }};
 

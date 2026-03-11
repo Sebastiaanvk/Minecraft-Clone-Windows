@@ -130,6 +130,7 @@ void Chunk::update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ
     // Manually check that the array indices are in range!
     meshPtr->solidMesh = {};
     meshPtr->cutoutMesh = {};
+    meshPtr->translucentMesh = {};
     // meshPtr->mesh.reserve(MAXCHUNKX * MAXCHUNKY * MAXCHUNKZ * 6 / 4); // Arbitrary size, not sure if it matters for speed.
 
     // const Chunk& nbChunkNegX = chunkManager.getChunkPointer({chunkLoc.x-MAXCHUNKX,chunkLoc.z});
@@ -153,7 +154,7 @@ void Chunk::update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ
         // Change later for see through shizzle.
 
         // if(y==-1 || y==MAXCHUNKY ||  !BlockRegistry::isOpaque(chunk[locToIndex(x,y,z)])){
-        if(y==MAXCHUNKY ||  !BlockRegistry::isOpaque(chunk[locToIndex(x,y,z)])){
+        if(y==MAXCHUNKY ||  !BlockRegistry::isOpaque(chunk[locToIndex(x,y,z)])){ 
             LocInt loc = {x,y,z};
             LocInt realLoc = chunkLoc+loc;
             for(int i=0; i<6;i++){
@@ -209,9 +210,20 @@ void Chunk::update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ
                     meshElt.corners[2] = locIntToLocFloat(realLoc + blockSides[i][3]);
                     meshElt.corners[3] = locIntToLocFloat(realLoc + blockSides[i][2]);
                     meshElt.blockType = nbBlockID;
-                    meshElt.tint[0] = 140,meshElt.tint[1] = 210,meshElt.tint[2] = 70;
+                    meshElt.tint[0] = leavesTint[0],meshElt.tint[1] = leavesTint[1],meshElt.tint[2] = leavesTint[2];
                     meshPtr->cutoutMesh.push_back(meshElt);
+                } else if(nbBlockID==BlockID::Water && (y==MAXCHUNKY || chunk[locToIndex(x,y,z)]!=BlockID::Water)){ 
+                    TranslucentMeshElt meshElt;
+                    meshElt.corners[0] = locIntToLocFloat(realLoc + blockSides[i][1]);
+                    meshElt.corners[1] = locIntToLocFloat(realLoc + blockSides[i][0]);
+                    meshElt.corners[2] = locIntToLocFloat(realLoc + blockSides[i][3]);
+                    meshElt.corners[3] = locIntToLocFloat(realLoc + blockSides[i][2]);
+                    meshElt.blockType = nbBlockID;
+                    meshElt.faceType = faceTypeArrIngoing[i];
+                    meshElt.tint[0] = waterTint[0],meshElt.tint[1] = waterTint[1],meshElt.tint[2] = waterTint[2];
+                    meshPtr->translucentMesh.push_back(meshElt);
                 }
+
             }
         }
     }}}

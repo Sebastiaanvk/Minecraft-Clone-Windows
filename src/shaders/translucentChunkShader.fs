@@ -8,9 +8,6 @@ uniform sampler2D textureAtlas;
   
 void main()
 {
+    // FragColor = vec4(0.0f,1.0f,0.0f,1.0f);
     FragColor = fragTint*texture(textureAtlas,TexCoord);
-    // FragColor = texture(textureAtlas,TexCoord);
-    if(FragColor.a<0.5f){
-        discard;
-    }
 }

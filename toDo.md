@@ -3,6 +3,29 @@
 
 ## Nu aan werken:
 
+### march 11 2026
+Water blocks kunnen renderen.
+Wat moet hiervoor gebeuren?
+We moeten een translucent shader toevoegen
+Een translucent VBO constructor en VAO constructor
+Met texture en tint!
+Water block. translucentMesh creator, probably same way as leaves, should be easy I think, for now we just check whether the neighboring block is water. Lets start with that.
+So add water to blockregistry->add water to player inventory -> add water to mesh creation -> water at correct tint for inventory.
+TranslucentVBOElt, translucentMesh, translucentMeshes, 
+Kijken hoe we die translucent mesh creeeren.
+
+
+
+sort the translucent boxes? Yes!
+Camera underwater should make the whole thing more blue.
+Maybe tint the entire screen?
+
+
+Water is rendering!
+Todo: dont add water face if its next to another water! Yes did this!
+Sort the translucent blocks.
+
+
 ### march 10 2026
 Water!
 Add water!

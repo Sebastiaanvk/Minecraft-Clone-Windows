@@ -26,11 +26,19 @@ struct CutoutMeshElt{
     uint8_t tint[3];
 };
 
+struct TranslucentMeshElt{
+    LocFloat corners[4];
+    BlockID blockType;
+    FaceType faceType;
+    uint8_t tint[3];
+};
+
 // One chunk mesh as a vector of sides of blocks
 struct RenderableChunkMesh{
     ChunkID chunkId;
     std::vector<ChunkMeshElt> solidMesh;
     std::vector<CutoutMeshElt> cutoutMesh;
+    std::vector<TranslucentMeshElt> translucentMesh;
     bool updated;
 };
 
