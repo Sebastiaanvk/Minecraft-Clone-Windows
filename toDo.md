@@ -3,23 +3,10 @@
 
 ## Nu aan werken:
 
-### march 11 2026
-
-
-
-
-
 Checken of het blokje niet solid is als ik de boom bouw!
+Water beide richtingen op renderen!
+Als ik onderwater ben, het hele scherm blauw maken.
 
-
-
-### march 10 2026
-Water!
-Add water!
-
-
-### march 9 2026
-Bloemen -> Water -> bomen -> Generation 
 
 
 

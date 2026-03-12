@@ -11,7 +11,7 @@ namespace ChunkGeneration{
 
     inline const std::vector<LocInt> treeLeaves = {
                             {0,6,-1},
-                  {-1,6,0}          ,{1,6,0}, 
+                  {-1,6,0}, {0,6,0},{1,6,0}, 
                             {0,6,1},
 
                   {-1,5,-1},{0,5,-1},{1,5,-1},

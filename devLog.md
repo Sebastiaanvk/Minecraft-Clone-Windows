@@ -1,5 +1,9 @@
 # DevLog
 
+## 12/3/2026
+Alright, won't have as much time today, but anyways.
+Added a leaf to my tree that I forgot to render.
+
 ## 11/3/2026
 Ok I spent the morning trying to get everything to run on another computer.
 Apparently some setups were not as universal as I thought, so I had to install the mingw gcc compiler and re compile the glfw and everything.
