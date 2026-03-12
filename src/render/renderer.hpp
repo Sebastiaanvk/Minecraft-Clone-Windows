@@ -107,6 +107,8 @@ private:
     bool setupCubeOutline();
     void renderHighlightedCube(const World& world, const glm::mat4& view, const glm::mat4& projection);
 
+    unsigned int VAOUnderwater;
+
     Shader rectangleShaderProgram;
     unsigned int VAORectangle;
     bool setupRectangleRenderer();

@@ -11,6 +11,7 @@ inline const FaceType faceTypeArrIngoing[] = {FaceType::Side,FaceType::Side,Face
 
 // I will formalize this later on:
 inline const uint8_t waterTint[3] = {0,128,190};
+inline const uint8_t underwaterTint[3] = {0,128,200};
 inline const uint8_t leavesTint[3] = {140,210,70};
 inline const uint8_t grassTint[3] = {140,210,70};
 

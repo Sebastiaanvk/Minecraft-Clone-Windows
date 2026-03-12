@@ -6,7 +6,10 @@ Added a leaf to my tree that I forgot to render.
 
 I fixed that trees dont places leaves into non-air blocks.
 Water faces now render both sides.
-When underwater, it longer displays the block you're targeting.
+When underwater, it no longer displays the block you're targeting.
+Added a blue tint when underwater.
+
+<img src="assets\media\underwater 12-3-2026.png" width="900" >
 
 ## 11/3/2026
 Ok I spent the morning trying to get everything to run on another computer.

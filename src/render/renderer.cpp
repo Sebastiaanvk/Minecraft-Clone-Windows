@@ -32,6 +32,28 @@ void Renderer::render(World& world, Camera& camera, GameUIData gameData){
     if( world.hasBlockTargeted() && !world.playerIsUnderwater()){
         renderHighlightedCube(world, view, projection);
     }
+    if(world.playerIsUnderwater()){
+        glBindVertexArray(VAO2dTexture);
+        glEnable(GL_BLEND);
+        glDisable(GL_DEPTH_TEST);
+        
+        glm::vec2 size = glm::vec2(2.0f,2.0f);
+        glm::vec2 loc = glm::vec2(-1.0f,1.0f);
+        
+        uiTextureShaderProgram.use();
+        uiTextureShaderProgram.setInt("textureAtlas",blockTextureSlotOffset);
+        uiTextureShaderProgram.setVec2("loc",loc);
+        uiTextureShaderProgram.setVec2("size",size);
+        uiTextureShaderProgram.setVec2("textureLoc",TextureAtlas::getUVCoord(BlockID::Water,FaceType::Side));
+        uiTextureShaderProgram.setVec2("textureSize",TextureAtlas::getTextureSize());
+
+        uiTextureShaderProgram.setVec4("tint",glm::vec4((float)underwaterTint[0]/255.0f,(float)underwaterTint[1]/255.0f,(float)underwaterTint[2]/255.0f,1.0f)); 
+        glDrawElements(GL_TRIANGLES,6, GL_UNSIGNED_INT, 0);
+        uiTextureShaderProgram.setVec4("tint",glm::vec4(1.0f,1.0f,1.0f,1.0f));
+
+        glEnable(GL_DEPTH_TEST);
+        glDisable(GL_BLEND);
+    }
 
     // Render UI
     renderHotbar(world);
@@ -419,6 +441,7 @@ RendererUIData Renderer::getRendererUIData(){
 
     return rendererUIData;
 }
+
 
 bool Renderer::setupCubeOutline(){
 
