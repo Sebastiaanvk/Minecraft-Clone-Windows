@@ -52,7 +52,7 @@ private:
     int hotbarSelection = 0;
 
     // LocFloat pos = glm::vec3(0.0f,128.0f, 0.0f);
-    LocFloat pos = glm::vec3(0.0f,200.0f, 0.0f);
+    LocFloat pos = glm::vec3(0.0f,200.000f-0.0001f, 0.0f);
     LocFloat lastPos;
     LocFloat forward;
 

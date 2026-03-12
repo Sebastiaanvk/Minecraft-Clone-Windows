@@ -30,6 +30,7 @@ public:
     void placeBlock();
     bool hasBlockTargeted() const;
     LocInt getTargetedBlock() const;
+    bool playerIsUnderwater() const;
     int getHotbarSelection() const;
 
     float tickTimeLength = 0.05f;

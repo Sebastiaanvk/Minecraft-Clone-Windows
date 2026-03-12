@@ -4,6 +4,10 @@
 Alright, won't have as much time today, but anyways.
 Added a leaf to my tree that I forgot to render.
 
+I fixed that trees dont places leaves into non-air blocks.
+Water faces now render both sides.
+When underwater, it longer displays the block you're targeting.
+
 ## 11/3/2026
 Ok I spent the morning trying to get everything to run on another computer.
 Apparently some setups were not as universal as I thought, so I had to install the mingw gcc compiler and re compile the glfw and everything.

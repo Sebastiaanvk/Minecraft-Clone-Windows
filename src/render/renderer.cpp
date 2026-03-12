@@ -29,7 +29,7 @@ void Renderer::render(World& world, Camera& camera, GameUIData gameData){
     // END_TIMING(renderChunksN)
 
     // Highlight the selected cube.
-    if( world.hasBlockTargeted()){
+    if( world.hasBlockTargeted() && !world.playerIsUnderwater()){
         renderHighlightedCube(world, view, projection);
     }
 

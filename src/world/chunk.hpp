@@ -54,6 +54,7 @@ class Chunk{
     bool blockIsSolid(const LocInt& loc);
     bool blockIsOpaque(const LocInt& loc) const;
     bool notAir(const LocInt& loc) const;
+    bool blockIsUnderwater(const LocInt& loc) const;
     int getHighestYBorder() const;
 
 
@@ -73,7 +74,7 @@ class Chunk{
     std::shared_ptr<RenderableChunkMesh> meshPtr;
     int highestY = 0;
     int highestYBorder = 0;
-    void setBlockIdNbs(const LocInt& loc,BlockID id,std::array<Chunk*,8> nbs);
+    void setBlockIdNbsIfEmpty(const LocInt& loc,BlockID id,std::array<Chunk*,8> nbs);
 
     // const GenerationPars* genParsP;
     // const FastNoiseLite noise;

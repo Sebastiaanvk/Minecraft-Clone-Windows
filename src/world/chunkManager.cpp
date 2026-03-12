@@ -270,3 +270,11 @@ bool ChunkManager::notAir(const LocInt& loc) const{
     }
     return false;
 }
+
+bool ChunkManager::isUnderwater(const LocInt& loc) const{
+    ChunkID chunkID = getChunkID(loc);
+    if(chunks.count(chunkID)!=0){
+        return chunks.at(chunkID)->blockIsUnderwater(getLocWithinChunk(loc));
+    }
+    return false;
+}

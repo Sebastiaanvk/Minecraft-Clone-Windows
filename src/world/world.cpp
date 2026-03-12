@@ -273,6 +273,11 @@ bool World::hasBlockTargeted() const{
 LocInt World::getTargetedBlock() const{
     return targetedBlock;
 }
+
+bool World::playerIsUnderwater() const {
+    return chunkManager.isUnderwater(player.getBlockLoc());
+}
+
 int World::getHotbarSelection() const{
     return player.getHotbarSelectionIndex();
 }

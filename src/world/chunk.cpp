@@ -57,7 +57,7 @@ void Chunk::generateTrees(std::array<Chunk*,8> nbChunks){
                     }
                     for(int i=0; i<ChunkGeneration::treeLeaves.size(); i++){
                         // std::cout << x+ChunkGeneration::treeLeaves[i].x << "," << dirtHeight+ChunkGeneration::treeLeaves[i].y << "," << z+ChunkGeneration::treeLeaves[i].z << std::endl;
-                        setBlockIdNbs({x+ChunkGeneration::treeLeaves[i].x,dirtHeight+ChunkGeneration::treeLeaves[i].y,z+ChunkGeneration::treeLeaves[i].z},BlockID::Oak_Leaves,nbChunks);
+                        setBlockIdNbsIfEmpty({x+ChunkGeneration::treeLeaves[i].x,dirtHeight+ChunkGeneration::treeLeaves[i].y,z+ChunkGeneration::treeLeaves[i].z},BlockID::Oak_Leaves,nbChunks);
                     }
                     
                 }
@@ -85,7 +85,7 @@ void Chunk::setBlockId(const LocInt& loc,BlockID id){
         }
     }
 }
-void Chunk::setBlockIdNbs(const LocInt& loc,BlockID id,std::array<Chunk*,8> nbs){
+void Chunk::setBlockIdNbsIfEmpty(const LocInt& loc,BlockID id,std::array<Chunk*,8> nbs){
     // The nbs go in clockwise order, starting in the bottom left (negative x, negative z)
     // 2 3 4
     // 1 x 5
@@ -93,33 +93,48 @@ void Chunk::setBlockIdNbs(const LocInt& loc,BlockID id,std::array<Chunk*,8> nbs)
     if(loc.y>=MAXCHUNKY || loc.y<0){
         return;
     }
-    if(loc.x<0){
-        int newX = loc.x+MAXCHUNKX;
-        if(loc.z<0){
-            nbs[0]->setBlockId({newX,loc.y,loc.z+MAXCHUNKZ},id);
-        } else if(loc.z<MAXCHUNKZ){
-            nbs[1]->setBlockId({newX,loc.y,loc.z},id);
-        } else {
-            nbs[2]->setBlockId({newX,loc.y,loc.z-MAXCHUNKZ},id);
+    int nbIndex;
+    int newX = loc.x;
+    int newZ = loc.z;
+
+    if(loc.x>=0 && loc.x<MAXCHUNKX){
+        if(loc.z>=0 && loc.z<MAXCHUNKZ){
+            if(getBlockId(loc)==BlockID::Air)
+                setBlockId(loc,id);
+            return;
         }
-    } else if(loc.x>=MAXCHUNKX){
-        int newX = loc.x-MAXCHUNKX;
         if(loc.z<0){
-            nbs[6]->setBlockId({newX,loc.y,loc.z+MAXCHUNKZ},id);
-        } else if(loc.z<MAXCHUNKZ){
-            nbs[5]->setBlockId({newX,loc.y,loc.z},id);
+            nbIndex=7;
+            newZ +=MAXCHUNKZ;
         } else {
-            nbs[4]->setBlockId({newX,loc.y,loc.z-MAXCHUNKZ},id);
+            nbIndex=3;
+            newZ-=MAXCHUNKZ;
+        }
+    } else if(loc.x<0){
+        newX += MAXCHUNKX;
+        if(loc.z<0){
+            nbIndex=0;
+            newZ +=MAXCHUNKZ;
+        } else if(loc.z<MAXCHUNKZ){
+            nbIndex=1;
+        } else {
+            nbIndex=2;
+            newZ-=MAXCHUNKZ;
         }
     } else {
+        newX -= MAXCHUNKX;
         if(loc.z<0){
-            nbs[7]->setBlockId({loc.x,loc.y,loc.z+MAXCHUNKZ},id);
+            nbIndex=6;
+            newZ +=MAXCHUNKZ;
         } else if(loc.z<MAXCHUNKZ){
-            setBlockId(loc,id);
+            nbIndex=5;
         } else {
-            nbs[3]->setBlockId({loc.x,loc.y,loc.z-MAXCHUNKZ},id);
+            nbIndex=4;
+            newZ-=MAXCHUNKZ;
         }
     }
+    if(nbs[nbIndex]->getBlockId({newX,loc.y,newZ})==BlockID::Air)
+        nbs[nbIndex]->setBlockId({newX,loc.y,newZ},id);
 }
 
 bool Chunk::blockIsSolid(const LocInt& loc){
@@ -157,6 +172,13 @@ bool Chunk::notAir(const LocInt& loc) const{
         return chunkManager.notAir(newloc);
     }
     return getBlockId(loc)!=BlockID::Air;
+}
+
+bool Chunk::blockIsUnderwater(const LocInt& loc) const{
+    if(loc.y<0||loc.y>=MAXCHUNKY){
+        return false;
+    }
+    return BlockRegistry::isUnderwater(getBlockId(loc));
 }
 
 bool Chunk::isDirty(){
@@ -312,6 +334,16 @@ void Chunk::update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ
                     meshElt.faceType = faceTypeArrIngoing[i];
                     meshElt.tint[0] = waterTint[0],meshElt.tint[1] = waterTint[1],meshElt.tint[2] = waterTint[2];
                     meshPtr->translucentMesh.push_back(meshElt);
+
+                    TranslucentMeshElt meshElt2; // Water renders the faces both ways
+                    meshElt2.corners[1] = locIntToLocFloat(realLoc + blockSides[i][1]);
+                    meshElt2.corners[0] = locIntToLocFloat(realLoc + blockSides[i][0]);
+                    meshElt2.corners[3] = locIntToLocFloat(realLoc + blockSides[i][3]);
+                    meshElt2.corners[2] = locIntToLocFloat(realLoc + blockSides[i][2]);
+                    meshElt2.blockType = BlockID::Water;
+                    meshElt2.faceType = faceTypeArrIngoing[i];
+                    meshElt2.tint[0] = waterTint[0],meshElt2.tint[1] = waterTint[1],meshElt2.tint[2] = waterTint[2];
+                    meshPtr->translucentMesh.push_back(meshElt2);
                 }
 
             }
