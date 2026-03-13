@@ -151,6 +151,9 @@ inline Loc2 operator+(const Loc2& chunkID1, const Loc2& chunkID2){
     return {chunkID1.x+chunkID2.x, chunkID1.z+chunkID2.z};
 }
 
+inline LocInt worldLocToRenderLoc(const LocInt& loc){
+    return {loc.x,loc.y,-loc.z};
+}
 
 const glm::vec3 UP = {0.0f,1.0f,0.0f};
 

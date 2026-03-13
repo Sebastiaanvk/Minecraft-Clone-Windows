@@ -3,9 +3,20 @@
 
 ## Nu aan werken:
 
-Checken of het blokje niet solid is als ik de boom bouw!
-Water beide richtingen op renderen!
-Als ik onderwater ben, het hele scherm blauw maken.
+Ik wil texture atlas en mipmap fixen!!!!
+Ok so what do we need: convert the blockId and faceType to an index: easy, and we just add a function to the blockregistry that does just that.
+then we have to change the shaders and VBO properties so that we have a layerIndex as extra attribute. simple enough.
+Problem: for the hotbar texture we are just using a texture atlas.
+Maybe we should have two shaders for 2d textures: one that uses a texture atlas and one that uses the texture array.
+Also, I want refactor the renderer file. Its waaaay too long right now!
+So I will split it into a render2dAux and render3dAux files
+
+Alright, refactored the render class. Total overhaul.
+
+So now I want to set up the texture array.
+Already did some research about how it works.
+What we need: have a blockRegistry function that converts a blockID and FaceType into an index.
+Then we need to set up the textureArray by converting the 
 
 
 
@@ -25,6 +36,7 @@ After we change the block targeting algorithm, we can also change the hitbox of 
 Physics.
 
 
+- Optional (Optimization) Frustum culling!!! Only render chunks that are in view of the camera.
 - Optional (Optimization): Calculate the uv coordinates and stuff in the mesh creation function, since it can run in parallel. Good idea dude! But for later I guess.
 - Optional (Optimization): Change the render mesh to use local coordinates, so we can use uint_8. Then in the shader, we can add the chunkID location in parallel.
 - Optional (Optimization): Change the renderQueue function to give, for example, raw pointers, and to maybe preserve information better. Like we can actually check if we move to a new chunk and then remove the exact ones or something. Hmmm not sure if that works though. lets see.
@@ -354,3 +366,7 @@ Then, I will change the allow tree generation function.
 Then I will make sure that the tree generation function takes in an array of size 8 of chunk Pointers.
 then I will add the setBlockID chunk functions that can place in the spots of the neighbors.
 Yeah sounds doable. -->
+
+<!-- Checken of het blokje niet solid is als ik de boom bouw!
+Water beide richtingen op renderen!
+Als ik onderwater ben, het hele scherm blauw maken. -->

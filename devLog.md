@@ -1,5 +1,13 @@
 # DevLog
 
+## 13/3/2026
+Spent most of the morning refactoring the renderer class cause it was getting way too big and I was losing the overview and spent too much time searching.
+Added two render classes: ChunkRenderer and UIRenderer.
+Was a bit of a hassle on how to set it up in terms of sharing render settings and having a reference to the Renderer class.
+Of course I forgot about the circular includes.
+But yeah, works now and I think it's much better this way.
+
+
 ## 12/3/2026
 Alright, won't have as much time today, but anyways.
 Added a leaf to my tree that I forgot to render.

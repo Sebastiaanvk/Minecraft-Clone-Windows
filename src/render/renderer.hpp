@@ -7,32 +7,20 @@
 #include <cmath>
 #include <world/world.hpp>
 #include <camera.hpp>
-#include <memory>
-#include <render/renderable.hpp>
 #include <render/uiData.hpp>
-#include <shaders/shader.h>
-#include <util/loc.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <render/customImGui.hpp>
-#include <render/textures.hpp>
-#include <algorithm>
 #include <chrono>
 #include <util/macros.hpp>
+#include <render/chunkRenderer.hpp>
+#include <render/uiRenderer.hpp>
+// #include <memory>
+// #include <render/renderable.hpp>
+// #include <util/loc.h>
 
 
-
-class RenderMesh{
-    public:
-    unsigned int VAO;
-    unsigned int VBO;
-    GLsizei nrVertices;
-};
-// class ChunkMeshes{
-//     RenderMesh solidMesh;
-//     RenderMesh cutoutMesh;
-// };
 
 class Renderer {
 public:
@@ -45,92 +33,32 @@ public:
     void render(World& world, Camera& camera, GameUIData gameData);
     void shutDown();
 
-private:
-// Chatgpt suggested using a struct for the data of the vbo.
-    struct SolidVBOElt{
-        glm::vec3 pos;
-        glm::vec2 uv;
-        uint8_t tint[4];
-    };
-
-    struct CutoutVBOElt{
-        glm::vec3 pos;
-        glm::vec2 uv;
-        uint8_t tint[4];
-    };
-
-    struct TranslucentVBOElt{
-        glm::vec3 pos;
-        glm::vec2 uv;
-        uint8_t tint[4];
-    };
-
-    bool showGameData = true;
-    float projectionDistance = 1000.0f;
-    float textureMargin = 0.005f;
-    int maxNewMeshesPerFrame = 3;
-    bool vSync =false;
-
     const int blockTextureSlotOffset = 0;
     const int hotbarTextureSlotOffset = 1;
 
+    struct RenderSettings{
+        float projectionDistance = 1000.0f;
+        float textureMargin = 0.005f;
+        int maxNewMeshesPerFrame = 3;
+        float localOutlineOffset = 0.002f;
+        float localOutlineWidth = 7.0f;
+        float hotbarWidthPortion = 0.7f;
+        float crossHairLength = 0.05f; //These ratios are with respect to the height of the window.
+        float crossHairWidth = 0.005f;
+    };
+    RenderSettings renderSettings;
+
+private:
+    
+    bool showGameData = true;
+    bool vSync =false;
+
     GLFWwindow* window;
 
-    LocInt worldLocToRenderLoc(const LocInt& loc);
-
-    Shader solidChunkShaderProgram;
-    unsigned int viewLocChunksSolid;
-    unsigned int projectionLocChunksSolid;
-
-    Shader cutoutChunkShaderProgram;
-    unsigned int viewLocChunksCutout;
-    unsigned int projectionLocChunksCutout;
-
-    Shader translucentChunkShaderProgram;
-    unsigned int viewLocChunksTranslucent;
-    unsigned int projectionLocChunksTranslucent;
-
-    std::map<ChunkID,RenderMesh> solidMeshes; // Considering changing this to a map that contains all meshes.
-    std::map<ChunkID,RenderMesh> cutoutMeshes;
-    std::map<ChunkID,RenderMesh> translucentMeshes;
-    std::vector<SolidVBOElt> updateSolidVBOVector(const RenderableChunkMesh& worldMesh);
-    std::vector<CutoutVBOElt> updateCutoutVBOVector(const RenderableChunkMesh& worldMesh);
-    std::vector<TranslucentVBOElt> updateTranslucentVBOVector(const RenderableChunkMesh& worldMesh);
-    void updateRenderMesh(const ChunkID& chunkID, RenderableChunkMesh& worldMesh);
-    void createRenderMesh(const ChunkID& chunkID, RenderableChunkMesh& worldMesh);
-    void renderChunks(World& world, glm::mat4& view, glm::mat4& projection);
-
-    float localOutlineOffset = 0.002f;
-    float localOutlineWidth = 7.0f;
-    unsigned int VAOBlockOutline;
-    Shader outLineShaderProgram;
-    bool setupCubeOutline();
-    void renderHighlightedCube(const World& world, const glm::mat4& view, const glm::mat4& projection);
-
-    unsigned int VAOUnderwater;
-
-    Shader rectangleShaderProgram;
-    unsigned int VAORectangle;
-    bool setupRectangleRenderer();
-
-    Shader uiTextureShaderProgram;
-    unsigned int VAO2dTexture;
-    bool setup2dRenderer();
-
-    float hotbarWidthPortion = 0.7f;
-    unsigned int hotbarTextureAtlas;
-    bool setupHotbarTexture();
-    void renderHotbar(const World& world);
-     
-    float crossHairLength = 0.05f; //These ratios are with respect to the height of the window.
-    float crossHairWidth = 0.005f;
-    void renderCrosshair();
+    ChunkRenderer chunkRenderer;
+    UIRenderer uiRenderer;
 
     RendererUIData getRendererUIData();
-
-    // void renderHotbarTest();
-    // void setupTestMeshes( int atlasWidth, int atlasHeight);
-
 };
 
 
