@@ -8,6 +8,13 @@ Of course I forgot about the circular includes.
 But yeah, works now and I think it's much better this way.
 
 
+Oh my, I finally got the texture atlases working.
+There were some bugs that were super hard to track, but managed in the end.  
+Looks way nicer now.
+
+
+
+
 ## 12/3/2026
 Alright, won't have as much time today, but anyways.
 Added a leaf to my tree that I forgot to render.

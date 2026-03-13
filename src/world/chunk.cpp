@@ -301,7 +301,6 @@ void Chunk::update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ
                     meshElt.corners[2] = realLoc + blockSides[i][3];
                     meshElt.corners[3] = realLoc + blockSides[i][2];
 
-                    // meshElt.blockType = chunk[loc.y*MAXCHUNKX*MAXCHUNKZ + loc.z*MAXCHUNKX + loc.x];
                     meshElt.blockType = nbBlockID;
                     // meshElt.blockType = blockId;
                     meshElt.faceType = faceTypeArrIngoing[i];
@@ -313,7 +312,7 @@ void Chunk::update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ
                     } else {
                         meshElt.tint[0] = 255,meshElt.tint[1] = 255,meshElt.tint[2] = 255;
                     }
-                    meshPtr->solidMesh.push_back(meshElt);
+                    addSolidFaceToMesh(meshElt);
                 // } else if(nbBlockID!=BlockID::Air && !BlockRegistry::isCross(nbBlockID) && !BlockRegistry::isTranslucent(nbBlockID)){ // I think I need to revise the blockRegistry flags, but this should work for now.
                 } else if(nbBlockID==BlockID::Oak_Leaves){ 
                     CutoutMeshElt meshElt;
@@ -323,7 +322,7 @@ void Chunk::update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ
                     meshElt.corners[3] = locIntToLocFloat(realLoc + blockSides[i][2]);
                     meshElt.blockType = nbBlockID;
                     meshElt.tint[0] = leavesTint[0],meshElt.tint[1] = leavesTint[1],meshElt.tint[2] = leavesTint[2];
-                    meshPtr->cutoutMesh.push_back(meshElt);
+                    addCutoutFaceToMesh(meshElt);
                 } else if( BlockRegistry::isUnderwater(nbBlockID) && (y==MAXCHUNKY || !BlockRegistry::isUnderwater(chunk[locToIndex(x,y,z)]))){ 
                     TranslucentMeshElt meshElt;
                     meshElt.corners[0] = locIntToLocFloat(realLoc + blockSides[i][1]);
@@ -333,7 +332,7 @@ void Chunk::update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ
                     meshElt.blockType = BlockID::Water;
                     meshElt.faceType = faceTypeArrIngoing[i];
                     meshElt.tint[0] = waterTint[0],meshElt.tint[1] = waterTint[1],meshElt.tint[2] = waterTint[2];
-                    meshPtr->translucentMesh.push_back(meshElt);
+                    addTranslucentFaceToMesh(meshElt);
 
                     TranslucentMeshElt meshElt2; // Water renders the faces both ways
                     meshElt2.corners[1] = locIntToLocFloat(realLoc + blockSides[i][1]);
@@ -343,7 +342,7 @@ void Chunk::update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ
                     meshElt2.blockType = BlockID::Water;
                     meshElt2.faceType = faceTypeArrIngoing[i];
                     meshElt2.tint[0] = waterTint[0],meshElt2.tint[1] = waterTint[1],meshElt2.tint[2] = waterTint[2];
-                    meshPtr->translucentMesh.push_back(meshElt2);
+                    addTranslucentFaceToMesh(meshElt2);
                 }
 
             }
@@ -367,7 +366,7 @@ void Chunk::update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ
                 else {
                     cutoutMeshElt.tint[0] = 255,cutoutMeshElt.tint[1] = 255,cutoutMeshElt.tint[2] = 255;
                 }
-                meshPtr->cutoutMesh.push_back(cutoutMeshElt);
+                addCutoutFaceToMesh(cutoutMeshElt);
             }
         }
     }}}
@@ -378,45 +377,56 @@ void Chunk::update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ
 }
 
 
-// Before optimizations:
-// void Chunk::update_mesh(){
-//     meshPtr->updated =true;
-//     meshPtr->mesh = {};
-//     for(int x=0; x<MAXCHUNKX; x++){ for(int y=0; y<MAXCHUNKY; y++){ for(int z=0; z< MAXCHUNKZ; z++){
-//         LocInt loc = {x,y,z};
-//         // Change later for see through shizzle.
-//         // std::cout << loc << std::endl;
-//         // std::cout << loc.x << "," << loc.y << "," << loc.z << std::endl;
-//         if(blockIsOpaque(loc)){
-//             for(int i=0; i<6;i++){
-//                 // std::cout << i << std::endl;
-//                 LocInt dir = dirs[i];
-//                 if(!blockIsOpaque(loc+dir)){
-//                     ChunkMeshElt meshElt;
-//                     meshElt.corners[0] = chunkLoc + loc + blockSides[i][0];
-//                     meshElt.corners[1] = chunkLoc + loc + blockSides[i][1];
-//                     meshElt.corners[2] = chunkLoc + loc + blockSides[i][2];
-//                     meshElt.corners[3] = chunkLoc + loc + blockSides[i][3];
+void Chunk::addSolidFaceToMesh(const ChunkMeshElt& face){
+    // Triangles counter-clockwise
+    for(int i=0;i<6;i++){
+        SolidVBOElt vboElt;
+        int corner = cornerOrder[i];
+        
+        vboElt.pos[0] = face.corners[corner].x;
+        vboElt.pos[1] = face.corners[corner].y;
+        vboElt.pos[2] = -face.corners[corner].z; // Mirror the z!
+        vboElt.uvl = glm::vec3(uvDiff[corner],BlockRegistry::getTextureIndex(face.blockType,face.faceType));
+        vboElt.tint[0] = face.tint[0];
+        vboElt.tint[1] = face.tint[1];
+        vboElt.tint[2] = face.tint[2];
+        vboElt.tint[3] = 255;
 
-//                     meshElt.blockType = getBlockId(loc);
-//                     meshElt.faceType = faceTypeArr[i];
-                    
-//                     //Fix this for general cases!!!!
-//                     // Also the color was kind of arbitrary
-//                     if(meshElt.faceType==FaceType::Top && meshElt.blockType==BlockID::Grass_Dirt){
-//                         meshElt.tint[0] = 190,meshElt.tint[1] = 255,meshElt.tint[2] = 120;
-//                     } else {
-//                         meshElt.tint[0] = 255,meshElt.tint[1] = 255,meshElt.tint[2] = 255;
-//                     }
-
-//                     meshPtr->mesh.push_back(meshElt);
-//                 }
-//             }
-//         }
-//     }}}
-//     dirty = false;
-// }
-
+        meshPtr->solidMesh.push_back(vboElt);
+    }
+}
+void Chunk::addCutoutFaceToMesh(const CutoutMeshElt& face){
+    for(int i=0;i<6;i++){
+        CutoutVBOElt vboElt;
+        int corner = cornerOrder[i];
+        
+        vboElt.pos[0] = face.corners[corner].x;
+        vboElt.pos[1] = face.corners[corner].y;
+        vboElt.pos[2] = -face.corners[corner].z; // mirror the z!
+        vboElt.uvl = glm::vec3(uvDiff[corner],BlockRegistry::getTextureIndex(face.blockType,FaceType::Side));
+        vboElt.tint[0] = face.tint[0];
+        vboElt.tint[1] = face.tint[1];
+        vboElt.tint[2] = face.tint[2];
+        vboElt.tint[3] = 255;
+        meshPtr->cutoutMesh.push_back(vboElt);
+    }
+}
+void Chunk::addTranslucentFaceToMesh(const TranslucentMeshElt& face){
+        for(int i=0;i<6;i++){
+            TranslucentVBOElt vboElt;
+            int corner = cornerOrder[i];
+            
+            vboElt.pos[0] = face.corners[corner].x;
+            vboElt.pos[1] = face.corners[corner].y;
+            vboElt.pos[2] = -face.corners[corner].z; // Mirror the z!
+            vboElt.uvl = glm::vec3(uvDiff[corner],BlockRegistry::getTextureIndex(face.blockType,face.faceType));
+            vboElt.tint[0] = face.tint[0];
+            vboElt.tint[1] = face.tint[1];
+            vboElt.tint[2] = face.tint[2];
+            vboElt.tint[3] = 255;
+            meshPtr->translucentMesh.push_back(vboElt);
+        }
+}
 
 std::shared_ptr<RenderableChunkMesh> Chunk::getMeshPtr(){
     assert(!dirtyFlag);

@@ -39,7 +39,7 @@ public:
     struct RenderSettings{
         float projectionDistance = 1000.0f;
         float textureMargin = 0.005f;
-        int maxNewMeshesPerFrame = 3;
+        int maxNewMeshesPerFrame = 10;
         float localOutlineOffset = 0.002f;
         float localOutlineWidth = 7.0f;
         float hotbarWidthPortion = 0.7f;

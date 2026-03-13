@@ -110,123 +110,123 @@ void ChunkRenderer::renderChunks(World& world, glm::mat4& view, glm::mat4& proje
     glDisable(GL_BLEND);
 }
 
-std::vector<ChunkRenderer::SolidVBOElt> ChunkRenderer::updateSolidVBOVector(const RenderableChunkMesh& worldMesh){
-    std::vector<SolidVBOElt> vertices;
-    // The face has numbered corners starting in the bottom left corner and going counter clockwise.
-    // The corners that correspond to the two triangles that make up the face.
-    const int cornerOrder[6] = {0,1,3,1,2,3};
-    // The uv diffs that correspond to the four corners of the face.
-    const glm::vec2 uvDiff[] = {{0,1},{1,1},{1,0},{0,0}};
-    for( auto face: worldMesh.solidMesh){
-        // Triangles counter-clockwise
-        // glm::vec2 uvCoord = TextureAtlas::getUVCoord(face.blockType,face.faceType);
-        for(int i=0;i<6;i++){
-            SolidVBOElt vboElt;
-            int corner = cornerOrder[i];
+// std::vector<ChunkRenderer::SolidVBOElt> ChunkRenderer::updateSolidVBOVector(const RenderableChunkMesh& worldMesh){
+//     std::vector<SolidVBOElt> vertices;
+//     // The face has numbered corners starting in the bottom left corner and going counter clockwise.
+//     // The corners that correspond to the two triangles that make up the face.
+//     const int cornerOrder[6] = {0,1,3,1,2,3};
+//     // The uv diffs that correspond to the four corners of the face.
+//     const glm::vec2 uvDiff[] = {{0,1},{1,1},{1,0},{0,0}};
+//     for( auto face: worldMesh.solidMesh){
+//         // Triangles counter-clockwise
+//         // glm::vec2 uvCoord = TextureAtlas::getUVCoord(face.blockType,face.faceType);
+//         for(int i=0;i<6;i++){
+//             SolidVBOElt vboElt;
+//             int corner = cornerOrder[i];
             
-            vboElt.pos[0] = face.corners[corner].x;
-            vboElt.pos[1] = face.corners[corner].y;
-            vboElt.pos[2] = -face.corners[corner].z; // Mirror the z!
-            vboElt.uvl = glm::vec3(uvDiff[corner],BlockRegistry::getTextureIndex(face.blockType,face.faceType));
-            // vboElt.uv[0] = uvCoord.x+(textureMargin+(1.0f-2.0f*textureMargin)*uvDiff[corner].first)*TextureAtlas::getTextureSizeWidth();
-            // vboElt.uv[1] = uvCoord.y+(textureMargin+(1.0f-2.0f*textureMargin)*uvDiff[corner].second)*TextureAtlas::getTextureSizeHeight();
-            vboElt.tint[0] = face.tint[0];
-            vboElt.tint[1] = face.tint[1];
-            vboElt.tint[2] = face.tint[2];
-            vboElt.tint[3] = 255;
+//             vboElt.pos[0] = face.corners[corner].x;
+//             vboElt.pos[1] = face.corners[corner].y;
+//             vboElt.pos[2] = -face.corners[corner].z; // Mirror the z!
+//             vboElt.uvl = glm::vec3(uvDiff[corner],BlockRegistry::getTextureIndex(face.blockType,face.faceType));
+//             // vboElt.uv[0] = uvCoord.x+(textureMargin+(1.0f-2.0f*textureMargin)*uvDiff[corner].first)*TextureAtlas::getTextureSizeWidth();
+//             // vboElt.uv[1] = uvCoord.y+(textureMargin+(1.0f-2.0f*textureMargin)*uvDiff[corner].second)*TextureAtlas::getTextureSizeHeight();
+//             vboElt.tint[0] = face.tint[0];
+//             vboElt.tint[1] = face.tint[1];
+//             vboElt.tint[2] = face.tint[2];
+//             vboElt.tint[3] = 255;
 
-            vertices.push_back(vboElt);
-        }
-    }
-    return vertices;
-}
+//             vertices.push_back(vboElt);
+//         }
+//     }
+//     return vertices;
+// }
 
-std::vector<ChunkRenderer::CutoutVBOElt> ChunkRenderer::updateCutoutVBOVector(const RenderableChunkMesh& worldMesh){
-    std::vector<CutoutVBOElt> vertices;
-    // The face has numbered corners starting in the bottom left corner and going counter clockwise.
-    // The corners that correspond to the two triangles that make up the face.
-    const int cornerOrder[6] = {0,1,3,1,2,3};
-    // The uv diffs that correspond to the four corners of the face.
-    const glm::vec2 uvDiff[] = {{0,1},{1,1},{1,0},{0,0}};
-    for( auto face: worldMesh.cutoutMesh){
-        // std::cout << "Face in the cutout mesh !" << std::endl;
-        // Triangles counter-clockwise
-        // glm::vec2 uvCoord = TextureAtlas::getUVCoord(face.blockType,FaceType::Side);
-        for(int i=0;i<6;i++){
-            CutoutVBOElt vboElt;
-            int corner = cornerOrder[i];
+// std::vector<ChunkRenderer::CutoutVBOElt> ChunkRenderer::updateCutoutVBOVector(const RenderableChunkMesh& worldMesh){
+//     std::vector<CutoutVBOElt> vertices;
+//     // The face has numbered corners starting in the bottom left corner and going counter clockwise.
+//     // The corners that correspond to the two triangles that make up the face.
+//     const int cornerOrder[6] = {0,1,3,1,2,3};
+//     // The uv diffs that correspond to the four corners of the face.
+//     const glm::vec2 uvDiff[] = {{0,1},{1,1},{1,0},{0,0}};
+//     for( auto face: worldMesh.cutoutMesh){
+//         // std::cout << "Face in the cutout mesh !" << std::endl;
+//         // Triangles counter-clockwise
+//         // glm::vec2 uvCoord = TextureAtlas::getUVCoord(face.blockType,FaceType::Side);
+//         for(int i=0;i<6;i++){
+//             CutoutVBOElt vboElt;
+//             int corner = cornerOrder[i];
             
-            vboElt.pos[0] = face.corners[corner].x;
-            vboElt.pos[1] = face.corners[corner].y;
-            vboElt.pos[2] = -face.corners[corner].z; // mirror the z!
-            vboElt.uvl = glm::vec3(uvDiff[corner],BlockRegistry::getTextureIndex(face.blockType,FaceType::Side));
-            // vboElt.uv[0] = uvCoord.x+(textureMargin+(1.0f-2.0f*textureMargin)*uvDiff[corner].first)*TextureAtlas::getTextureSizeWidth();
-            // vboElt.uv[1] = uvCoord.y+(textureMargin+(1.0f-2.0f*textureMargin)*uvDiff[corner].second)*TextureAtlas::getTextureSizeHeight();
-            // vboElt.uv[0] = uvCoord.x+uvDiff[corner].first*TextureAtlas::getTextureSizeWidth();
-            // vboElt.uv[1] = uvCoord.y+uvDiff[corner].second*TextureAtlas::getTextureSizeHeight();
-            vboElt.tint[0] = face.tint[0];
-            vboElt.tint[1] = face.tint[1];
-            vboElt.tint[2] = face.tint[2];
-            vboElt.tint[3] = 255;
-            vertices.push_back(vboElt);
-        }
-    }
-    return vertices;
-}
+//             vboElt.pos[0] = face.corners[corner].x;
+//             vboElt.pos[1] = face.corners[corner].y;
+//             vboElt.pos[2] = -face.corners[corner].z; // mirror the z!
+//             vboElt.uvl = glm::vec3(uvDiff[corner],BlockRegistry::getTextureIndex(face.blockType,FaceType::Side));
+//             // vboElt.uv[0] = uvCoord.x+(textureMargin+(1.0f-2.0f*textureMargin)*uvDiff[corner].first)*TextureAtlas::getTextureSizeWidth();
+//             // vboElt.uv[1] = uvCoord.y+(textureMargin+(1.0f-2.0f*textureMargin)*uvDiff[corner].second)*TextureAtlas::getTextureSizeHeight();
+//             // vboElt.uv[0] = uvCoord.x+uvDiff[corner].first*TextureAtlas::getTextureSizeWidth();
+//             // vboElt.uv[1] = uvCoord.y+uvDiff[corner].second*TextureAtlas::getTextureSizeHeight();
+//             vboElt.tint[0] = face.tint[0];
+//             vboElt.tint[1] = face.tint[1];
+//             vboElt.tint[2] = face.tint[2];
+//             vboElt.tint[3] = 255;
+//             vertices.push_back(vboElt);
+//         }
+//     }
+//     return vertices;
+// }
 
-std::vector<ChunkRenderer::TranslucentVBOElt> ChunkRenderer::updateTranslucentVBOVector(const RenderableChunkMesh& worldMesh){
-    std::vector<TranslucentVBOElt> vertices;
-    // The face has numbered corners starting in the bottom left corner and going counter clockwise.
-    // The corners that correspond to the two triangles that make up the face.
-    const int cornerOrder[6] = {0,1,3,1,2,3};
-    // The uv diffs that correspond to the four corners of the face.
-    const glm::vec2 uvDiff[] = {{0,1},{1,1},{1,0},{0,0}};
-    for( auto face: worldMesh.translucentMesh){
-        // Triangles counter-clockwise
-        // glm::vec2 uvCoord = TextureAtlas::getUVCoord(face.blockType,face.faceType);
-        for(int i=0;i<6;i++){
-            TranslucentVBOElt vboElt;
-            int corner = cornerOrder[i];
+// std::vector<ChunkRenderer::TranslucentVBOElt> ChunkRenderer::updateTranslucentVBOVector(const RenderableChunkMesh& worldMesh){
+//     std::vector<TranslucentVBOElt> vertices;
+//     // The face has numbered corners starting in the bottom left corner and going counter clockwise.
+//     // The corners that correspond to the two triangles that make up the face.
+//     const int cornerOrder[6] = {0,1,3,1,2,3};
+//     // The uv diffs that correspond to the four corners of the face.
+//     const glm::vec2 uvDiff[] = {{0,1},{1,1},{1,0},{0,0}};
+//     for( auto face: worldMesh.translucentMesh){
+//         // Triangles counter-clockwise
+//         // glm::vec2 uvCoord = TextureAtlas::getUVCoord(face.blockType,face.faceType);
+//         for(int i=0;i<6;i++){
+//             TranslucentVBOElt vboElt;
+//             int corner = cornerOrder[i];
             
-            vboElt.pos[0] = face.corners[corner].x;
-            vboElt.pos[1] = face.corners[corner].y;
-            vboElt.pos[2] = -face.corners[corner].z; // Mirror the z!
-            // vboElt.uv[0] = uvCoord.x+(textureMargin+(1.0f-2.0f*textureMargin)*uvDiff[corner].first)*TextureAtlas::getTextureSizeWidth();
-            // vboElt.uv[1] = uvCoord.y+(textureMargin+(1.0f-2.0f*textureMargin)*uvDiff[corner].second)*TextureAtlas::getTextureSizeHeight();
-            vboElt.uvl = glm::vec3(uvDiff[corner],BlockRegistry::getTextureIndex(face.blockType,face.faceType));
-            vboElt.tint[0] = face.tint[0];
-            vboElt.tint[1] = face.tint[1];
-            vboElt.tint[2] = face.tint[2];
-            vboElt.tint[3] = 255;
+//             vboElt.pos[0] = face.corners[corner].x;
+//             vboElt.pos[1] = face.corners[corner].y;
+//             vboElt.pos[2] = -face.corners[corner].z; // Mirror the z!
+//             // vboElt.uv[0] = uvCoord.x+(textureMargin+(1.0f-2.0f*textureMargin)*uvDiff[corner].first)*TextureAtlas::getTextureSizeWidth();
+//             // vboElt.uv[1] = uvCoord.y+(textureMargin+(1.0f-2.0f*textureMargin)*uvDiff[corner].second)*TextureAtlas::getTextureSizeHeight();
+//             vboElt.uvl = glm::vec3(uvDiff[corner],BlockRegistry::getTextureIndex(face.blockType,face.faceType));
+//             vboElt.tint[0] = face.tint[0];
+//             vboElt.tint[1] = face.tint[1];
+//             vboElt.tint[2] = face.tint[2];
+//             vboElt.tint[3] = 255;
 
-            vertices.push_back(vboElt);
-        }
-    }
-    return vertices;
-}
+//             vertices.push_back(vboElt);
+//         }
+//     }
+//     return vertices;
+// }
 
 
 void ChunkRenderer::updateRenderMesh(const ChunkID& chunkID, RenderableChunkMesh& worldMesh){
-    std::vector<SolidVBOElt> solidVertices = updateSolidVBOVector(worldMesh);
-    solidMeshes[chunkID].nrVertices = 6*worldMesh.solidMesh.size(); 
+    // std::vector<SolidVBOElt> solidVertices = updateSolidVBOVector(worldMesh);
+    // solidMeshes[chunkID].nrVertices = 6*worldMesh.solidMesh.size(); 
+    solidMeshes[chunkID].nrVertices = worldMesh.solidMesh.size(); 
     glBindVertexArray(solidMeshes[chunkID].VAO);
     glBindBuffer(GL_ARRAY_BUFFER,solidMeshes[chunkID].VBO);
-    // glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size()*sizeof(chunkVBOElt), vertices.data());
-    glBufferData(GL_ARRAY_BUFFER, solidVertices.size() * sizeof(SolidVBOElt), solidVertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, worldMesh.solidMesh.size() * sizeof(SolidVBOElt), worldMesh.solidMesh.data(), GL_STATIC_DRAW);
 
-    std::vector<CutoutVBOElt> cutoutVertices = updateCutoutVBOVector(worldMesh);
-    cutoutMeshes[chunkID].nrVertices = 6*worldMesh.cutoutMesh.size(); 
+    // std::vector<CutoutVBOElt> cutoutVertices = updateCutoutVBOVector(worldMesh);
+    // cutoutMeshes[chunkID].nrVertices = 6*worldMesh.cutoutMesh.size(); 
+    cutoutMeshes[chunkID].nrVertices = worldMesh.cutoutMesh.size(); 
     glBindVertexArray(cutoutMeshes[chunkID].VAO);
     glBindBuffer(GL_ARRAY_BUFFER,cutoutMeshes[chunkID].VBO);
-    // glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size()*sizeof(chunkVBOElt), vertices.data());
-    glBufferData(GL_ARRAY_BUFFER, cutoutVertices.size() * sizeof(CutoutVBOElt), cutoutVertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, worldMesh.cutoutMesh.size() * sizeof(CutoutVBOElt), worldMesh.cutoutMesh.data(), GL_STATIC_DRAW);
 
-    std::vector<TranslucentVBOElt> translucentVertices = updateTranslucentVBOVector(worldMesh);
-    translucentMeshes[chunkID].nrVertices = 6*worldMesh.translucentMesh.size(); 
+    // std::vector<TranslucentVBOElt> translucentVertices = updateTranslucentVBOVector(worldMesh);
+    // translucentMeshes[chunkID].nrVertices = 6*worldMesh.translucentMesh.size(); 
+    translucentMeshes[chunkID].nrVertices = worldMesh.translucentMesh.size(); 
     glBindVertexArray(translucentMeshes[chunkID].VAO);
     glBindBuffer(GL_ARRAY_BUFFER,translucentMeshes[chunkID].VBO);
-    // glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size()*sizeof(chunkVBOElt), vertices.data());
-    glBufferData(GL_ARRAY_BUFFER, translucentVertices.size() * sizeof(TranslucentVBOElt), translucentVertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, worldMesh.translucentMesh.size() * sizeof(TranslucentVBOElt), worldMesh.translucentMesh.data(), GL_STATIC_DRAW);
 
     worldMesh.updated = false;
 }
@@ -240,21 +240,20 @@ void ChunkRenderer::createRenderMesh(const ChunkID& chunkID, RenderableChunkMesh
 
     glGenBuffers(1, &solidRenderMesh.VBO);
     glBindBuffer(GL_ARRAY_BUFFER, solidRenderMesh.VBO);
-    std::vector<SolidVBOElt> solidVertices = updateSolidVBOVector(worldMesh);
-    glBufferData(GL_ARRAY_BUFFER, solidVertices.size()*sizeof(SolidVBOElt), solidVertices.data(), GL_STATIC_DRAW);
-    solidRenderMesh.nrVertices = worldMesh.solidMesh.size()*6;
+    // std::vector<SolidVBOElt> solidVertices = updateSolidVBOVector(worldMesh);
+    // glBufferData(GL_ARRAY_BUFFER, solidVertices.size()*sizeof(SolidVBOElt), solidVertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, worldMesh.solidMesh.size()*sizeof(SolidVBOElt), worldMesh.solidMesh.data(), GL_STATIC_DRAW);
+    // solidRenderMesh.nrVertices = worldMesh.solidMesh.size()*6;
+    solidRenderMesh.nrVertices = worldMesh.solidMesh.size();
     // Position attribute:
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(SolidVBOElt), (void*)offsetof(SolidVBOElt, pos));
     glEnableVertexAttribArray(0);
-    // uv attribute
+    // uvl attribute
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(SolidVBOElt), (void*)offsetof(SolidVBOElt, uvl));
     glEnableVertexAttribArray(1);
     // tint attribute
     glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(SolidVBOElt), (void*)offsetof(SolidVBOElt, tint));
     glEnableVertexAttribArray(2);
-    // // texture index attribute
-    // glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(SolidVBOElt), (void*)offsetof(SolidVBOElt, textureLayer));
-    // glEnableVertexAttribArray(3);
     solidMeshes[chunkID] = solidRenderMesh;
 
 
@@ -264,21 +263,20 @@ void ChunkRenderer::createRenderMesh(const ChunkID& chunkID, RenderableChunkMesh
 
     glGenBuffers(1, &cutoutRenderMesh.VBO);
     glBindBuffer(GL_ARRAY_BUFFER, cutoutRenderMesh.VBO);
-    std::vector<CutoutVBOElt> cutoutVertices = updateCutoutVBOVector(worldMesh);
-    glBufferData(GL_ARRAY_BUFFER, cutoutVertices.size()*sizeof(CutoutVBOElt), cutoutVertices.data(), GL_STATIC_DRAW);
-    cutoutRenderMesh.nrVertices = worldMesh.cutoutMesh.size()*6;
+    // std::vector<CutoutVBOElt> cutoutVertices = updateCutoutVBOVector(worldMesh);
+    // glBufferData(GL_ARRAY_BUFFER, cutoutVertices.size()*sizeof(CutoutVBOElt), cutoutVertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, worldMesh.cutoutMesh.size()*sizeof(CutoutVBOElt), worldMesh.cutoutMesh.data(), GL_STATIC_DRAW);
+    // cutoutRenderMesh.nrVertices = worldMesh.cutoutMesh.size()*6;
+    cutoutRenderMesh.nrVertices = worldMesh.cutoutMesh.size();
     // Position attribute:
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(CutoutVBOElt), (void*)offsetof(CutoutVBOElt, pos));
     glEnableVertexAttribArray(0);
-    // uv attribute
+    // uvl attribute
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(CutoutVBOElt), (void*)offsetof(CutoutVBOElt, uvl));
     glEnableVertexAttribArray(1);
     // tint attribute
     glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(CutoutVBOElt), (void*)offsetof(CutoutVBOElt, tint));
     glEnableVertexAttribArray(2);
-    // // texture index attribute
-    // glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(SolidVBOElt), (void*)offsetof(SolidVBOElt, textureLayer));
-    // glEnableVertexAttribArray(3);
     cutoutMeshes[chunkID] = cutoutRenderMesh;
 
 
@@ -288,22 +286,21 @@ void ChunkRenderer::createRenderMesh(const ChunkID& chunkID, RenderableChunkMesh
 
     glGenBuffers(1, &translucentRenderMesh.VBO);
     glBindBuffer(GL_ARRAY_BUFFER, translucentRenderMesh.VBO);
-    std::vector<TranslucentVBOElt> translucentVertices = updateTranslucentVBOVector(worldMesh);
-    glBufferData(GL_ARRAY_BUFFER, translucentVertices.size()*sizeof(TranslucentVBOElt), translucentVertices.data(), GL_STATIC_DRAW);
-    translucentRenderMesh.nrVertices = worldMesh.translucentMesh.size()*6;
+    // std::vector<TranslucentVBOElt> translucentVertices = updateTranslucentVBOVector(worldMesh);
+    // glBufferData(GL_ARRAY_BUFFER, translucentVertices.size()*sizeof(TranslucentVBOElt), translucentVertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, worldMesh.translucentMesh.size()*sizeof(TranslucentVBOElt), worldMesh.translucentMesh.data(), GL_STATIC_DRAW);
+    // translucentRenderMesh.nrVertices = worldMesh.translucentMesh.size()*6;
+    translucentRenderMesh.nrVertices = worldMesh.translucentMesh.size();
     // Position attribute:
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(TranslucentVBOElt), (void*)offsetof(TranslucentVBOElt, pos));
     glEnableVertexAttribArray(0);
-    // uv attribute
+    // uvl attribute
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(TranslucentVBOElt), (void*)offsetof(TranslucentVBOElt, uvl));
     glEnableVertexAttribArray(1);
     // tint attribute
     glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(TranslucentVBOElt), (void*)offsetof(TranslucentVBOElt, tint));
     glEnableVertexAttribArray(2);
     translucentMeshes[chunkID] = translucentRenderMesh;
-    // // texture index attribute
-    // glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(SolidVBOElt), (void*)offsetof(SolidVBOElt, textureLayer));
-    // glEnableVertexAttribArray(3);
 
     worldMesh.updated = false;
 }

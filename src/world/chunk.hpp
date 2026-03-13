@@ -27,7 +27,7 @@ static constexpr ChunkID nbDiffsDiag[8] = {{-MAXCHUNKX,-MAXCHUNKZ},{-MAXCHUNKX,0
 class ChunkManager; // Chunk and ChunkManager include each other.
 
 class Chunk{
-    public:
+public:
     // Chunk(const ChunkID& loc,  ChunkManager& chunkManager, const GenerationPars* generationParsP, FastNoiseLite fastNoiseLite);
     Chunk(const ChunkID& loc,  ChunkManager& chunkManager);
     void generateChunkTerrain();
@@ -61,7 +61,7 @@ class Chunk{
     std::shared_ptr<RenderableChunkMesh> getMeshPtr();
     
     
-    private:
+private:
     std::atomic<bool> dirtyFlag = true; // I guess dirty is negative of finished creating mesh.
     std::atomic<bool> terrainGeneratedFlag = false;
     std::atomic<bool> treesGeneratedFlag = false;
@@ -76,8 +76,11 @@ class Chunk{
     int highestYBorder = 0;
     void setBlockIdNbsIfEmpty(const LocInt& loc,BlockID id,std::array<Chunk*,8> nbs);
 
-    // const GenerationPars* genParsP;
-    // const FastNoiseLite noise;
+    const int cornerOrder[6] = {0,1,3,1,2,3};
+    const glm::vec2 uvDiff[4] = {{0,1},{1,1},{1,0},{0,0}};
+    void addSolidFaceToMesh(const ChunkMeshElt& face);
+    void addCutoutFaceToMesh(const CutoutMeshElt& face);
+    void addTranslucentFaceToMesh(const TranslucentMeshElt& face);
 };
 
 

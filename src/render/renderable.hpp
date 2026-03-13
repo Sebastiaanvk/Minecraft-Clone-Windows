@@ -33,12 +33,32 @@ struct TranslucentMeshElt{
     uint8_t tint[3];
 };
 
+struct SolidVBOElt{
+    glm::vec3 pos;
+    glm::vec3 uvl;
+    // int textureLayer;
+    uint8_t tint[4];
+};
+
+struct CutoutVBOElt{
+    glm::vec3 pos;
+    glm::vec3 uvl;
+    // int textureLayer;
+    uint8_t tint[4];
+};
+
+struct TranslucentVBOElt{
+    glm::vec3 pos;
+    glm::vec3 uvl;
+    // int textureLayer;
+    uint8_t tint[4];
+};
 // One chunk mesh as a vector of sides of blocks
 struct RenderableChunkMesh{
     ChunkID chunkId;
-    std::vector<ChunkMeshElt> solidMesh;
-    std::vector<CutoutMeshElt> cutoutMesh;
-    std::vector<TranslucentMeshElt> translucentMesh;
+    std::vector<SolidVBOElt> solidMesh;
+    std::vector<CutoutVBOElt> cutoutMesh;
+    std::vector<TranslucentVBOElt> translucentMesh;
     bool updated;
 };
 
