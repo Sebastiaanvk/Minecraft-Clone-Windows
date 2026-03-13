@@ -11,6 +11,7 @@
 #include <blockRegistry.hpp>
 #include <iostream>
 #include <fstream>
+#include <util/macros.hpp>
 
 struct TextureLoc{
     int x;
@@ -22,24 +23,20 @@ struct TextureLoc{
 class TextureAtlas{
 public:
     static bool setup();
-    static void bind();
-    static glm::vec2 getUVCoord(const BlockID& blockID, const FaceType& faceType);
-    static float getTextureSizeHeight();
-    static float getTextureSizeWidth();
-    static glm::vec2 getTextureSize();
+    // static void bind();
+    // static glm::vec2 getUVCoord(const BlockID& blockID, const FaceType& faceType);
+    // static float getTextureSizeHeight();
+    // static float getTextureSizeWidth();
+    // static glm::vec2 getTextureSize();
 private:
     TextureAtlas() = delete;
     static nlohmann::json jsonAtlasData;
-    static int atlasWidth;
-    static int atlasHeight;
-    static float textureSizeHeight;
-    static float textureSizeWidth;
-    static unsigned int textureAtlasID;
+    // static int atlasWidth;
+    // static int atlasHeight;
+    // static float textureSizeHeight;
+    // static float textureSizeWidth;
+    static unsigned int textureArrayID;
 };
-
-
-// class HotbarTexture{
-// };
 
 
 

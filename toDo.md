@@ -16,7 +16,25 @@ Alright, refactored the render class. Total overhaul.
 So now I want to set up the texture array.
 Already did some research about how it works.
 What we need: have a blockRegistry function that converts a blockID and FaceType into an index.
-Then we need to set up the textureArray by converting the 
+Then we need to set up the textureArray by converting the texture atlas in one long array that contains the actual textures I use and load them into a texture.
+Then I do the mipmap shizzle and the way that it renders settings.
+I need to change all the shaders to include a third parameter which is an int and is the texture index.
+I need to see if I need two separate shaders for the 2d rendering. One for normal blocks and one for the hotbarTexture.
+And I also need two differen VAO's for the atlas and the array 2d rendering programs.
+
+
+Ok so what we will do: Change the texture setup so we get an array.
+For this we either add the images one by one or we make one big array.
+
+Need to change the shader for chunks and for the hotbar rendering, since we will need a different 2d shader then.
+And we need to change the VAO's then.
+
+then we need to change the functions in the ChunkRenderer that turn the RenderableMeshes into the VBO's.
+
+I think that should be enough.(hopefully)
+
+
+To do : check out the influence of the mip map settings on the render.
 
 
 

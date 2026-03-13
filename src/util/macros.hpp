@@ -14,6 +14,12 @@
 }
 
 
+#define Var(x) std::cerr << #x << " = " << (x) << std::endl;
+
+#define Msg(...) std::cerr << #__VA_ARGS__ << std::endl;
+
+
+
 
 
 

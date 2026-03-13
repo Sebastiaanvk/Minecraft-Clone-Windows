@@ -91,33 +91,45 @@ void Shader::use()
 { 
     glUseProgram(ID);
 }  
-void Shader::setBool(const std::string &name, bool value) const
-{         
+void Shader::assertProgramBound() const {
+    GLint currentProgram;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
+    assert(currentProgram == (GLint)ID);
+}
+
+void Shader::setBool(const std::string &name, bool value) const{         
+    assertProgramBound();
     glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value); 
 }
-void Shader::setInt(const std::string &name, int value) const
-{ 
+void Shader::setInt(const std::string &name, int value) const{ 
+    assertProgramBound();
     glUniform1i(glGetUniformLocation(ID, name.c_str()), value); 
 }
-void Shader::setFloat(const std::string &name, float value) const
-{ 
+void Shader::setFloat(const std::string &name, float value) const{ 
+    assertProgramBound();
     glUniform1f(glGetUniformLocation(ID, name.c_str()), value); 
 } 
 
 void Shader::setMat4(const std::string &name, const glm::mat4& model) const{
-        unsigned int modelLoc = glGetUniformLocation(ID, name.c_str());
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    assertProgramBound();
+    unsigned int modelLoc = glGetUniformLocation(ID, name.c_str());
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 }
 void Shader::setLocInt(const std::string& name, const LocInt& loc) const{
+    assertProgramBound();
     glUniform3f(glGetUniformLocation(ID, name.c_str()), loc.x,loc.y,loc.z);
 }
 void Shader::setVec3(const std::string& name, const glm::vec3& vec) const{
+    assertProgramBound();
     glUniform3f(glGetUniformLocation(ID, name.c_str()), vec.x,vec.y,vec.z);
 }
 
 void Shader::setVec2(const std::string& name, const glm::vec2& vec) const{
+    assertProgramBound();
     glUniform2f(glGetUniformLocation(ID, name.c_str()), vec.x,vec.y);
 }
 void Shader::setVec4(const std::string& name, const glm::vec4& vec) const{
+    assertProgramBound();
+    // glUseProgram(ID);
     glUniform4f(glGetUniformLocation(ID, name.c_str()), vec.x,vec.y,vec.z,vec.a);
 }

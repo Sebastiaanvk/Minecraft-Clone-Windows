@@ -248,6 +248,9 @@ public:
     static bool isCross(const BlockID& id);
     static bool isUnderwater(const BlockID& id);
     static std::string getTextureName(const BlockID id, const FaceType faceType);
+    static int getTextureIndex(const BlockID id, const FaceType faceType);
+    static int nrTextureIndices();
+    static std::string indexToTextureName(int index);
 };
 
 

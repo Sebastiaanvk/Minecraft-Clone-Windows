@@ -33,15 +33,17 @@ private:
     Shader outLineShaderProgram;
     bool setupCubeOutline();
 
-    // unsigned int VAOUnderwater;
-
     Shader rectangleShaderProgram;
     unsigned int VAORectangle;
     bool setupRectangleRenderer();
 
-    Shader uiTextureShaderProgram;
-    unsigned int VAO2dTexture;
-    bool setup2dRenderer();
+    Shader uiTextureShaderProgramAtlas;
+    unsigned int VAO2dTextureAtlas;
+    bool setup2dRendererAtlas();
+
+    Shader uiTextureShaderProgramArray;
+    unsigned int VAO2dTextureArray;
+    bool setup2dRendererArray();
 
     const float& hotbarWidthPortion ;
     unsigned int hotbarTextureAtlas;

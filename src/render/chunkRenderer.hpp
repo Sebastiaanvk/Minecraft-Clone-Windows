@@ -40,19 +40,22 @@ private:
 
     struct SolidVBOElt{
         glm::vec3 pos;
-        glm::vec2 uv;
+        glm::vec3 uvl;
+        // int textureLayer;
         uint8_t tint[4];
     };
 
     struct CutoutVBOElt{
         glm::vec3 pos;
-        glm::vec2 uv;
+        glm::vec3 uvl;
+        // int textureLayer;
         uint8_t tint[4];
     };
 
     struct TranslucentVBOElt{
         glm::vec3 pos;
-        glm::vec2 uv;
+        glm::vec3 uvl;
+        // int textureLayer;
         uint8_t tint[4];
     };
 

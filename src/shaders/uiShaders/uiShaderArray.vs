@@ -1,0 +1,16 @@
+#version 330 core
+layout (location = 0) in vec2 aPos;   // the position variable has attribute position 0
+layout (location = 1) in vec2 aTexCoord;
+  
+out vec3 TexCoord;
+
+uniform vec2 loc;
+uniform vec2 size;
+uniform float textureLayer;
+
+void main()
+{
+    gl_Position = vec4(loc.x+aPos.x*size.x,loc.y+aPos.y*size.y,0.0, 1.0);
+    // TexCoord =    vec2(textureLoc.x+aTexCoord.x*textureSize.x,textureLoc.y+aTexCoord.y*textureSize.y); 
+    TexCoord =    vec3(aTexCoord,textureLayer); 
+}   

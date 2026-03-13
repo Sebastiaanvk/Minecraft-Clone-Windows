@@ -1,10 +1,10 @@
 #include <render/textures.hpp>
 
-unsigned int TextureAtlas::textureAtlasID = 0;
-float TextureAtlas::textureSizeWidth = 0.0f;
-float TextureAtlas::textureSizeHeight = 0.0f;
-int TextureAtlas::atlasWidth = 0;
-int TextureAtlas::atlasHeight = 0;
+unsigned int TextureAtlas::textureArrayID = 0;
+// float TextureAtlas::textureSizeWidth;
+// float TextureAtlas::textureSizeHeight;
+// int TextureAtlas::atlasWidth;
+// int TextureAtlas::atlasHeight;
 // The json contains a dictionary from the entity names to the locations on the texture atlas.
 std::ifstream f("assets/blockAtlasJson.json");
 nlohmann::json TextureAtlas::jsonAtlasData = nlohmann::json::parse(f);
@@ -15,64 +15,84 @@ glm::vec2 jsonGet(const nlohmann::json& data, const std::string& textureName, in
     return {xLoc, yLoc};
 }
 
-glm::vec2 TextureAtlas::getUVCoord(const BlockID& blockID,const FaceType& faceType){
-    return jsonGet(jsonAtlasData, BlockRegistry::getTextureName(blockID,faceType), atlasWidth, atlasHeight);
-}
+// glm::vec2 TextureAtlas::getUVCoord(const BlockID& blockID,const FaceType& faceType){
+//     return jsonGet(jsonAtlasData, BlockRegistry::getTextureName(blockID,faceType), atlasWidth, atlasHeight);
+// }
 
-float TextureAtlas::getTextureSizeHeight(){
-    return textureSizeHeight;
+// float TextureAtlas::getTextureSizeHeight(){
+//     return textureSizeHeight;
 
-}
-float TextureAtlas::getTextureSizeWidth(){
-    return textureSizeWidth;
-}
+// }
+// float TextureAtlas::getTextureSizeWidth(){
+//     return textureSizeWidth;
+// }
 
-glm::vec2 TextureAtlas::getTextureSize(){
-    return glm::vec2(textureSizeWidth,textureSizeHeight);
-}
+// glm::vec2 TextureAtlas::getTextureSize(){
+//     return glm::vec2(textureSizeWidth,textureSizeHeight);
+// }
 
 
-void TextureAtlas::bind(){
-    // glActiveTexture(GL_TEXTURE0); // Optional if I want to have multiple textureAtlases simultaneously.
-    glBindTexture(GL_TEXTURE_2D, textureAtlasID);  
-
-}
+// void TextureAtlas::bind(){
+//     // glActiveTexture(GL_TEXTURE0); // Optional if I want to have multiple textureAtlases simultaneously.
+//     glBindTexture(GL_TEXTURE_2D, textureArrayID);  
+// }
 
 bool TextureAtlas::setup(){
 
     // Setting up the texture atlas
-    glGenTextures(1, &textureAtlasID);  
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textureAtlasID);  
+    glGenTextures(1, &textureArrayID);  
+    glBindTexture(GL_TEXTURE_2D_ARRAY, textureArrayID);  
 
-    // set the texture wrapping/filtering options (on the currently bound texture object)
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // Claude advised me to change GL_REPEAT to GL_CLAMP_TO_EDGE, didnt solve the problem.
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    // Apparently I could consider an texture array instead of an atlas and then you have a mipmap for each texture instead of the full atlas.
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST); // Removes the black lines between far away blocks, but makes the borders of the mipmap very obvious.
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // This adds black lines, but makes the mipmap borders less obvious
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+// Log(1)
 
-
-    int  nrChannels;
+    int  nrChannels, atlasWidth, atlasHeight;
     unsigned char *data = stbi_load("assets/blockAtlas.png", &atlasWidth, &atlasHeight, &nrChannels, 0); 
-    // std::cout << "atlasWidth: " << atlasWidth << ", atlasHeight: " << atlasHeight << std::endl;
-
-    // The atlasWidth and atlasHeight give the number of pixels in the atlas.
-    // textureSizeWidth gives the portion of the image that belongs to a single texture.
-    textureSizeWidth = (float)16/(float)atlasWidth;
-    textureSizeHeight = (float)16/(float)atlasHeight;
-
-    if(data){
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlasWidth, atlasHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    } else {
+    // Log(1.2)
+    if(!data){
         std::cout << "Failed to load texture" << std::endl;
         return false;
     }
+    // Log(1.3)
+    GLsizei mipLevelCount = 5; //We want 5 mipmap layers because the textures are 16x16, so 16,8,4,2,1.
+    // Log(1.4)
+    // GLenum err = glGetError();
+    // std::cout << "GL error before glTexStorage3D: " << err << std::endl;
+    // std::cout<< BlockRegistry::nrTextureIndices() << std::endl;
+    // std::cout << "textureArrayID: " << textureArrayID << std::endl;
+    // std::cout << glGetString(GL_VERSION) << std::endl;
+
+    // glTexStorage3D(GL_TEXTURE_2D_ARRAY, mipLevelCount, GL_RGBA8, 16, 16, BlockRegistry::nrTextureIndices());
+    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA8, 16, 16, BlockRegistry::nrTextureIndices(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    for(int i=0; i<BlockRegistry::nrTextureIndices(); i++){
+        std::string textureName = BlockRegistry::indexToTextureName(i);
+        unsigned char texture[16*16*4];
+        int starting_x = jsonAtlasData["frames"][textureName]["frame"]["x"];
+        int starting_y = jsonAtlasData["frames"][textureName]["frame"]["y"];
+        int textureIndex = 0;
+        for(int dy=0;dy<16;dy++){
+            for(int dx=0; dx<16; dx++){
+                for(int ch=0; ch<4; ch++){
+                    texture[textureIndex] = data[(dy+starting_y)*atlasWidth*4 + (starting_x+dx)*4+ch]; 
+                    textureIndex++;
+                }
+            }
+        }
+        glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, 16, 16, 1, GL_RGBA, GL_UNSIGNED_BYTE, texture);
+    }
+    glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
+
+// Log(3)
+    // set the texture wrapping/filtering options (on the currently bound texture object)
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // This adds black lines, but makes the mipmap borders less obvious
+    // glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST); // Removes the black lines between far away blocks, but makes the borders of the mipmap very obvious.
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    // glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // THIS IS EXTREMELY  CURSED!!!!!!!
+
+// Log(3)
     stbi_image_free(data);
 
     return true;

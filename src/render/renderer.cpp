@@ -35,6 +35,7 @@ void Renderer::render(World& world, Camera& camera, GameUIData gameData){
         uiRenderer.renderHighlightedCube(world, view, projection);
     }
     if(world.playerIsUnderwater()){
+        uiRenderer.renderUnderwater();
     }
 
     // Render UI
