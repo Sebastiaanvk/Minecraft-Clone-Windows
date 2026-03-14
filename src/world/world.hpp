@@ -17,12 +17,15 @@
 #include <input/input_handler.hpp>
 #include <render/uiData.hpp>
 #include <util/macros.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 class World {
 public:
     // World();
     World(unsigned int seed);
     void update(Input_Handler& input_handler);
+    void setFrustumSettings(float renderDistanceNear, float renderDistanceFar, float fovX, float fovY);
 
     std::queue<std::shared_ptr<RenderableChunkMesh>> toRenderableChunkQueue();
     Player player;
@@ -38,9 +41,9 @@ public:
     RenderableInventory getRenderableInventory() const;
 
 
+
 private:
     ChunkManager chunkManager;
-    // void addChunk(const ChunkID& chunkID);    
 
     bool blockTargeted = false;
     LocInt targetedBlock;
@@ -49,6 +52,9 @@ private:
     void updatePlayerLocation(Input_Handler& input_handler);
     int tick = 0;
     int ticksBetweenBlockManipulation = 6;
+
+    ChunkManager::FrustumCullingPars frustumCullingPars;
+    void frustumCull();
 };
 
 #endif //MODEL_HPP

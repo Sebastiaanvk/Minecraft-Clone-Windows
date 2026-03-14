@@ -8,7 +8,6 @@ Game::Game()
     world(seed),
     camera()
 {
-    // std::mt19937 generator(seed); // Mersenne Twister engine (Not sure why this is here)
     std::cout << "Seed: "<< seed << std::endl;
 
 }
@@ -27,16 +26,8 @@ void Game::run(){
     }
 
     while( !glfwWindowShouldClose(renderer.getWindow()) ){
-        // std::cout<< "\nNew game loop:\n";
 
-//        std::this_thread::sleep_for(std::chrono::milliseconds(13)); // This might cause input problems!
         float currentFrame = glfwGetTime();
-        // frameTimeQueue.push(currentFrame);
-        // if(frameTimeQueue.size()>frameTimeQueueLength){
-        //     float timeDiff = currentFrame-frameTimeQueue.front();
-        //     frameTimeQueue.pop();
-        //     frameRate = frameTimeQueueLength/timeDiff;
-        // }
         nrFramesInSecond += 1;
         if(currentFrame-lastSecondFrame>1.0f){
             frameRate = (float)nrFramesInSecond/(currentFrame-lastSecondFrame);
@@ -53,19 +44,21 @@ void Game::run(){
         timeAccumulator += deltaTime;
         while(timeAccumulator>=world.tickTimeLength){
             if(!paused){
+                START_TIMING(worldUpdate)
+                world.setFrustumSettings(renderer.renderSettings.projectionNearDistance,renderer.renderSettings.projectionFarDistance,camera.getFov(),(float)camera.getFov()/renderer.getAspectRatio());
                 world.update(input_handler);        
+                END_TIMING(worldUpdate)
             }
             timeAccumulator -= world.tickTimeLength;
         }
-
 
         float alpha = timeAccumulator/world.tickTimeLength;
 
         camera.update(world.player,alpha);
         
-        // START_TIMING(render)
+        START_TIMING(render)
         renderer.render(world,camera,getGameUIData());
-        // END_TIMING(render)
+        END_TIMING(render)
 
     }
     renderer.shutDown();
@@ -85,7 +78,6 @@ void Game::process_input(){
             input_handler.reset();
         }
     }
-    // std::cout << "dx: " << input_handler.getDX() << " dy: " << input_handler.getDY() << "\n";
     world.player.rotate(input_handler.getDX(),input_handler.getDY());
 }
 
@@ -95,4 +87,3 @@ GameUIData Game::getGameUIData(){
         gameData.frameRate = frameRate;
         return gameData;
 }
-

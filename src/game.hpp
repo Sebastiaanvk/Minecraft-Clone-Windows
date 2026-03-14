@@ -34,8 +34,6 @@ private:
     bool paused = false;
 
     float frameRate = -1.0f;
-    // int frameTimeQueueLength = 20;
-    // std::queue<float> frameTimeQueue;
     float lastSecondFrame=0.0f;
     int nrFramesInSecond = 0;
 

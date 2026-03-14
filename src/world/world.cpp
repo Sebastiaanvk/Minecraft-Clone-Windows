@@ -21,9 +21,10 @@ void World::update(Input_Handler& input_handler){
 
     tick += 1;
     updatePlayerLocation(input_handler);
-
+    
     chunkManager.generateTerrainsAsync(player.getBlockLoc() );
     chunkManager.generateTreesAsync(player.getBlockLoc());
+    frustumCull();
     chunkManager.calculateMeshesAsync(player.getBlockLoc());
 
     if(input_handler.key_down(Key::LEFT_MOUSE_BUTTON)){
@@ -45,6 +46,44 @@ void World::update(Input_Handler& input_handler){
 }
 
 
+void World::setFrustumSettings(float renderDistanceNear, float renderDistanceFar, float fovX, float fovY){
+    frustumCullingPars.near = renderDistanceNear;
+    frustumCullingPars.far = renderDistanceFar;
+    frustumCullingPars.fovX = fovX;
+    frustumCullingPars.fovY = fovY;
+}
+
+
+glm::vec3 rotate(const glm::vec3& dir,float degrees, const glm::vec3& axis){
+    glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f),glm::radians(degrees), axis);
+    return glm::vec3(rotationMatrix * glm::vec4(dir,1.0f));
+}
+
+void World::frustumCull(){
+    frustumCullingPars.cameraLoc = player.getPos();
+    frustumCullingPars.forward = player.getForwardDir();
+    // float pitch = player.getPitch();
+    // float yaw = player.getYaw();
+    glm::vec3 right = glm::normalize(glm::cross(frustumCullingPars.forward, {0,1,0}));
+    glm::vec3 up = glm::normalize(glm::cross(right, frustumCullingPars.forward));
+    float fovX = frustumCullingPars.fovX;
+    float fovY = frustumCullingPars.fovY;
+    // float fovX = 45.0f; // Just for testing purposes
+    // float fovY = 45.0f; // Just for testing purposes
+    // frustumCullingPars.left = yawPitchToVector(yaw+90-fovX/2,pitch);//Double check if the directions of the degrees are correct like this!
+    // frustumCullingPars.right = yawPitchToVector(yaw-90+fovX/2,pitch);
+    // frustumCullingPars.top = yawPitchToVector(yaw,pitch+90-fovY/2);
+    // frustumCullingPars.bottom = yawPitchToVector(yaw,pitch-90+fovY/2);
+    // frustumCullingPars.normals[0] = yawPitchToVector(yaw+90,pitch);//Double check if the directions of the degrees are correct like this!
+    // frustumCullingPars.normals[1] = yawPitchToVector(yaw-90,pitch);
+    // frustumCullingPars.normals[2] = yawPitchToVector(yaw,pitch+90-fovY/2);
+    // frustumCullingPars.normals[3] = yawPitchToVector(yaw,pitch-90+fovY/2);
+    frustumCullingPars.normals[0] = rotate(frustumCullingPars.forward,90.0f-fovX/2,up);//Double check if the directions of the degrees are correct like this!
+    frustumCullingPars.normals[1] = rotate(frustumCullingPars.forward,-90.0f+fovX/2,up);
+    frustumCullingPars.normals[2] = rotate(frustumCullingPars.forward,90.0f-fovY/2,right);
+    frustumCullingPars.normals[3] = rotate(frustumCullingPars.forward,-90.0f+fovY/2,right);
+    chunkManager.cullChunks(frustumCullingPars);
+}
 
 
 void World::updatePlayerLocation(Input_Handler& input_handler){
@@ -72,6 +111,7 @@ void World::updatePlayerLocation(Input_Handler& input_handler){
         player.move_down(tickTimeLength);
     }
 }
+
 
 std::queue<std::shared_ptr<RenderableChunkMesh>> World::toRenderableChunkQueue(){
     return chunkManager.toRenderableChunkQueue(player.getBlockLoc());

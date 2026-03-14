@@ -2,7 +2,7 @@
 #include <render/renderer.hpp>
 
 ChunkRenderer::ChunkRenderer(Renderer& renderer) :
-renderer(renderer),projectionDistance(renderer.renderSettings.projectionDistance),
+renderer(renderer),//projectionDistance(renderer.renderSettings.projectionDistance),
 textureMargin(renderer.renderSettings.textureMargin),maxNewMeshesPerFrame(renderer.renderSettings.maxNewMeshesPerFrame) {
     
 }
@@ -41,10 +41,11 @@ void ChunkRenderer::renderChunks(World& world, glm::mat4& view, glm::mat4& proje
     std::vector<ChunkID> chunksToRender;
 
     // Loop through the renderable chunk meshes.
-    // START_TIMING(renderableChunkQueue)
+    START_TIMING(renderableChunkQueue)
     std::queue<std::shared_ptr<RenderableChunkMesh>> chunkQueue = world.toRenderableChunkQueue();
-    // END_TIMING(renderableChunkQueue)
+    END_TIMING(renderableChunkQueue)
 
+    START_TIMING(checkingChunksToUpdate)
     while(!chunkQueue.empty()){
         std::shared_ptr<RenderableChunkMesh> chunkPtr = chunkQueue.front();
         chunkQueue.pop();
@@ -78,7 +79,9 @@ void ChunkRenderer::renderChunks(World& world, glm::mat4& view, glm::mat4& proje
         }
         chunksToRender.push_back(chunkID);
     }
+    END_TIMING(checkingChunksToUpdate)
 
+    START_TIMING(solidChunks)
     // Set the view and projection matrices to the right values in the chunk shader program
     solidChunkShaderProgram.use();
     glUniformMatrix4fv(viewLocChunksSolid, 1, GL_FALSE, glm::value_ptr(view));
@@ -87,7 +90,9 @@ void ChunkRenderer::renderChunks(World& world, glm::mat4& view, glm::mat4& proje
         glBindVertexArray(solidMeshes[chunkID].VAO);
         glDrawArrays(GL_TRIANGLES, 0, solidMeshes[chunkID].nrVertices);
     }
+    END_TIMING(solidChunks)
 
+    START_TIMING(cutoutChunks)
     cutoutChunkShaderProgram.use();
     glUniformMatrix4fv(viewLocChunksCutout, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(projectionLocChunksCutout, 1, GL_FALSE, glm::value_ptr(projection));
@@ -95,7 +100,9 @@ void ChunkRenderer::renderChunks(World& world, glm::mat4& view, glm::mat4& proje
         glBindVertexArray(cutoutMeshes[chunkID].VAO);
         glDrawArrays(GL_TRIANGLES, 0, cutoutMeshes[chunkID].nrVertices);
     }
+    END_TIMING(cutoutChunks)
 
+    START_TIMING(translucentChunks)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
     translucentChunkShaderProgram.use();
@@ -105,6 +112,7 @@ void ChunkRenderer::renderChunks(World& world, glm::mat4& view, glm::mat4& proje
         glBindVertexArray(translucentMeshes[chunkID].VAO);
         glDrawArrays(GL_TRIANGLES, 0, translucentMeshes[chunkID].nrVertices);
     }
+    END_TIMING(translucentChunks)
 
 
     glDisable(GL_BLEND);

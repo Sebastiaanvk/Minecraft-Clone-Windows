@@ -158,4 +158,13 @@ inline LocInt worldLocToRenderLoc(const LocInt& loc){
 const glm::vec3 UP = {0.0f,1.0f,0.0f};
 
 
+inline glm::vec3 yawPitchToVector(float yaw, float pitch){
+    glm::vec3 direction;
+    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    direction.y = sin(glm::radians(pitch));
+    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    return glm::normalize(direction);
+}
+
+
 #endif //LOC_H

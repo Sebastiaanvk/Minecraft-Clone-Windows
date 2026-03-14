@@ -10,6 +10,7 @@
 #include <chrono> // Just for measuring the time it takes to calculate the mesh of a chunk.
 #include <future>
 #include <cassert>
+#include <glm/glm.hpp>
 
 class Chunk; // Chunk and ChunkManager include each other.
 
@@ -39,9 +40,24 @@ public:
     void calculateMeshesAsync(const LocInt& loc);
     void calculateMeshes(const LocInt& loc,int distance);
     void calculateMeshes(const LocInt& loc);
+    
     std::queue<std::shared_ptr<RenderableChunkMesh>> toRenderableChunkQueue( const LocInt& loc);
 
 
+    struct FrustumCullingPars{
+        LocFloat cameraLoc;
+        float fovX;
+        float fovY;
+        glm::vec3 forward;
+        glm::vec3 normals[4];
+        // glm::vec3 right;
+        // glm::vec3 left;
+        // glm::vec3 top;
+        // glm::vec3 bottom;
+        float near;
+        float far;
+    };
+    void cullChunks(const FrustumCullingPars& cullingPars);
 
 private:
     ChunkID getChunkID(const LocInt& loc) const;
@@ -57,6 +73,10 @@ private:
     bool allowedToStartCalculatingMesh(const ChunkID& chunkID);
 
     std::vector<std::future<void>> futureDump;
+
+    FrustumCullingPars frustumCullingPars;
+    std::vector<ChunkID> culledChunksVector;
+    bool chunkInFrustum(const LocFloat& cornerLoc);
 
 };
 

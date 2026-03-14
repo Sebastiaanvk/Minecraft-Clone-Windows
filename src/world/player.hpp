@@ -31,6 +31,8 @@ public:
     LocInt getBlockLoc() const;
     bool blockIntersects(const LocInt& loc );
     LocFloat getForwardDir() const;
+    float getYaw() const;
+    float getPitch() const;
     int getHotbarSelectionIndex() const;
     void changeHotbarSelection( bool moveUp);
 

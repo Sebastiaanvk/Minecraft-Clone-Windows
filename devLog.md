@@ -1,5 +1,49 @@
 # DevLog
 
+
+## 14/3/2026
+
+Frustum culling today.
+The mathematics is not super trivial, but I think I can do it in a better and simpler way than I could find on sites like learnopengl.com.
+
+### Frustum Culling
+So, just as a simple explanation: The frustum is defined by 6 planes: top, bottom, left, right, near, far.
+All of these planes are defined by a normal vector N which is perpendicular to the plane and a number c.
+The plane is defined by the subset of points for which the inner product of the vector N is exactly c.
+A point in space is considered to be on one side of the plane when the inner product is >c and on the other side of the plane if <c. 
+Also, we define the normals of the planes, so the inside of the frustum has a positive inner product with all planes and the c's are non-negative.
+For simplicity, we assume the camera is exactly at (0,0,0). (Easy to do, we just shift all coordinates in space by the position of the camera).
+In that case, the c's for the top, bottom, left, right planes are 0.
+
+For the near and far planes, we simplify a bit.
+We merely use the forward direction of the player to check the distance to the camera and then we just check whether the point is between the nearDistance and farDistance nubmers. 
+Btw this is not the actual distance, but its the distance of the projection of the point onto the forward vector.
+
+The normal of the other planes is given by starting with a normal that is perpendicular to the forward vector and then we move it by half of the fov.
+I guess thats the same as turning the forward vector by 90 degree minus half the fov.
+We have a fov parameter, but I think thats just for the x-z axis (yaw direction).
+We can get the y axis (pitch direction) fov by multiplying the normal fov with the y x ratio of the current window.
+
+Now here's the ugly part:
+To check whether a box should not be culled, I have the following idea: we check for each plane whether at least one of the vertices of the bounding box is on the right side of the plane.
+And then if this is true for each plane, we dont cull the object.
+
+There are two important things to realize:
+- This can give false positives:
+We can have a hitbox that is entirely outside of the frustum, but for each plane, there is some point in the frustum on the proper side of the plane.
+- It doesn't suffice to check whether any of the vertices of the bounding box is entirely inside of the frustum, because there are examples of objects that intersect with the frustum, but none of the vertices are inside of the frustum.
+
+So what it comes down to, is that we throw away all objects for which there is some plane for which all the vertices are on the wrong side of the plane.
+In that case, it's impossible for an element inside of the bounding box to be inside of the frustum.
+
+Ok it seemed to be working quite nicely, but I messed really badly.
+I was using pitch and yaw to turn the forward direction and to get the normals.
+But this doesn't work because when you're looking down, changing the yaw barely changes the vector!
+
+Ok, so the proper way to do it is to use the cross-product and stuff for finding the rotating axes.
+
+
+
 ## 13/3/2026
 Spent most of the morning refactoring the renderer class cause it was getting way too big and I was losing the overview and spent too much time searching.
 Added two render classes: ChunkRenderer and UIRenderer.
@@ -12,7 +56,9 @@ Oh my, I finally got the texture atlases working.
 There were some bugs that were super hard to track, but managed in the end.  
 Looks way nicer now.
 
+Alright, I also optimized the mesh calculation so that the result of the mesh calculation can go straight into the gpu.
 
+Today was a good day.
 
 
 ## 12/3/2026

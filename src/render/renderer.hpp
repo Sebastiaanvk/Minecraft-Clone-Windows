@@ -33,11 +33,14 @@ public:
     void render(World& world, Camera& camera, GameUIData gameData);
     void shutDown();
 
+    float getAspectRatio();
+
     const int blockTextureSlotOffset = 0;
     const int hotbarTextureSlotOffset = 1;
 
     struct RenderSettings{
-        float projectionDistance = 1000.0f;
+        float projectionFarDistance = 1000.0f;
+        float projectionNearDistance = 0.1f;
         float textureMargin = 0.005f;
         int maxNewMeshesPerFrame = 10;
         float localOutlineOffset = 0.002f;

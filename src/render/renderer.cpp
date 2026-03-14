@@ -24,11 +24,11 @@ void Renderer::render(World& world, Camera& camera, GameUIData gameData){
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
     glm::mat4 projection;
-    projection = glm::perspective(glm::radians(camera.getFov()),  (float)width / (float)height, 0.1f, renderSettings.projectionDistance);
+    projection = glm::perspective(glm::radians(camera.getFov()),  (float)width / (float)height, renderSettings.projectionNearDistance, renderSettings.projectionFarDistance);
 
-    // START_TIMING(renderChunksN)
+    START_TIMING(renderChunksN)
     chunkRenderer.renderChunks(world, view, projection);
-    // END_TIMING(renderChunksN)
+    END_TIMING(renderChunksN)
 
     // Highlight the selected cube.
     if( world.hasBlockTargeted() && !world.playerIsUnderwater()){
@@ -112,11 +112,17 @@ void Renderer::shutDown(){
     CustomImGui::shutdown();
 }
 
+float Renderer::getAspectRatio(){
+    int height,width;
+    glfwGetWindowSize(window, &width, &height);
+    return (float)width/height;
+}
 
 RendererUIData Renderer::getRendererUIData(){
     RendererUIData rendererUIData;
     rendererUIData.maxNewMeshesPerFrameP = &renderSettings.maxNewMeshesPerFrame;
-    rendererUIData.projectionDistanceP = &renderSettings.projectionDistance;
+    rendererUIData.projectionFarDistanceP = &renderSettings.projectionFarDistance;
+    rendererUIData.projectionNearDistanceP = &renderSettings.projectionNearDistance;
     rendererUIData.textureMarginP = &renderSettings.textureMargin;
     rendererUIData.localOutlineOffsetP = &renderSettings.localOutlineOffset;
     rendererUIData.localOutlineWidthP = &renderSettings.localOutlineWidth;

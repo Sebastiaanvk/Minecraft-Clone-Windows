@@ -34,7 +34,7 @@ private:
     Renderer& renderer;
 // Chatgpt suggested using a struct for the data of the vbo.
 
-    const float& projectionDistance;
+    // const float& projectionDistance;
     const float& textureMargin;
     const int& maxNewMeshesPerFrame;
 

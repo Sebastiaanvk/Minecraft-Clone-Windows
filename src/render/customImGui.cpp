@@ -54,7 +54,8 @@ void CustomImGui::renderStart(CameraUIData cameraUIData, WorldUIData worldUIData
         }
         if (ImGui::CollapsingHeader("Renderer",ImGuiTreeNodeFlags_DefaultOpen)){
             ImGui::SliderInt("New Meshes Per Frame",rendererUIData.maxNewMeshesPerFrameP,1,20);
-            ImGui::SliderFloat("Projection Distance",rendererUIData.projectionDistanceP,100.0f,2000.0f);            
+            ImGui::SliderFloat("Projection Far Distance",rendererUIData.projectionFarDistanceP,100.0f,2000.0f);            
+            ImGui::SliderFloat("Projection Near Distance",rendererUIData.projectionNearDistanceP,0.01f,10.0f);            
             ImGui::SliderFloat("Crosshair Width",rendererUIData.crossHairWidthP,0.0f,0.10f);
             ImGui::SliderFloat("Texture Margin",rendererUIData.textureMarginP,0.0f,0.02f);
             ImGui::SliderFloat("Local Outline Offset",rendererUIData.localOutlineOffsetP,0.0f,0.02f);

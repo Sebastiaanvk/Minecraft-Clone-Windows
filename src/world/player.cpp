@@ -2,11 +2,12 @@
 
 Player::Player()
     {
-    glm::vec3 direction;
-    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    direction.y = sin(glm::radians(pitch));
-    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    forward = glm::normalize(direction);
+    // glm::vec3 direction;
+    // direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    // direction.y = sin(glm::radians(pitch));
+    // direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    // forward = glm::normalize(direction);
+    forward = yawPitchToVector(yaw, pitch);
 }
 
 void Player::storePos(){
@@ -93,6 +94,13 @@ bool Player::blockIntersects(const LocInt& loc ){
 
 LocFloat Player::getForwardDir() const{
     return forward;
+}
+float Player::getYaw() const{
+    return yaw;
+
+}
+float Player::getPitch() const{
+    return pitch;
 }
 
 int Player::getHotbarSelectionIndex() const{

@@ -3,12 +3,26 @@
 
 ## Nu aan werken:
 
-The VBO's vectors in de create mesh functions al doen.
+Idea:
+We add a frustum check function to the start of the world update loop.
+I guess we can use it to decide which chunks we are going to create the meshes of?
+So we start the async mesh creation after checking which chunks are inside of the frustum.
+Good idea I think. Lets see.
+First we should just try to keep it the same as much as possible.
 
+so anyways, we should make a function that fills a vector with all the chunks inside of the render area that could be in the frustum.
+For this we need: camera location, forward vector, fov, fov for y direction, renderNearDistance, renderFarDistance.
+So we copy these variables first to the function.
+We make an empty vector.
+We loop through chunkID in range.
+We have a function that takes the relevant parameters and the chunkID and returns a bool on whether the block could be in the frustum.
+Wait, no actually I want a function that takes in a struct that contains the four normals and the forward vector.
+We store this structure in the main loop.
+Ok Yeah I think I know enough now.
 
-To do : check out the influence of the mip map settings on the render.
-
-
+Ok I overlooked one aspect: We need to know the vectors that are perpendicular to the forward vector in order to rotate it.
+Hmmmm. ok I know how to do it. We use the yaw and pitch coordinates.
+And then we get a function that turns a yaw and pitch into a forward vector.
 
 
 
@@ -25,10 +39,9 @@ After we change the block targeting algorithm, we can also change the hitbox of 
 
 Physics.
 
-
-- Optional (Optimization) Frustum culling!!! Only render chunks that are in view of the camera.
-- Optional (Optimization): Calculate the uv coordinates and stuff in the mesh creation function, since it can run in parallel. Good idea dude! But for later I guess.
-- Optional (Optimization): Change the render mesh to use local coordinates, so we can use uint_8. Then in the shader, we can add the chunkID location in parallel.
+- Optional (Optimization): Frustum culling!!! Only render chunks that are in view of the camera.
+- Optional (Optimization): Add a vegetation and translucent render distance.
+- Optional (Optimization): water blocks only both sides when theplayer is underwater.(Short term optimization)
 - Optional (Optimization): Change the renderQueue function to give, for example, raw pointers, and to maybe preserve information better. Like we can actually check if we move to a new chunk and then remove the exact ones or something. Hmmm not sure if that works though. lets see.
 - Optional (Cleaner Code): De hotbar texture naar de texture class sturen voor consistentie.
 - Optional (Cleaner Code): De rendercode mooi encapsulaten zodat de main render functie Heel overzichtelijk wordt.
@@ -389,3 +402,5 @@ And we need to change the VAO's then. then we need to change the functions in th
 
 I think that should be enough.(hopefully)
 -->
+
+<!-- The VBO's vectors in de create mesh functions al doen. -->

@@ -3,7 +3,7 @@
 const int expectedDirtHeight = 128;
 const int dirtHeightAmplitude = 30;
 const int bedrockHeight = 5;
-const int waterLevel = 115;
+const int waterLevel = expectedDirtHeight-15;
 // FastNoiseLite noise;
 const int nrNoises = 4;
 float amplitudes[nrNoises] = {60,30,15,7.5};

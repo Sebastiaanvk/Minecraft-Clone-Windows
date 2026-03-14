@@ -8,6 +8,65 @@ ChunkManager::ChunkManager(unsigned int seed){
     // generateTerrains({0,0}); // I dont think we need this. Maybe I just broke the game....
 }
 
+void ChunkManager::cullChunks(const FrustumCullingPars& cullingPars){
+    frustumCullingPars = cullingPars;
+
+    ChunkID chunkId = getChunkID(posToBlockLoc(frustumCullingPars.cameraLoc));
+    culledChunksVector = {};
+
+    std::queue<std::shared_ptr<RenderableChunkMesh>> chunkQueue;
+    for(int dx=-renderDistance; dx<=renderDistance; dx++){
+        for(int dz=-renderDistance; dz<=renderDistance; dz++){
+            ChunkID chunkCandidate = {chunkId.x+dx*MAXCHUNKX,chunkId.z+dz*MAXCHUNKZ};
+            assert(chunks.count(chunkCandidate));
+            if(chunkInFrustum({chunkCandidate.x,0,chunkCandidate.z})){
+                culledChunksVector.push_back(chunkCandidate);
+            }
+        }
+    }
+}
+
+const LocFloat vertexDiffs[8] = {{0,0,0},{MAXCHUNKX,0,0},{MAXCHUNKX,0,MAXCHUNKZ},{0,0,MAXCHUNKZ},{0,MAXCHUNKY,0},{MAXCHUNKX,MAXCHUNKY,0},{MAXCHUNKX,MAXCHUNKY,MAXCHUNKZ},{0,MAXCHUNKY,MAXCHUNKZ}};
+
+bool ChunkManager::chunkInFrustum(const LocFloat& cornerLoc ){
+    LocFloat vertices[8];
+    for(int i=0;i<8;i++){
+        vertices[i] = vertexDiffs[i]+cornerLoc-frustumCullingPars.cameraLoc;
+    }
+    for(int k=0; k<4; k++){
+        bool goodSidePlane = false;
+        for(int i=0;i<8;i++){
+            if(glm::dot(vertices[i],frustumCullingPars.normals[k])>=0.0f ){
+                goodSidePlane = true;
+                break;
+            }
+        } 
+        if(!goodSidePlane)
+            return false;
+    }
+
+    bool goodSidePlane = false;
+    for(int i=0;i<8;i++){
+        if(glm::dot(vertices[i],frustumCullingPars.forward)>=frustumCullingPars.near ){
+            goodSidePlane = true;
+            break;
+        }
+    } 
+    if(!goodSidePlane)
+        return false;
+    goodSidePlane = false;
+    for(int i=0;i<8;i++){
+        if(glm::dot(vertices[i],frustumCullingPars.forward)<=frustumCullingPars.far ){
+            goodSidePlane = true;
+            break;
+        }
+    } 
+    if(!goodSidePlane)
+        return false;
+
+    return true;
+}
+
 void ChunkManager::generateTerrains(const LocInt& loc, int distance){
     ChunkID chunkId = getChunkID(loc);
     for(int dx=-distance; dx<=distance; dx++){
@@ -136,20 +195,29 @@ void ChunkManager::calculateMeshes(const LocInt& loc){
 }
 
 std::queue<std::shared_ptr<RenderableChunkMesh>> ChunkManager::toRenderableChunkQueue( const LocInt& loc){
-    ChunkID chunkId = getChunkID(loc);
+    // ChunkID chunkId = getChunkID(loc);
     std::queue<std::shared_ptr<RenderableChunkMesh>> chunkQueue;
-    for(int dx=-renderDistance; dx<=renderDistance; dx++){
-        for(int dz=-renderDistance; dz<=renderDistance; dz++){
-            ChunkID chunkCandidate = {chunkId.x+dx*MAXCHUNKX,chunkId.z+dz*MAXCHUNKZ};
-            assert(chunks.count(chunkCandidate));
-            if( !chunks[chunkCandidate]->isDirty() && !chunks[chunkCandidate]->getCalculatingMeshFlag()){
-                chunkQueue.push(chunks[chunkCandidate]->getMeshPtr());
-                // if(chunks[chunkCandidate]->getMeshPtr()->cutoutMesh.size()>0){
-                //     std::cout << "Flowers in mesh in chunkmanager!" << std::endl;
-                // }
-            }
+    for(auto chunkCandidate : culledChunksVector ){
+        assert(chunks.count(chunkCandidate));
+        if( !chunks[chunkCandidate]->isDirty() && !chunks[chunkCandidate]->getCalculatingMeshFlag()){
+            chunkQueue.push(chunks[chunkCandidate]->getMeshPtr());
+            // if(chunks[chunkCandidate]->getMeshPtr()->cutoutMesh.size()>0){
+            //     std::cout << "Flowers in mesh in chunkmanager!" << std::endl;
+            // }
         }
     }
+    // for(int dx=-renderDistance; dx<=renderDistance; dx++){
+    //     for(int dz=-renderDistance; dz<=renderDistance; dz++){
+    //         ChunkID chunkCandidate = {chunkId.x+dx*MAXCHUNKX,chunkId.z+dz*MAXCHUNKZ};
+    //         assert(chunks.count(chunkCandidate));
+    //         if( !chunks[chunkCandidate]->isDirty() && !chunks[chunkCandidate]->getCalculatingMeshFlag()){
+    //             chunkQueue.push(chunks[chunkCandidate]->getMeshPtr());
+    //             // if(chunks[chunkCandidate]->getMeshPtr()->cutoutMesh.size()>0){
+    //             //     std::cout << "Flowers in mesh in chunkmanager!" << std::endl;
+    //             // }
+    //         }
+    //     }
+    // }
     return chunkQueue;
 }
 
