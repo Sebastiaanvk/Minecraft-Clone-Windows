@@ -26,9 +26,9 @@ void Renderer::render(World& world, Camera& camera, GameUIData gameData){
     glm::mat4 projection;
     projection = glm::perspective(glm::radians(camera.getFov()),  (float)width / (float)height, renderSettings.projectionNearDistance, renderSettings.projectionFarDistance);
 
-    START_TIMING(renderChunksN)
+    // START_TIMING(renderChunksN)
     chunkRenderer.renderChunks(world, view, projection);
-    END_TIMING(renderChunksN)
+    // END_TIMING(renderChunksN)
 
     // Highlight the selected cube.
     if( world.hasBlockTargeted() && !world.playerIsUnderwater()){
@@ -129,6 +129,9 @@ RendererUIData Renderer::getRendererUIData(){
     rendererUIData.hotbarWidthPortionP = &renderSettings.hotbarWidthPortion;
     rendererUIData.crossHairLengthP = &renderSettings.crossHairLength;
     rendererUIData.crossHairWidthP = &renderSettings.crossHairWidth;
+    rendererUIData.maxTerrainRenders = &renderSettings.maxTerrainRenders;
+    rendererUIData.maxWaterRenders = &renderSettings.maxWaterRenders;
+    rendererUIData.maxVegetationRenders = &renderSettings.maxVegetationRenders;
 
     return rendererUIData;
 }

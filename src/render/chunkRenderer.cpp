@@ -3,7 +3,9 @@
 
 ChunkRenderer::ChunkRenderer(Renderer& renderer) :
 renderer(renderer),//projectionDistance(renderer.renderSettings.projectionDistance),
-textureMargin(renderer.renderSettings.textureMargin),maxNewMeshesPerFrame(renderer.renderSettings.maxNewMeshesPerFrame) {
+textureMargin(renderer.renderSettings.textureMargin),maxNewMeshesPerFrame(renderer.renderSettings.maxNewMeshesPerFrame),
+maxTerrainRenders(renderer.renderSettings.maxTerrainRenders),maxWaterRenders(renderer.renderSettings.maxWaterRenders),
+maxVegetationRenders(renderer.renderSettings.maxVegetationRenders) {
     
 }
 
@@ -41,11 +43,11 @@ void ChunkRenderer::renderChunks(World& world, glm::mat4& view, glm::mat4& proje
     std::vector<ChunkID> chunksToRender;
 
     // Loop through the renderable chunk meshes.
-    START_TIMING(renderableChunkQueue)
+    // START_TIMING(renderableChunkQueue)
     std::queue<std::shared_ptr<RenderableChunkMesh>> chunkQueue = world.toRenderableChunkQueue();
-    END_TIMING(renderableChunkQueue)
+    // END_TIMING(renderableChunkQueue)
 
-    START_TIMING(checkingChunksToUpdate)
+    // START_TIMING(checkingChunksToUpdate)
     while(!chunkQueue.empty()){
         std::shared_ptr<RenderableChunkMesh> chunkPtr = chunkQueue.front();
         chunkQueue.pop();
@@ -60,14 +62,13 @@ void ChunkRenderer::renderChunks(World& world, glm::mat4& view, glm::mat4& proje
     LocInt playerLoc = world.player.getBlockLoc();
     if(chunksToUploadGPU.size()>maxNewMeshesPerFrame){
         std::nth_element(chunksToUploadGPU.begin(),chunksToUploadGPU.begin()+maxNewMeshesPerFrame-1,chunksToUploadGPU.end(),
-            [playerLoc](const std::shared_ptr<RenderableChunkMesh>& m1, const std::shared_ptr<RenderableChunkMesh>& m2){
-                int dx1 = (m1->chunkId.x-playerLoc.x);
-                int dz1 = (m1->chunkId.z-playerLoc.z);
-                int dx2 = (m2->chunkId.x-playerLoc.x);
-                int dz2 = (m2->chunkId.z-playerLoc.z);
-                return dx1*dx1+dz1*dz1<dx2*dx2+dz2*dz2;
-            }
-        );
+        [playerLoc](const std::shared_ptr<RenderableChunkMesh>& m1, const std::shared_ptr<RenderableChunkMesh>& m2){
+            int dx1 = (m1->chunkId.x-playerLoc.x);
+            int dz1 = (m1->chunkId.z-playerLoc.z);
+            int dx2 = (m2->chunkId.x-playerLoc.x);
+            int dz2 = (m2->chunkId.z-playerLoc.z);
+            return dx1*dx1+dz1*dz1<dx2*dx2+dz2*dz2;
+        });
     }
     for(int i=0; i<maxNewMeshesPerFrame && i<chunksToUploadGPU.size(); i++){
         std::shared_ptr<RenderableChunkMesh> chunkPtr = chunksToUploadGPU[i];
@@ -79,40 +80,61 @@ void ChunkRenderer::renderChunks(World& world, glm::mat4& view, glm::mat4& proje
         }
         chunksToRender.push_back(chunkID);
     }
-    END_TIMING(checkingChunksToUpdate)
+    // END_TIMING(checkingChunksToUpdate)
 
-    START_TIMING(solidChunks)
+    auto closerToPlayer = [playerLoc](const ChunkID& m1, const ChunkID& m2){
+        int dx1 = (m1.x-playerLoc.x);
+        int dz1 = (m1.z-playerLoc.z);
+        int dx2 = (m2.x-playerLoc.x);
+        int dz2 = (m2.z-playerLoc.z);
+        return dx1*dx1+dz1*dz1<dx2*dx2+dz2*dz2;
+    };
+    // Assuming terrain Renders >= water Renders >= vegetation renders    
+    if(chunksToRender.size()>maxVegetationRenders){
+        std::nth_element(chunksToRender.begin(),chunksToRender.begin()+maxVegetationRenders-1,chunksToRender.end(),closerToPlayer);
+    }
+    if(chunksToRender.size()>maxWaterRenders){
+        std::nth_element(chunksToRender.begin()+maxVegetationRenders,chunksToRender.begin()+maxWaterRenders-1,chunksToRender.end(),closerToPlayer);
+    }
+    if(chunksToRender.size()>maxTerrainRenders){
+        std::nth_element(chunksToRender.begin()+maxWaterRenders,chunksToRender.begin()+maxTerrainRenders-1,chunksToRender.end(),closerToPlayer);
+    }
+
+    // START_TIMING(solidChunks)
     // Set the view and projection matrices to the right values in the chunk shader program
     solidChunkShaderProgram.use();
     glUniformMatrix4fv(viewLocChunksSolid, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(projectionLocChunksSolid, 1, GL_FALSE, glm::value_ptr(projection));
-    for(auto chunkID : chunksToRender){
+    for(int i=0; i<maxTerrainRenders&& i<chunksToRender.size(); i++){
+        ChunkID chunkID = chunksToRender[i];
         glBindVertexArray(solidMeshes[chunkID].VAO);
         glDrawArrays(GL_TRIANGLES, 0, solidMeshes[chunkID].nrVertices);
     }
-    END_TIMING(solidChunks)
+    // END_TIMING(solidChunks)
 
-    START_TIMING(cutoutChunks)
+    // START_TIMING(cutoutChunks)
     cutoutChunkShaderProgram.use();
     glUniformMatrix4fv(viewLocChunksCutout, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(projectionLocChunksCutout, 1, GL_FALSE, glm::value_ptr(projection));
-    for(auto chunkID : chunksToRender){
+    for(int i=0; i<maxVegetationRenders&& i<chunksToRender.size(); i++){
+        ChunkID chunkID = chunksToRender[i];
         glBindVertexArray(cutoutMeshes[chunkID].VAO);
         glDrawArrays(GL_TRIANGLES, 0, cutoutMeshes[chunkID].nrVertices);
     }
-    END_TIMING(cutoutChunks)
+    // END_TIMING(cutoutChunks)
 
-    START_TIMING(translucentChunks)
+    // START_TIMING(translucentChunks)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
     translucentChunkShaderProgram.use();
     glUniformMatrix4fv(viewLocChunksTranslucent, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(projectionLocChunksTranslucent, 1, GL_FALSE, glm::value_ptr(projection));
-    for(auto chunkID : chunksToRender){
+    for(int i = std::min(maxWaterRenders,(int)chunksToRender.size())-1;i>=0; i--){
+        ChunkID chunkID = chunksToRender[i];
         glBindVertexArray(translucentMeshes[chunkID].VAO);
         glDrawArrays(GL_TRIANGLES, 0, translucentMeshes[chunkID].nrVertices);
     }
-    END_TIMING(translucentChunks)
+    // END_TIMING(translucentChunks)
 
 
     glDisable(GL_BLEND);

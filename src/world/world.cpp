@@ -22,10 +22,18 @@ void World::update(Input_Handler& input_handler){
     tick += 1;
     updatePlayerLocation(input_handler);
     
+    START_TIMING(generateTerrain)
     chunkManager.generateTerrainsAsync(player.getBlockLoc() );
+    END_TIMING(generateTerrain)
+    START_TIMING(generateTrees)
     chunkManager.generateTreesAsync(player.getBlockLoc());
+    END_TIMING(generateTrees)
+    START_TIMING(generateFrustumCull)
     frustumCull();
+    END_TIMING(generateFrustumCull)
+    START_TIMING(calculateMeshesAsync)
     chunkManager.calculateMeshesAsync(player.getBlockLoc());
+    END_TIMING(calculateMeshesAsync)
 
     if(input_handler.key_down(Key::LEFT_MOUSE_BUTTON)){
         deleteTarget();
@@ -42,7 +50,9 @@ void World::update(Input_Handler& input_handler){
     calculatePlayerTarget();
     // chunkManager.generateChunks(player.getBlockLoc() );
 
+    START_TIMING(calcMeshes)
     chunkManager.calculateMeshes(player.getBlockLoc());
+    END_TIMING(calcMeshes)
 }
 
 

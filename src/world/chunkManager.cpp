@@ -12,7 +12,7 @@ void ChunkManager::cullChunks(const FrustumCullingPars& cullingPars){
     frustumCullingPars = cullingPars;
 
     ChunkID chunkId = getChunkID(posToBlockLoc(frustumCullingPars.cameraLoc));
-    culledChunksVector = {};
+    culledChunksVector.clear();
 
     std::queue<std::shared_ptr<RenderableChunkMesh>> chunkQueue;
     for(int dx=-renderDistance; dx<=renderDistance; dx++){

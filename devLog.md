@@ -1,4 +1,36 @@
 # DevLog
+## 15/3/2026
+Finally fixed the frustum culling today.
+It seemed to be working pretty smoothly in terms of culling, but the problem was that I was not rendering the chunks on the side of the screen.
+
+I spent way too long thinking it had to do with the position of the projection plane and the camera.
+I thought the culling was going incorrectly, because I was doing the frustum culling from the center of the projection plane as opposed to from the "eye" of the frustum.
+
+
+Well that was not the problem actually.
+First of all, I wrongly assumed that the fov parameter in the perspective matrix was the fovX, but it's actually the vertical field of view, fovY.
+Second of all, you cant get the other field of view by just multiplying with the aspect ratio, no no no.
+
+No the actual way to get the other field of view is a bit more complicated.
+Allow me to explain:
+Assume the projection plane is at z=-1 in camera space (usually it's at the near plane of the frustum).
+Then there is a rectangle on this plane that coincides with your screen/window.
+Since fov is the vertical field of view, the top edge of this window is exactly at y=tan(fov/2) (where fov is the angle in radians.)
+This window has the aspect ratio width/height, so the left edge of this window is at x=width/height*tan(fov/2).
+We also know the left edge is at x=tan(fovX/2), so we get fovX = 2*arctan(width/height * tan(fov/2)).
+
+And now it works perfectly!
+The fps increase is absolutely great.
+
+Of course it still drops when I fly super high and try to render all the chunks anyways.
+Maybe I should just set a limit of chunks to render each frame. Yeah thats a great idea, we can just do an nth element sort of the chunks.
+
+And we could even set a limit for the vegetation, water and terrain chunks? 
+Yep I set a limit to the number of chunks that render vegetation, water, terrain.
+Really nice, because when you are on the ground you never notice it, and when you fly, the framerate doesnt drop.
+
+
+<img src="assets\media\vegetation rendering distance.gif" width="900" >
 
 
 ## 14/3/2026

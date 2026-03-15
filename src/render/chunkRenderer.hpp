@@ -12,8 +12,8 @@
 #include <render/textures.hpp>
 #include <map>
 #include <world/world.hpp>
-#include <util/macros.hpp>
 #include <util/loc.h>
+#include <util/macros.hpp>
 
 class Renderer;
 
@@ -38,6 +38,9 @@ private:
     const float& textureMargin;
     const int& maxNewMeshesPerFrame;
 
+    int& maxTerrainRenders;
+    int& maxWaterRenders;
+    int& maxVegetationRenders; 
 
     Shader solidChunkShaderProgram;
     unsigned int viewLocChunksSolid;

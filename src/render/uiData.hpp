@@ -40,6 +40,9 @@ struct RendererUIData {
     float* hotbarWidthPortionP;
     float* crossHairLengthP;
     float* crossHairWidthP;
+    int* maxTerrainRenders;
+    int* maxWaterRenders;
+    int* maxVegetationRenders; 
 };
 
 

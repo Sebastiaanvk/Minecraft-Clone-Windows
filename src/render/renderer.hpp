@@ -13,12 +13,12 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <render/customImGui.hpp>
 #include <chrono>
-#include <util/macros.hpp>
 #include <render/chunkRenderer.hpp>
 #include <render/uiRenderer.hpp>
 // #include <memory>
 // #include <render/renderable.hpp>
 // #include <util/loc.h>
+#include <util/macros.hpp>
 
 
 
@@ -48,6 +48,10 @@ public:
         float hotbarWidthPortion = 0.7f;
         float crossHairLength = 0.05f; //These ratios are with respect to the height of the window.
         float crossHairWidth = 0.005f;
+
+        int maxTerrainRenders = 2000;
+        int maxWaterRenders = 2000;
+        int maxVegetationRenders = 1600; 
     };
     RenderSettings renderSettings;
 

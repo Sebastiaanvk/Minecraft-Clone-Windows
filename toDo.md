@@ -3,28 +3,7 @@
 
 ## Nu aan werken:
 
-Idea:
-We add a frustum check function to the start of the world update loop.
-I guess we can use it to decide which chunks we are going to create the meshes of?
-So we start the async mesh creation after checking which chunks are inside of the frustum.
-Good idea I think. Lets see.
-First we should just try to keep it the same as much as possible.
-
-so anyways, we should make a function that fills a vector with all the chunks inside of the render area that could be in the frustum.
-For this we need: camera location, forward vector, fov, fov for y direction, renderNearDistance, renderFarDistance.
-So we copy these variables first to the function.
-We make an empty vector.
-We loop through chunkID in range.
-We have a function that takes the relevant parameters and the chunkID and returns a bool on whether the block could be in the frustum.
-Wait, no actually I want a function that takes in a struct that contains the four normals and the forward vector.
-We store this structure in the main loop.
-Ok Yeah I think I know enough now.
-
-Ok I overlooked one aspect: We need to know the vectors that are perpendicular to the forward vector in order to rotate it.
-Hmmmm. ok I know how to do it. We use the yaw and pitch coordinates.
-And then we get a function that turns a yaw and pitch into a forward vector.
-
-
+Bug when pausing and moving mouse too far!
 
 
 ### Other 
@@ -404,3 +383,23 @@ I think that should be enough.(hopefully)
 -->
 
 <!-- The VBO's vectors in de create mesh functions al doen. -->
+<!-- Idea:
+We add a frustum check function to the start of the world update loop.
+I guess we can use it to decide which chunks we are going to create the meshes of?
+So we start the async mesh creation after checking which chunks are inside of the frustum.
+Good idea I think. Lets see.
+First we should just try to keep it the same as much as possible.
+
+so anyways, we should make a function that fills a vector with all the chunks inside of the render area that could be in the frustum.
+For this we need: camera location, forward vector, fov, fov for y direction, renderNearDistance, renderFarDistance.
+So we copy these variables first to the function.
+We make an empty vector.
+We loop through chunkID in range.
+We have a function that takes the relevant parameters and the chunkID and returns a bool on whether the block could be in the frustum.
+Wait, no actually I want a function that takes in a struct that contains the four normals and the forward vector.
+We store this structure in the main loop.
+Ok Yeah I think I know enough now.
+
+Ok I overlooked one aspect: We need to know the vectors that are perpendicular to the forward vector in order to rotate it.
+Hmmmm. ok I know how to do it. We use the yaw and pitch coordinates.
+And then we get a function that turns a yaw and pitch into a forward vector. -->

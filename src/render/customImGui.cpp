@@ -53,6 +53,9 @@ void CustomImGui::renderStart(CameraUIData cameraUIData, WorldUIData worldUIData
             }
         }
         if (ImGui::CollapsingHeader("Renderer",ImGuiTreeNodeFlags_DefaultOpen)){
+            ImGui::SliderInt("Max Terrain Renders",rendererUIData.maxTerrainRenders,1,10000);
+            ImGui::SliderInt("Max Water Renders",rendererUIData.maxWaterRenders,1,10000);
+            ImGui::SliderInt("Max Vegetation Renders",rendererUIData.maxVegetationRenders,1,10000);
             ImGui::SliderInt("New Meshes Per Frame",rendererUIData.maxNewMeshesPerFrameP,1,20);
             ImGui::SliderFloat("Projection Far Distance",rendererUIData.projectionFarDistanceP,100.0f,2000.0f);            
             ImGui::SliderFloat("Projection Near Distance",rendererUIData.projectionNearDistanceP,0.01f,10.0f);            
