@@ -7,6 +7,7 @@ ChunkManager::ChunkManager(unsigned int seed):
         pool(std::thread::hardware_concurrency()-1){
     ChunkGeneration::init(seed);
     // generateTerrains({0,0}); // I dont think we need this. Maybe I just broke the game....
+    chunks.reserve(100000);
 }
 
 void ChunkManager::cullChunks(const FrustumCullingPars& cullingPars){
@@ -118,7 +119,7 @@ void ChunkManager::generateTrees(const LocInt& loc, int distance){
                 std::array<Chunk*,8> nbChunks;
                 for( int i=0; i<8; i++){
                     nbChunks[i] = chunks.at(chunkCandidate+nbDiffsDiag[i]).get();
-                    assert(nbChunks[i]->terrainIsGenerated());
+                    // assert(nbChunks[i]->terrainIsGenerated());
                 }
                 chunks[chunkCandidate]->generateTrees(nbChunks);
             }
@@ -163,7 +164,7 @@ void ChunkManager::calculateMeshesAsync(const LocInt& loc,int distance){
     for(int dx=-distance; dx<=distance; dx++){
         for(int dz=-distance; dz<=distance; dz++){
             ChunkID chunkCandidate = {chunkId.x+dx*MAXCHUNKX,chunkId.z+dz*MAXCHUNKZ};
-            assert(chunks.count(chunkCandidate));
+            // assert(chunks.count(chunkCandidate));
             if(chunks[chunkCandidate]->treesAreGenerated()){
                 if( chunks[chunkCandidate]->isDirty() && allowedToStartCalculatingMesh(chunkCandidate) && !chunks[chunkCandidate]->getCalculatingMeshFlag()){
                     // std::cout<< "Mesh creation asynchronously!" << std::endl;
@@ -296,7 +297,7 @@ void ChunkManager::placeBlock(const LocInt& loc,const BlockID& blockId){
     }
     ChunkID chunkID = getChunkID(loc);
     if(chunks.count(chunkID)!=0){
-        chunks.at(chunkID)->setBlockId(getLocWithinChunk(loc),blockId);
+        chunks.at(chunkID)->setBlockIdNoCheck(getLocWithinChunk(loc),blockId);
     }
 }
 

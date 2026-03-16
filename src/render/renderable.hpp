@@ -17,7 +17,7 @@ struct ChunkMeshElt{
     FaceType faceType;
     //Chatgpt suggested this datatype:
     uint8_t tint[3];
-    uint8_t padding; // This is there to give the struct a round number of bytes. Probably not necessary anymore!
+    uint8_t occlusion;
 };
 
 struct CutoutMeshElt{

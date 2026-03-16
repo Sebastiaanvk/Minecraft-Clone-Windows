@@ -48,7 +48,7 @@ public:
     void setCalculatingMeshFlagTrue();
 
     // The LocInt loc parameter of the Chunk methods take the location relative to the Chunk location in the world.
-    void setBlockId(const LocInt& loc,BlockID id);
+    void setBlockIdNoCheck(const LocInt& loc,BlockID id); // No checks to see if the loc is in range.
     void deleteBlock(LocInt loc);
     BlockID getBlockId(const LocInt& loc) const;
     bool blockIsSolid(const LocInt& loc);

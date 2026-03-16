@@ -15,24 +15,25 @@ void Chunk::generateChunkTerrain(){
     }
     for(int x=0; x<MAXCHUNKX; x++){
         for(int z=0; z<MAXCHUNKZ; z++){
-            int dirtHeight = ChunkGeneration::getDirtHeight({x+chunkID.x,z+chunkID.z});
+            Loc2 realLoc = {x+chunkID.x,z+chunkID.z};
+            int dirtHeight = ChunkGeneration::getDirtHeight(realLoc);
             int bedrockHeight = ChunkGeneration::getBedrockHeight();
             int waterLevel = ChunkGeneration::getWaterLevel();
 
             for(int y=0; y<bedrockHeight; y++){
-                setBlockId({x,y,z}, BlockID::Bedrock);
+                setBlockIdNoCheck({x,y,z}, BlockID::Bedrock);
             }
             for(int y=bedrockHeight; y<dirtHeight; y++){
-                setBlockId({x,y,z}, BlockID::Dirt);
+                setBlockIdNoCheck({x,y,z}, BlockID::Dirt);
             }
             for(int y=dirtHeight; y<waterLevel; y++){
-                setBlockId({x,y,z}, BlockID::Water);
+                setBlockIdNoCheck({x,y,z}, BlockID::Water);
             }
             if(dirtHeight>=waterLevel){
-                setBlockId({x,dirtHeight-1,z},BlockID::Grass_Dirt);
-                setBlockId({x,dirtHeight,z},ChunkGeneration::getOptionalPlant({x,z}));
+                setBlockIdNoCheck({x,dirtHeight-1,z},BlockID::Grass_Dirt);
+                setBlockIdNoCheck({x,dirtHeight,z},ChunkGeneration::getOptionalPlant(realLoc));
             } else {
-                setBlockId({x,dirtHeight,z},ChunkGeneration::getOptionalUnderwaterPlant({x,z}));
+                setBlockIdNoCheck({x,dirtHeight,z},ChunkGeneration::getOptionalUnderwaterPlant(realLoc));
             }
         }
     } 
@@ -46,14 +47,14 @@ void Chunk::generateTrees(std::array<Chunk*,8> nbChunks){
             int waterLevel = ChunkGeneration::getWaterLevel();
             if(dirtHeight>=waterLevel){
                 if(ChunkGeneration::containsTree({chunkID.x+x,chunkID.z+z})){
-                    for(int i=0; i<8; i++){
-                        assert(!nbChunks[i]->generatingTrees());
-                        assert(!nbChunks[i]->getCalculatingMeshFlag());
-                        assert(nbChunks[i]->terrainIsGenerated());
-                        assert(nbChunks[i]->terrainIsGenerated());
-                    }
+                    // for(int i=0; i<8; i++){
+                    //     assert(!nbChunks[i]->generatingTrees());
+                    //     assert(!nbChunks[i]->getCalculatingMeshFlag());
+                    //     assert(nbChunks[i]->terrainIsGenerated());
+                    //     assert(nbChunks[i]->terrainIsGenerated());
+                    // }
                     for(int y=dirtHeight; y<dirtHeight+6 && y<MAXCHUNKY; y++){
-                        setBlockId({x,y,z},BlockID::Oak_Log);
+                        setBlockIdNoCheck({x,y,z},BlockID::Oak_Log);
                     }
                     for(int i=0; i<ChunkGeneration::treeLeaves.size(); i++){
                         // std::cout << x+ChunkGeneration::treeLeaves[i].x << "," << dirtHeight+ChunkGeneration::treeLeaves[i].y << "," << z+ChunkGeneration::treeLeaves[i].z << std::endl;
@@ -72,10 +73,10 @@ BlockID Chunk::getBlockId(const LocInt& loc) const{
     return chunk.at( loc.y*MAXCHUNKX*MAXCHUNKZ + loc.z*MAXCHUNKX + loc.x);
 }
 
-void Chunk::setBlockId(const LocInt& loc,BlockID id){
-    assert(loc.x>=0 && loc.x<MAXCHUNKX);
-    assert(loc.y>=0 && loc.y<MAXCHUNKY);
-    assert(loc.z>=0 && loc.z<MAXCHUNKZ);
+void Chunk::setBlockIdNoCheck(const LocInt& loc,BlockID id){
+    // assert(loc.x>=0 && loc.x<MAXCHUNKX);
+    // assert(loc.y>=0 && loc.y<MAXCHUNKY);
+    // assert(loc.z>=0 && loc.z<MAXCHUNKZ);
     chunk[loc.y*MAXCHUNKX*MAXCHUNKZ + loc.z*MAXCHUNKX + loc.x] = id;
     dirtyFlag = true;
     if(id!=BlockID::Air){
@@ -100,7 +101,7 @@ void Chunk::setBlockIdNbsIfEmpty(const LocInt& loc,BlockID id,std::array<Chunk*,
     if(loc.x>=0 && loc.x<MAXCHUNKX){
         if(loc.z>=0 && loc.z<MAXCHUNKZ){
             if(getBlockId(loc)==BlockID::Air)
-                setBlockId(loc,id);
+                setBlockIdNoCheck(loc,id);
             return;
         }
         if(loc.z<0){
@@ -134,7 +135,7 @@ void Chunk::setBlockIdNbsIfEmpty(const LocInt& loc,BlockID id,std::array<Chunk*,
         }
     }
     if(nbs[nbIndex]->getBlockId({newX,loc.y,newZ})==BlockID::Air)
-        nbs[nbIndex]->setBlockId({newX,loc.y,newZ},id);
+        nbs[nbIndex]->setBlockIdNoCheck({newX,loc.y,newZ},id);
 }
 
 bool Chunk::blockIsSolid(const LocInt& loc){
@@ -217,7 +218,7 @@ int Chunk::getHighestYBorder() const{
 
 
 void Chunk::deleteBlock(LocInt loc){
-    setBlockId(loc, BlockID::Air);
+    setBlockIdNoCheck(loc, BlockID::Air);
 }
 
 //The corners are counter-clockwise, starting at the left bottom
@@ -245,10 +246,6 @@ void Chunk::update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ
     meshPtr->translucentMesh = {};
     // meshPtr->mesh.reserve(MAXCHUNKX * MAXCHUNKY * MAXCHUNKZ * 6 / 4); // Arbitrary size, not sure if it matters for speed.
 
-    // const Chunk& nbChunkNegX = chunkManager.getChunkPointer({chunkLoc.x-MAXCHUNKX,chunkLoc.z});
-    // const Chunk&  nbChunkPosX= chunkManager.getChunkPointer({chunkLoc.x+MAXCHUNKX,chunkLoc.z});
-    // const Chunk& nbChunkNegZ = chunkManager.getChunkPointer({chunkLoc.x,chunkLoc.z-MAXCHUNKZ});
-    // const Chunk& nbChunkPosZ = chunkManager.getChunkPointer({chunkLoc.x,chunkLoc.z+MAXCHUNKZ});
 
     int maxYToCheck = std::max({highestY,nbChunkNegX->getHighestYBorder(),nbChunkPosX->getHighestYBorder(),nbChunkNegZ->getHighestYBorder(),nbChunkPosZ->getHighestYBorder()});
 

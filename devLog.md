@@ -23,6 +23,15 @@ Still some frame drops, but in my defense, in the normal game you would never fl
 Plus, the frame drops are only there when you are flying through the world at break neck speeds.
 I think I should start focusing on adding things to the game again.
 
+## Ambient Occlusion
+Alright so I started reading the learnopengl page on ambient occlusion (SSAO) and that stuff is super complicated.
+But we are dealing a block world, so its actually simpler.
+We can just check for each corner how many solid blocks are adjacent to the vertex and could be blocking light. 
+For this we have like 5 options.
+I guess I just arbitrarily pick a number for each of these options.
+This numbers then shows how much the colours get darkened in that corner and the shader interpolates that for the full face.
+
+
 ## 15/3/2026
 Finally fixed the frustum culling today.
 It seemed to be working pretty smoothly in terms of culling, but the problem was that I was not rendering the chunks on the side of the screen.

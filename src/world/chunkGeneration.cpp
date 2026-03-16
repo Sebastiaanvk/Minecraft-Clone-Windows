@@ -9,14 +9,14 @@ const int nrNoises = 4;
 float amplitudes[nrNoises] = {60,30,15,7.5};
 float scales[nrNoises] = {10.0,5.0,2.0,1.0}; 
 
-float poppyChance = 0.03f;
-float dandelionChance = 0.03f;
-float shortGrassChance = 0.1f;
-float treeChance = 0.003f;
+float poppyChance = 0.003f;
+float dandelionChance = 0.003f;
+float shortGrassChance = 0.01f;
+float treeChance = 0.001f;
 
-float tubeCoralChance = 0.03f;
-float brainCoralChance = 0.03f;
-float seagrassChance = 0.1f;
+float tubeCoralChance = 0.003f;
+float brainCoralChance = 0.003f;
+float seagrassChance = 0.01f;
 
 uint64_t seed;
 FastNoiseLite noises[nrNoises];
