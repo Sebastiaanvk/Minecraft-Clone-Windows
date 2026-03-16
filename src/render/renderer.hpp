@@ -52,6 +52,9 @@ public:
         int maxTerrainRenders = 2000;
         int maxWaterRenders = 2000;
         int maxVegetationRenders = 1600; 
+
+        bool ambientOcclusion = true;
+        bool gammaCorrection = false;
     };
     RenderSettings renderSettings;
 

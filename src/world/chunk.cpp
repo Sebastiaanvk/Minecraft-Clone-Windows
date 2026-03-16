@@ -1,6 +1,12 @@
 #include <world/chunk.hpp>
 #include <world/chunkManager.hpp> // Chunk and ChunkManager include each other.
 
+inline int locToIndex(int x, int y, int z){
+    return y*MAXCHUNKX*MAXCHUNKZ + z*MAXCHUNKX + x;
+}
+inline int locToIndex(const LocInt& locInt) {
+    return locInt.y*MAXCHUNKX*MAXCHUNKZ + locInt.z*MAXCHUNKX + locInt.x;
+}
 Chunk::Chunk(const ChunkID& loc, ChunkManager& chunkManager)
     : chunkManager(chunkManager), chunkLoc({loc.x,0,loc.z}), chunkID(loc)
 {
@@ -86,6 +92,8 @@ void Chunk::setBlockIdNoCheck(const LocInt& loc,BlockID id){
         }
     }
 }
+
+
 void Chunk::setBlockIdNbsIfEmpty(const LocInt& loc,BlockID id,std::array<Chunk*,8> nbs){
     // The nbs go in clockwise order, starting in the bottom left (negative x, negative z)
     // 2 3 4
@@ -221,46 +229,139 @@ void Chunk::deleteBlock(LocInt loc){
     setBlockIdNoCheck(loc, BlockID::Air);
 }
 
-//The corners are counter-clockwise, starting at the left bottom
-const std::vector<std::vector<LocInt>> blockSides = {
-    {{1,0,0},{1,0,1},{1,1,1},{1,1,0}},
-    {{0,0,1},{0,0,0},{0,1,0},{0,1,1}},
-    {{0,1,0},{1,1,0},{1,1,1},{0,1,1}},
-    {{0,0,1},{1,0,1},{1,0,0},{0,0,0}},
-    {{1,0,1},{0,0,1},{0,1,1},{1,1,1}},
-    {{0,0,0},{1,0,0},{1,1,0},{0,1,0}},
+BlockID Chunk::getBlockIdNBs(const LocInt& loc,const std::array<Chunk*,8>& nbs) const{
+    // The nbs go in clockwise order, starting in the bottom left (negative x, negative z)
+    // 2 3 4
+    // 1 x 5
+    // 0 7 6
+    if(loc.y>=MAXCHUNKY || loc.y<0){
+        return BlockID::Air;
+    }
+    int nbIndex;
+    int newX = loc.x;
+    int newZ = loc.z;
+
+    if(loc.x>=0 && loc.x<MAXCHUNKX){
+        if(loc.z>=0 && loc.z<MAXCHUNKZ){
+            return chunk[locToIndex(loc)];
+        }
+        if(loc.z<0){
+            nbIndex=7;
+            newZ +=MAXCHUNKZ;
+        } else {
+            nbIndex=3;
+            newZ-=MAXCHUNKZ;
+        }
+    } else if(loc.x<0){
+        newX += MAXCHUNKX;
+        if(loc.z<0){
+            nbIndex=0;
+            newZ +=MAXCHUNKZ;
+        } else if(loc.z<MAXCHUNKZ){
+            nbIndex=1;
+        } else {
+            nbIndex=2;
+            newZ-=MAXCHUNKZ;
+        }
+    } else {
+        newX -= MAXCHUNKX;
+        if(loc.z<0){
+            nbIndex=6;
+            newZ +=MAXCHUNKZ;
+        } else if(loc.z<MAXCHUNKZ){
+            nbIndex=5;
+        } else {
+            nbIndex=4;
+            newZ-=MAXCHUNKZ;
+        }
+    }
+    return nbs[nbIndex]->chunk[locToIndex({newX,loc.y,newZ})];
+}
+
+// From the loc.h file:
+// inline const LocInt dirs[] = {{1,0,0},{-1,0,0},{0,1,0},{0,-1,0},{0,0,1},{0,0,-1}};
+
+
+//The corners are counter-clockwise, starting at the left bottom looking outward.
+const std::array<std::array<LocInt,4>,6> blockSides = {{
+    {{{1,0,0},{1,0,1},{1,1,1},{1,1,0}}},
+    {{{0,0,1},{0,0,0},{0,1,0},{0,1,1}}},
+    {{{0,1,0},{1,1,0},{1,1,1},{0,1,1}}},
+    {{{0,0,1},{1,0,1},{1,0,0},{0,0,0}}},
+    {{{1,0,1},{0,0,1},{0,1,1},{1,1,1}}},
+    {{{0,0,0},{1,0,0},{1,1,0},{0,1,0}}},
+}};
+
+const std::array<LocInt,8> cubeCorners = {{
+    {0,0,0},{1,0,0},{1,0,1},{0,0,1},
+    {0,1,0},{1,1,0},{1,1,1},{0,1,1}
+}};
+
+const std::array<LocInt,8> cubeCornersDiagonals = {{
+    {-1,-1,-1},{1,-1,-1},{1,-1,1},{-1,-1,1},
+    {-1,1,-1},{1,1,-1},{1,1,1},{-1,1,1}
+}};
+
+const LocInt cubeCornersAdjacent[8][3] = {
+    {{-1,0,0},{0,-1,0},{0,0,-1}},
+    {{1,0,0},{0,-1,0},{0,0,-1}},
+    {{1,0,0},{0,-1,0},{0,0,1}},
+    {{-1,0,0},{0,-1,0},{0,0,1}},
+    {{-1,0,0},{0,1,0},{0,0,-1}},
+    {{1,0,0},{0,1,0},{0,0,-1}},
+    {{1,0,0},{0,1,0},{0,0,1}},
+    {{-1,0,0},{0,1,0},{0,0,1}}
 };
 
-const std::vector<std::vector<LocInt>> diagonals = {
-    {{0,0,0},{1,0,1},{1,1,1},{0,1,0}},
-    {{1,0,0},{0,0,1},{0,1,1},{1,1,0}},
-    {{1,0,1},{0,0,0},{0,1,0},{1,1,1}},
-    {{0,0,1},{1,0,0},{1,1,0},{0,1,1}}
+// The ith element of this array are the four corners of the face in direction dirs[i]
+// going counter clockwise looking from the inside of the cube.
+const std::array<std::array<int,4>,6> blockSidesIndices = {{
+    {1,2,6,5},
+    {3,0,4,7},
+    {4,5,6,7},
+    {3,2,1,0},
+    {2,3,7,6},
+    {0,1,5,4},
+}};
+
+// These are very arbitrary. Will need to test.
+const std::array<uint8_t,6> occlusions = {
+    255,175,150,      // diagonal neighbor not opaque
+    225,200,150       // diagonal neighbor opaque.
 };
 
-void Chunk::update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ, Chunk* nbChunkPosZ){
+const std::array<std::array<LocInt,4>,4> diagonals = {{
+    {{{0,0,0},{1,0,1},{1,1,1},{0,1,0}}},
+    {{{1,0,0},{0,0,1},{0,1,1},{1,1,0}}},
+    {{{1,0,1},{0,0,0},{0,1,0},{1,1,1}}},
+    {{{0,0,1},{1,0,0},{1,1,0},{0,1,1}}}
+}};
+
+uint8_t Chunk::calcOcclusion(const LocInt& loc,int cornerIndex, const std::array<Chunk*,8>& nbChunks){
+    int opaqueNbs = -1;
+    for(int j=0;j<3;j++){
+        if(BlockRegistry::isOpaque(getBlockIdNBs(loc+cubeCornersAdjacent[cornerIndex][j],nbChunks))){
+            opaqueNbs += 1;
+        }
+    }
+    if(BlockRegistry::isOpaque(getBlockIdNBs(loc+cubeCornersDiagonals[cornerIndex],nbChunks))){
+        opaqueNbs += 3;
+    }
+    return occlusions[opaqueNbs];
+}
+
+void Chunk::update_mesh(std::array<Chunk*,8> nbChunks){
     // Ok this function goes against all object oriented principles, but I really needed to optimize as much as possible.
-    // Manually check that the array indices are in range!
     meshPtr->solidMesh = {};
     meshPtr->cutoutMesh = {};
     meshPtr->translucentMesh = {};
-    // meshPtr->mesh.reserve(MAXCHUNKX * MAXCHUNKY * MAXCHUNKZ * 6 / 4); // Arbitrary size, not sure if it matters for speed.
 
 
-    int maxYToCheck = std::max({highestY,nbChunkNegX->getHighestYBorder(),nbChunkPosX->getHighestYBorder(),nbChunkNegZ->getHighestYBorder(),nbChunkPosZ->getHighestYBorder()});
+    int maxYToCheck = std::max({highestY,nbChunks[1]->getHighestYBorder(),nbChunks[3]->getHighestYBorder(),nbChunks[5]->getHighestYBorder(),nbChunks[7]->getHighestYBorder()});
 
-    auto locToIndex = [](int x, int y, int z) {
-        return y*MAXCHUNKX*MAXCHUNKZ + z*MAXCHUNKX + x;
-    };
-    auto locToIndexLoc = [](const LocInt& locInt) {
-        return locInt.y*MAXCHUNKX*MAXCHUNKZ + locInt.z*MAXCHUNKX + locInt.x;
-    };
     
     // for(int y=-1; y<=maxYToCheck+1; y++){ for(int z=0; z<MAXCHUNKZ; z++){ for(int x=0; x< MAXCHUNKX; x++){
     for(int y=0; y<=maxYToCheck+1; y++){ for(int z=0; z<MAXCHUNKZ; z++){ for(int x=0; x< MAXCHUNKX; x++){
-        
-        // BlockID blockId = chunk[locToIndex(x,y,z)];
-        // Change later for see through shizzle.
 
         // if(y==-1 || y==MAXCHUNKY ||  !BlockRegistry::isOpaque(chunk[locToIndex(x,y,z)])){
         if(y==MAXCHUNKY ||  !BlockRegistry::isOpaque(chunk[locToIndex(x,y,z)])){ 
@@ -272,31 +373,40 @@ void Chunk::update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ
                     continue;
                 }
                 // bool nbOpaque = false;
-                BlockID nbBlockID = BlockID::Air; 
-                if(nb.x==-1){
-                    // nbOpaque = BlockRegistry::isOpaque(nbChunkNegX.chunk[locToIndex(MAXCHUNKX-1,loc.y,loc.z)]);
-                    nbBlockID = nbChunkNegX->chunk[locToIndex(MAXCHUNKX-1,loc.y,loc.z)];
-                } else if(nb.x==MAXCHUNKX){
-                    // nbOpaque = BlockRegistry::isOpaque(nbChunkPosX.chunk[locToIndex(0,loc.y,loc.z)]);
-                    nbBlockID = nbChunkPosX->chunk[locToIndex(0,loc.y,loc.z)];
-                } else if(nb.z==-1){
-                    // nbOpaque = BlockRegistry::isOpaque(nbChunkNegZ.chunk[locToIndex(loc.x,loc.y,MAXCHUNKZ-1)]);
-                    nbBlockID = nbChunkNegZ->chunk[locToIndex(loc.x,loc.y,MAXCHUNKZ-1)];
-                } else if(nb.z==MAXCHUNKZ){
-                    // nbOpaque = BlockRegistry::isOpaque(nbChunkPosZ.chunk[locToIndex(loc.x,loc.y,0)]);
-                    nbBlockID = nbChunkPosZ->chunk[locToIndex(loc.x,loc.y,0)];
-                } else if(nb.y>=0 && nb.y<MAXCHUNKY){
-                    // nbOpaque = BlockRegistry::isOpaque(chunk[locToIndexLoc(nb)]);
-                    nbBlockID = chunk[locToIndexLoc(nb)];
-                }
+                // BlockID nbBlockID = BlockID::Air; 
+                // if(nb.x==-1){
+                //     // nbOpaque = BlockRegistry::isOpaque(nbChunkNegX.chunk[locToIndex(MAXCHUNKX-1,loc.y,loc.z)]);
+                //     nbBlockID = nbChunkNegX->chunk[locToIndex(MAXCHUNKX-1,loc.y,loc.z)];
+                // } else if(nb.x==MAXCHUNKX){
+                //     // nbOpaque = BlockRegistry::isOpaque(nbChunkPosX.chunk[locToIndex(0,loc.y,loc.z)]);
+                //     nbBlockID = nbChunkPosX->chunk[locToIndex(0,loc.y,loc.z)];
+                // } else if(nb.z==-1){
+                //     // nbOpaque = BlockRegistry::isOpaque(nbChunkNegZ.chunk[locToIndex(loc.x,loc.y,MAXCHUNKZ-1)]);
+                //     nbBlockID = nbChunkNegZ->chunk[locToIndex(loc.x,loc.y,MAXCHUNKZ-1)];
+                // } else if(nb.z==MAXCHUNKZ){
+                //     // nbOpaque = BlockRegistry::isOpaque(nbChunkPosZ.chunk[locToIndex(loc.x,loc.y,0)]);
+                //     nbBlockID = nbChunkPosZ->chunk[locToIndex(loc.x,loc.y,0)];
+                // } else if(nb.y>=0 && nb.y<MAXCHUNKY){
+                //     // nbOpaque = BlockRegistry::isOpaque(chunk[locToIndexLoc(nb)]);
+                //     nbBlockID = chunk[locToIndex(nb)];
+                // }
+                BlockID nbBlockID = getBlockIdNBs(nb,nbChunks);
+
 
                 if(BlockRegistry::isOpaque(nbBlockID)){
                     ChunkMeshElt meshElt;
                     // We had to change the order, because we are now rendering the face of the neighbor instead of the current cube.
                     meshElt.corners[0] = realLoc + blockSides[i][1];
+                    meshElt.occlusion[0] = calcOcclusion(loc,blockSidesIndices[i][1],nbChunks) ;
+
                     meshElt.corners[1] = realLoc + blockSides[i][0];
+                    meshElt.occlusion[1] = calcOcclusion(loc,blockSidesIndices[i][0],nbChunks) ;
+
                     meshElt.corners[2] = realLoc + blockSides[i][3];
+                    meshElt.occlusion[2] = calcOcclusion(loc,blockSidesIndices[i][3],nbChunks) ;
+
                     meshElt.corners[3] = realLoc + blockSides[i][2];
+                    meshElt.occlusion[3] = calcOcclusion(loc,blockSidesIndices[i][2],nbChunks) ;
 
                     meshElt.blockType = nbBlockID;
                     // meshElt.blockType = blockId;
@@ -388,7 +498,7 @@ void Chunk::addSolidFaceToMesh(const ChunkMeshElt& face){
         vboElt.tint[1] = face.tint[1];
         vboElt.tint[2] = face.tint[2];
         vboElt.tint[3] = 255;
-
+        vboElt.occlusion = face.occlusion[corner];
         meshPtr->solidMesh.push_back(vboElt);
     }
 }

@@ -41,6 +41,9 @@ private:
     int& maxTerrainRenders;
     int& maxWaterRenders;
     int& maxVegetationRenders; 
+    
+    bool& ambientOcclusionFlag;
+    bool& gammaCorrectionFlag;
 
     Shader solidChunkShaderProgram;
     unsigned int viewLocChunksSolid;

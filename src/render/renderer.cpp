@@ -29,12 +29,11 @@ void Renderer::render(World& world, Camera& camera, GameUIData gameData){
     // Explanation: The perspective matrix uses the fov as the fovY.
     // tan(fovY/2) is the y of the top of the intersection of the projection plane (z=-1 or near) with the frustum.
     // For example, the right side of this intersection is then at x = tan(fovX/2)= width/height * tan(fovY/2)
-    START_TIMING(frustumCull)
+    // START_TIMING(frustumCull)
     float fovY = camera.getFov();
     float fovX = 2.0f*glm::degrees(atan(getAspectRatio()*tan(glm::radians(camera.getFov())/2.0f)));
-    END_TIMING(frustumCull)
-
     world.frustumCull(renderSettings.projectionNearDistance,renderSettings.projectionFarDistance,fovX,fovY);
+    // END_TIMING(frustumCull)
 
     // START_TIMING(renderChunksN)
     chunkRenderer.renderChunks(world, view, projection);
@@ -142,6 +141,9 @@ RendererUIData Renderer::getRendererUIData(){
     rendererUIData.maxTerrainRenders = &renderSettings.maxTerrainRenders;
     rendererUIData.maxWaterRenders = &renderSettings.maxWaterRenders;
     rendererUIData.maxVegetationRenders = &renderSettings.maxVegetationRenders;
+
+    rendererUIData.ambientOcclusion = &renderSettings.ambientOcclusion;
+    rendererUIData.gammaCorrection = &renderSettings.gammaCorrection;
 
     return rendererUIData;
 }

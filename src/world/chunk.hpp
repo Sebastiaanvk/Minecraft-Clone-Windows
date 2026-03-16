@@ -24,6 +24,7 @@ static constexpr int CHUNKSIZE = MAXCHUNKX*MAXCHUNKY*MAXCHUNKZ;
 static constexpr ChunkID nbDiffs[4] = {{-MAXCHUNKX,0},{0,MAXCHUNKZ},{MAXCHUNKX,0},{0,-MAXCHUNKZ}};
 static constexpr ChunkID nbDiffsDiag[8] = {{-MAXCHUNKX,-MAXCHUNKZ},{-MAXCHUNKX,0},{-MAXCHUNKX,MAXCHUNKZ},{0,MAXCHUNKZ},{MAXCHUNKX,MAXCHUNKZ},{MAXCHUNKX,0},{MAXCHUNKX,-MAXCHUNKZ},{0,-MAXCHUNKZ}};
 
+
 class ChunkManager; // Chunk and ChunkManager include each other.
 
 class Chunk{
@@ -32,7 +33,7 @@ public:
     Chunk(const ChunkID& loc,  ChunkManager& chunkManager);
     void generateChunkTerrain();
     void generateTrees(std::array<Chunk*,8> nbChunks);
-    void update_mesh(Chunk* nbChunkNegX,Chunk* nbChunkPosX,Chunk* nbChunkNegZ, Chunk* nbChunkPosZ);
+    void update_mesh(std::array<Chunk*,8> nbChunks);
 
     std::array<BlockID,CHUNKSIZE> chunk; // This is for faster mesh creation. Kind of ugly though to have no get function.
 
@@ -74,6 +75,8 @@ private:
     std::shared_ptr<RenderableChunkMesh> meshPtr;
     int highestY = 0;
     int highestYBorder = 0;
+    BlockID getBlockIdNBs(const LocInt& loc,const std::array<Chunk*,8>& nbs) const;
+    uint8_t calcOcclusion(const LocInt& loc,int cornerIndex,const std::array<Chunk*,8>& nbChunks);
     void setBlockIdNbsIfEmpty(const LocInt& loc,BlockID id,std::array<Chunk*,8> nbs);
 
     const int cornerOrder[6] = {0,1,3,1,2,3};
@@ -81,6 +84,7 @@ private:
     void addSolidFaceToMesh(const ChunkMeshElt& face);
     void addCutoutFaceToMesh(const CutoutMeshElt& face);
     void addTranslucentFaceToMesh(const TranslucentMeshElt& face);
+
 };
 
 

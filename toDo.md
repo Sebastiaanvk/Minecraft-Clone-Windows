@@ -2,14 +2,15 @@
 
 
 ## Nu aan werken:
+We need to add all eight neighbors to the create mesh,(for ambient occlusion)
+So also check that they are all done creating the trees and everything.
+For each corner, we want to find the cubes we should check.
+There are four cubes, of which one belong the the opaque block we are checking.
+So my idea is to count the number of direct neghbors and also the diagonal neighbor.
+Then we have 6 options: 1,2 or 3 direct opaques and 0 or 1 diagonal opaque.
+So I guess we make 
+We should make a function that takes the relative location and 8 neighboring chunks and return the blockID of the relative locations.
 
-Bug when pausing and moving mouse too far!
-
-Frustum culling during render loop!
-Important.
-
-Generate terrain can be done way more efficiently. Hmm usually 800us and sometimes suddenly almost 20000us. Huge problem!
-Maybe in another thread? Yes for sure.
 
 
 ### Other 
@@ -24,6 +25,7 @@ After we change the block targeting algorithm, we can also change the hitbox of 
 
 Physics.
 
+- Bug when pausing and moving mouse too far!
 - Optional (Optimization): Frustum culling!!! Only render chunks that are in view of the camera.
 - Optional (Optimization): Add a vegetation and translucent render distance.
 - Optional (Optimization): water blocks only both sides when theplayer is underwater.(Short term optimization)
@@ -33,6 +35,7 @@ Physics.
 - Optional: Fix mipmap shizzzle
 - Optional: Texture array instead of texture atlas.
 - Optional: tick delay voor muis ingedrukt houden, maar geen delay voor muis spammen!
+- Optional: Fix the mipmaps for the transparent textures.
 
 
 And then for the raytracing, we simply need to check whether its not an air block.
@@ -409,3 +412,9 @@ Ok Yeah I think I know enough now.
 Ok I overlooked one aspect: We need to know the vectors that are perpendicular to the forward vector in order to rotate it.
 Hmmmm. ok I know how to do it. We use the yaw and pitch coordinates.
 And then we get a function that turns a yaw and pitch into a forward vector. -->
+
+<!-- Frustum culling during render loop!
+Important.
+
+Generate terrain can be done way more efficiently. Hmm usually 800us and sometimes suddenly almost 20000us. Huge problem!
+Maybe in another thread? Yes for sure. -->

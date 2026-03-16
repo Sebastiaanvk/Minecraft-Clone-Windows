@@ -17,7 +17,7 @@ struct ChunkMeshElt{
     FaceType faceType;
     //Chatgpt suggested this datatype:
     uint8_t tint[3];
-    uint8_t occlusion;
+    uint8_t occlusion[4];
 };
 
 struct CutoutMeshElt{
@@ -38,6 +38,7 @@ struct SolidVBOElt{
     glm::vec3 uvl;
     // int textureLayer;
     uint8_t tint[4];
+    uint8_t occlusion;
 };
 
 struct CutoutVBOElt{

@@ -43,6 +43,8 @@ struct RendererUIData {
     int* maxTerrainRenders;
     int* maxWaterRenders;
     int* maxVegetationRenders; 
+    bool* ambientOcclusion;
+    bool* gammaCorrection;
 };
 
 

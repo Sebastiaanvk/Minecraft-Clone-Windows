@@ -169,16 +169,21 @@ void ChunkManager::calculateMeshesAsync(const LocInt& loc,int distance){
                 if( chunks[chunkCandidate]->isDirty() && allowedToStartCalculatingMesh(chunkCandidate) && !chunks[chunkCandidate]->getCalculatingMeshFlag()){
                     // std::cout<< "Mesh creation asynchronously!" << std::endl;
                     chunks[chunkCandidate]->setCalculatingMeshFlagTrue();
-                    Chunk* nbChunkNegX = chunks.at(chunkCandidate+nbDiffs[0]).get();
-                    Chunk* nbChunkPosZ = chunks.at(chunkCandidate+nbDiffs[1]).get();
-                    Chunk* nbChunkPosX = chunks.at(chunkCandidate+nbDiffs[2]).get();
-                    Chunk* nbChunkNegZ = chunks.at(chunkCandidate+nbDiffs[3]).get();
+                    // Chunk* nbChunkNegX = chunks.at(chunkCandidate+nbDiffs[0]).get();
+                    // Chunk* nbChunkPosZ = chunks.at(chunkCandidate+nbDiffs[1]).get();
+                    // Chunk* nbChunkPosX = chunks.at(chunkCandidate+nbDiffs[2]).get();
+                    // Chunk* nbChunkNegZ = chunks.at(chunkCandidate+nbDiffs[3]).get();
+                    std::array<Chunk*,8> nbChunks;
+                    for( int i=0; i<8; i++){
+                        nbChunks[i] = chunks.at(chunkCandidate+nbDiffsDiag[i]).get();
+                        assert(nbChunks[i]->terrainIsGenerated());
+                    }
 
                     Chunk* chunkPtr = chunks.at(chunkCandidate).get();
                     // futureDump.push_back(std::async(std::launch::async, &Chunk::update_mesh,chunks.at(chunkCandidate).get(),nbChunkNegX,nbChunkPosX,nbChunkNegZ,nbChunkPosZ));
                     pool.detach_task(
-                        [chunkPtr,nbChunkNegX,nbChunkPosX,nbChunkNegZ,nbChunkPosZ]{
-                            chunkPtr->update_mesh(nbChunkNegX,nbChunkPosX,nbChunkNegZ,nbChunkPosZ);
+                        [chunkPtr,nbChunks]{
+                            chunkPtr->update_mesh(nbChunks);
                         }
                     );
                 }
@@ -201,11 +206,16 @@ void ChunkManager::calculateMeshes(const LocInt& loc, int distance){
             if(chunks[chunkCandidate]->treesAreGenerated()){
                 if( chunks[chunkCandidate]->isDirty() && allowedToStartCalculatingMesh(chunkCandidate) && !chunks[chunkCandidate]->getCalculatingMeshFlag()){
                     chunks[chunkCandidate]->setCalculatingMeshFlagTrue();
-                    Chunk* nbChunkNegX = chunks.at(chunkCandidate+nbDiffs[0]).get();
-                    Chunk* nbChunkPosZ = chunks.at(chunkCandidate+nbDiffs[1]).get();
-                    Chunk* nbChunkPosX = chunks.at(chunkCandidate+nbDiffs[2]).get();
-                    Chunk* nbChunkNegZ = chunks.at(chunkCandidate+nbDiffs[3]).get();
-                    chunks[chunkCandidate]->update_mesh(nbChunkNegX,nbChunkPosX,nbChunkNegZ,nbChunkPosZ);
+                    // Chunk* nbChunkNegX = chunks.at(chunkCandidate+nbDiffs[0]).get();
+                    // Chunk* nbChunkPosZ = chunks.at(chunkCandidate+nbDiffs[1]).get();
+                    // Chunk* nbChunkPosX = chunks.at(chunkCandidate+nbDiffs[2]).get();
+                    // Chunk* nbChunkNegZ = chunks.at(chunkCandidate+nbDiffs[3]).get();
+                    std::array<Chunk*,8> nbChunks;
+                    for( int i=0; i<8; i++){
+                        nbChunks[i] = chunks.at(chunkCandidate+nbDiffsDiag[i]).get();
+                        assert(nbChunks[i]->terrainIsGenerated());
+                    }
+                    chunks[chunkCandidate]->update_mesh(nbChunks);
                 }
             }
         }

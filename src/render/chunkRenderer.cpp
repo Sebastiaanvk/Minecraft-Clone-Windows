@@ -5,7 +5,8 @@ ChunkRenderer::ChunkRenderer(Renderer& renderer) :
 renderer(renderer),//projectionDistance(renderer.renderSettings.projectionDistance),
 textureMargin(renderer.renderSettings.textureMargin),maxNewMeshesPerFrame(renderer.renderSettings.maxNewMeshesPerFrame),
 maxTerrainRenders(renderer.renderSettings.maxTerrainRenders),maxWaterRenders(renderer.renderSettings.maxWaterRenders),
-maxVegetationRenders(renderer.renderSettings.maxVegetationRenders) {
+maxVegetationRenders(renderer.renderSettings.maxVegetationRenders),
+ambientOcclusionFlag(renderer.renderSettings.ambientOcclusion),gammaCorrectionFlag(renderer.renderSettings.gammaCorrection) {
     
 }
 
@@ -105,6 +106,7 @@ void ChunkRenderer::renderChunks(World& world, glm::mat4& view, glm::mat4& proje
     solidChunkShaderProgram.use();
     glUniformMatrix4fv(viewLocChunksSolid, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(projectionLocChunksSolid, 1, GL_FALSE, glm::value_ptr(projection));
+    solidChunkShaderProgram.setBool("ambientOcclusionFlag",ambientOcclusionFlag);
     for(int i=0; i<maxTerrainRenders&& i<chunksToRender.size(); i++){
         ChunkID chunkID = chunksToRender[i];
         glBindVertexArray(solidMeshes[chunkID].VAO);
@@ -284,6 +286,9 @@ void ChunkRenderer::createRenderMesh(const ChunkID& chunkID, RenderableChunkMesh
     // tint attribute
     glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(SolidVBOElt), (void*)offsetof(SolidVBOElt, tint));
     glEnableVertexAttribArray(2);
+    // occlusion attribute
+    glVertexAttribPointer(3, 1, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(SolidVBOElt), (void*)offsetof(SolidVBOElt, occlusion));
+    glEnableVertexAttribArray(3);
     solidMeshes[chunkID] = solidRenderMesh;
 
 
