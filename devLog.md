@@ -11,6 +11,17 @@ Yeah, looks way nicer now.
 I noticed that there's a huge bottleneck on the world update function by setting up the threads. 
 Like even just starting all the threads for the generating terrain can take like 15000us and all it does is start the new threads.
 I did some research and apparently the way to go is to use thread pools.
+Ok I added the thread pool from https://github.com/bshoshany/thread-pool. 
+The number of threads is equal to my systems nubmer of cpu's minus one (so I can keep running the main thread on one cpu).
+I call the asychronous functions using pool.detach_task.
+This has the advantage of not having to make futures and making a new mutex and stuff.
+Speeds it up by a lot.
+
+<img src="assets\media\rendering distance 16-3-2026.gif" width="900" >
+
+Still some frame drops, but in my defense, in the normal game you would never fly this high and render that many chunks simultaneously.
+Plus, the frame drops are only there when you are flying through the world at break neck speeds.
+I think I should start focusing on adding things to the game again.
 
 ## 15/3/2026
 Finally fixed the frustum culling today.

@@ -3,7 +3,8 @@
 
 
 
-ChunkManager::ChunkManager(unsigned int seed){
+ChunkManager::ChunkManager(unsigned int seed):
+        pool(std::thread::hardware_concurrency()-1){
     ChunkGeneration::init(seed);
     // generateTerrains({0,0}); // I dont think we need this. Maybe I just broke the game....
 }
@@ -92,7 +93,13 @@ void ChunkManager::generateTerrainsAsync(const LocInt& loc, int distance){
             if(chunks.count(chunkCandidate)==0){
                 addChunk(chunkCandidate);
                 // To do: add the chunk generation in async here!
-                futureDump.push_back(std::async(std::launch::async, &Chunk::generateChunkTerrain, chunks.at(chunkCandidate).get()));
+                // futureDump.push_back(std::async(std::launch::async, &Chunk::generateChunkTerrain, chunks.at(chunkCandidate).get()));
+                Chunk* chunkPtr = chunks.at(chunkCandidate).get();
+                pool.detach_task(
+                    [chunkPtr]{
+                        chunkPtr->generateChunkTerrain();
+                    }
+                );
             }
         }
     }
@@ -118,6 +125,7 @@ void ChunkManager::generateTrees(const LocInt& loc, int distance){
         }
     }
 }
+
 void ChunkManager::generateTrees(const LocInt& loc){
     generateTrees(loc,treeGenerationDistance);
 }
@@ -134,7 +142,13 @@ void ChunkManager::generateTreesAsync(const LocInt& loc, int distance){
                     nbChunks[i] = chunks.at(chunkCandidate+nbDiffsDiag[i]).get();
                     assert(nbChunks[i]->terrainIsGenerated());
                 }
-                futureDump.push_back(std::async(std::launch::async, &Chunk::generateTrees,chunks.at(chunkCandidate).get(),nbChunks));
+                Chunk* chunkPtr = chunks.at(chunkCandidate).get();
+                // futureDump.push_back(std::async(std::launch::async, &Chunk::generateTrees,chunks.at(chunkCandidate).get(),nbChunks));
+                pool.detach_task(
+                    [chunkPtr,nbChunks]{
+                        chunkPtr->generateTrees(nbChunks);
+                    }
+                );
             }
         }
     }
@@ -159,7 +173,13 @@ void ChunkManager::calculateMeshesAsync(const LocInt& loc,int distance){
                     Chunk* nbChunkPosX = chunks.at(chunkCandidate+nbDiffs[2]).get();
                     Chunk* nbChunkNegZ = chunks.at(chunkCandidate+nbDiffs[3]).get();
 
-                    futureDump.push_back(std::async(std::launch::async, &Chunk::update_mesh,chunks.at(chunkCandidate).get(),nbChunkNegX,nbChunkPosX,nbChunkNegZ,nbChunkPosZ));
+                    Chunk* chunkPtr = chunks.at(chunkCandidate).get();
+                    // futureDump.push_back(std::async(std::launch::async, &Chunk::update_mesh,chunks.at(chunkCandidate).get(),nbChunkNegX,nbChunkPosX,nbChunkNegZ,nbChunkPosZ));
+                    pool.detach_task(
+                        [chunkPtr,nbChunkNegX,nbChunkPosX,nbChunkNegZ,nbChunkPosZ]{
+                            chunkPtr->update_mesh(nbChunkNegX,nbChunkPosX,nbChunkNegZ,nbChunkPosZ);
+                        }
+                    );
                 }
             }
         }

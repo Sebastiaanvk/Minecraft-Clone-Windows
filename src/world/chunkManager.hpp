@@ -11,6 +11,8 @@
 #include <future>
 #include <cassert>
 #include <glm/glm.hpp>
+#include <thread>
+#include <BS_thread_pool.hpp>
 
 class Chunk; // Chunk and ChunkManager include each other.
 
@@ -65,7 +67,7 @@ private:
     std::unordered_map<ChunkID, std::unique_ptr<Chunk>> chunks;
     void addChunk(const ChunkID& chunkID);    
 
-    int renderDistance = 40;
+    int renderDistance = 50;
     int treeGenerationDistance = renderDistance+1;
     int chunkGenerationDistance = renderDistance+2; // Needs to be higher than the renderDistance or the game breaks!
 
@@ -77,6 +79,8 @@ private:
     FrustumCullingPars frustumCullingPars;
     std::vector<ChunkID> culledChunksVector;
     bool chunkInFrustum(const LocFloat& cornerLoc);
+
+    BS::thread_pool<> pool;
 
 };
 
