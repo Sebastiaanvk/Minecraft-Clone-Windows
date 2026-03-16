@@ -45,13 +45,6 @@ void Game::run(){
         while(timeAccumulator>=world.tickTimeLength){
             if(!paused){
                 START_TIMING(worldUpdate)
-                // world.setFrustumSettings(renderer.renderSettings.projectionNearDistance,renderer.renderSettings.projectionFarDistance,camera.getFov(),(float)camera.getFov()/renderer.getAspectRatio());
-                // Explanation: The perspective matrix uses the fov as the fovY.
-                // tan(fovY/2) is the y of the top of the intersection of the projection plane (z=-1) with the frustum.
-                // For example, the right side of this intersection is then at x = tan(fovX/2)= width/height * tan(fovY/2)
-                float fovY = camera.getFov();
-                float fovX = 2.0f*glm::degrees(atan(renderer.getAspectRatio()*tan(glm::radians(camera.getFov())/2.0f)));
-                world.setFrustumSettings(renderer.renderSettings.projectionNearDistance,renderer.renderSettings.projectionFarDistance,fovX,fovY);
                 world.update(input_handler);        
                 END_TIMING(worldUpdate)
             }

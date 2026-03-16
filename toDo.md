@@ -5,6 +5,12 @@
 
 Bug when pausing and moving mouse too far!
 
+Frustum culling during render loop!
+Important.
+
+Generate terrain can be done way more efficiently. Hmm usually 800us and sometimes suddenly almost 20000us. Huge problem!
+Maybe in another thread? Yes for sure.
+
 
 ### Other 
 Important: Adding an unloading distance for the chunks and the meshes!

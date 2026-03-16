@@ -1,4 +1,17 @@
 # DevLog
+## 16/3/2026
+I'll move the frustum culling to the render.
+That way, the frustum culling is done each frame instead of each game tick.
+Currently, when I move the camera quickly, the chunks on the edges of the screen are not rendered.
+Will decrease the frame rate by a bit, cause with render distande 40, the frustum culling takes about 1800us.
+But should be worth it.
+Yeah, looks way nicer now.
+
+
+I noticed that there's a huge bottleneck on the world update function by setting up the threads. 
+Like even just starting all the threads for the generating terrain can take like 15000us and all it does is start the new threads.
+I did some research and apparently the way to go is to use thread pools.
+
 ## 15/3/2026
 Finally fixed the frustum culling today.
 It seemed to be working pretty smoothly in terms of culling, but the problem was that I was not rendering the chunks on the side of the screen.

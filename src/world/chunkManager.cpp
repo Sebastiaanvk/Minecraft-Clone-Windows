@@ -79,6 +79,7 @@ void ChunkManager::generateTerrains(const LocInt& loc, int distance){
         }
     }
 }
+
 void ChunkManager::generateTerrains(const LocInt& loc){
     generateTerrains(loc,chunkGenerationDistance);
 }

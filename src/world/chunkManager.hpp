@@ -46,8 +46,8 @@ public:
 
     struct FrustumCullingPars{
         LocFloat cameraLoc;
-        float fovX;
-        float fovY;
+        // float fovX;
+        // float fovY;
         glm::vec3 forward;
         glm::vec3 normals[4];
         // glm::vec3 right;

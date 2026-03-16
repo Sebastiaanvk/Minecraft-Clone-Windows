@@ -25,7 +25,8 @@ public:
     // World();
     World(unsigned int seed);
     void update(Input_Handler& input_handler);
-    void setFrustumSettings(float renderDistanceNear, float renderDistanceFar, float fovX, float fovY);
+
+    void frustumCull(float renderDistanceNear, float renderDistanceFar, float fovX, float fovY);
 
     std::queue<std::shared_ptr<RenderableChunkMesh>> toRenderableChunkQueue();
     Player player;
@@ -54,7 +55,6 @@ private:
     int ticksBetweenBlockManipulation = 6;
 
     ChunkManager::FrustumCullingPars frustumCullingPars;
-    void frustumCull();
 };
 
 #endif //MODEL_HPP

@@ -28,9 +28,9 @@ void World::update(Input_Handler& input_handler){
     START_TIMING(generateTrees)
     chunkManager.generateTreesAsync(player.getBlockLoc());
     END_TIMING(generateTrees)
-    START_TIMING(generateFrustumCull)
-    frustumCull();
-    END_TIMING(generateFrustumCull)
+    // START_TIMING(generateFrustumCull)
+    // frustumCull();
+    // END_TIMING(generateFrustumCull)
     START_TIMING(calculateMeshesAsync)
     chunkManager.calculateMeshesAsync(player.getBlockLoc());
     END_TIMING(calculateMeshesAsync)
@@ -56,12 +56,6 @@ void World::update(Input_Handler& input_handler){
 }
 
 
-void World::setFrustumSettings(float renderDistanceNear, float renderDistanceFar, float fovX, float fovY){
-    frustumCullingPars.near = renderDistanceNear;
-    frustumCullingPars.far = renderDistanceFar;
-    frustumCullingPars.fovX = fovX;
-    frustumCullingPars.fovY = fovY;
-}
 
 
 glm::vec3 rotate(const glm::vec3& dir,float degrees, const glm::vec3& axis){
@@ -69,15 +63,18 @@ glm::vec3 rotate(const glm::vec3& dir,float degrees, const glm::vec3& axis){
     return glm::vec3(rotationMatrix * glm::vec4(dir,1.0f));
 }
 
-void World::frustumCull(){
+void World::frustumCull(float renderDistanceNear, float renderDistanceFar, float fovX, float fovY){
+    frustumCullingPars.near = renderDistanceNear;
+    frustumCullingPars.far = renderDistanceFar;
+    // frustumCullingPars.fovX = fovX;
+    // frustumCullingPars.fovY = fovY;
+
     frustumCullingPars.cameraLoc = player.getPos();
     frustumCullingPars.forward = player.getForwardDir();
-    // float pitch = player.getPitch();
-    // float yaw = player.getYaw();
     glm::vec3 right = glm::normalize(glm::cross(frustumCullingPars.forward, {0,1,0}));
     glm::vec3 up = glm::normalize(glm::cross(right, frustumCullingPars.forward));
-    float fovX = frustumCullingPars.fovX;
-    float fovY = frustumCullingPars.fovY;
+    // float fovX = frustumCullingPars.fovX;
+    // float fovY = frustumCullingPars.fovY;
     // float fovX = 45.0f; // Just for testing purposes
     // float fovY = 45.0f; // Just for testing purposes
     // frustumCullingPars.left = yawPitchToVector(yaw+90-fovX/2,pitch);//Double check if the directions of the degrees are correct like this!
