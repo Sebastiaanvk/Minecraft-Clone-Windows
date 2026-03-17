@@ -1,3 +1,24 @@
+# Minecraft Clone in C++ and OpenGL
+This is my project where I try to make a clone of Minecraft.
+The code is in C++ and I use OpenGL and GLFW to render triangles using the GPU.
+I use no framework or engine and I try to use external libraries as little as possible.
+
+I started this project, because I have always been really interested in game development and graphics and I love Minecraft. 
+A voxel engine is also a perfect sandbox for learning about graphics and relevant mathematics.
+I have a lot of experience with algorithm puzzles and scientific programming, but not really with a big software engineering project like this.
+
+My goal is to learn and to practice relevant skills, so I also try minimize AI dependence.
+I do use it for looking up syntax and documentation, asking about conventional patterns for, for example, the architecture and the occasional debugging.
+Pretty much I treat it as a Teaching Assistant at university.
+99% of the lines are written by me.
+I've also experienced that as of 2026, the free LLM's are pretty useless when it comes to the mathematics behind graphics rendering.
+They know the relevant terms, but they are absolutely bluffing when it comes to the intricacies.
+
+# DevLog
+[Check out the DevLog!](devlog.md)
+
+I started the devlog in March 2026, but at that point I already spent a lot of time learning about OpenGl, setting up the architecture, getting chunk rendering working, optimizing the calculation of the chunk meshes, etc.
+
 
 # Compiling and running the executable:
 While in the main folder:

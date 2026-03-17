@@ -202,7 +202,7 @@ bool UIRenderer::setupHotbarTexture(){
     // std::cout << "atlasWidth: " << atlasWidth << ", atlasHeight: " << atlasHeight << std::endl;
 
     if(data){
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlasWidth, atlasHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8_ALPHA8, atlasWidth, atlasHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D); // Not sure if necessary.
     } else {
         std::cout << "Failed to load hotbar texture." << std::endl;

@@ -5,6 +5,8 @@ in vec3 TexCoord;
 in vec4 fragTint;
 
 uniform sampler2DArray textureArray;
+uniform bool gammaCorrectionFlag;
+
   
 void main()
 {

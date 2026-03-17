@@ -54,7 +54,7 @@ bool TextureAtlas::setup(){
         return false;
     }
     // Log(1.3)
-    GLsizei mipLevelCount = 5; //We want 5 mipmap layers because the textures are 16x16, so 16,8,4,2,1.
+    GLsizei mipLevelCount = 4; //We want 5 mipmap layers because the textures are 16x16, so 16,8,4,2,1.
     // Log(1.4)
     // GLenum err = glGetError();
     // std::cout << "GL error before glTexStorage3D: " << err << std::endl;
@@ -64,6 +64,7 @@ bool TextureAtlas::setup(){
 
     // glTexStorage3D(GL_TEXTURE_2D_ARRAY, mipLevelCount, GL_RGBA8, 16, 16, BlockRegistry::nrTextureIndices());
     glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA8, 16, 16, BlockRegistry::nrTextureIndices(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_SRGB8_ALPHA8, 16, 16, BlockRegistry::nrTextureIndices(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     for(int i=0; i<BlockRegistry::nrTextureIndices(); i++){
         std::string textureName = BlockRegistry::indexToTextureName(i);
         unsigned char texture[16*16*4];
@@ -88,13 +89,37 @@ bool TextureAtlas::setup(){
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     // glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // ignore the mipmaps.
+    // glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // ignore the mipmaps.
 
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // this one looks the nicest.
     // glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST); 
     // glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST); 
+    // glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR); 
 
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     // glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // THIS IS EXTREMELY  CURSED!!!!!!!
+
+    // // Limit how far down the mip chain it goes
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, 4); 
+    
+    // std::cout << glGetString(GL_VERSION) << std::endl;
+    #ifndef GL_TEXTURE_MAX_ANISOTROPY_EXT
+    #define GL_TEXTURE_MAX_ANISOTROPY_EXT 0x84FE
+    #endif
+    #ifndef GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT
+    #define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
+    #endif
+
+
+    float maxAniso = 0.0f;
+    glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAniso);
+    std::cout << "Max anisotropy: " << maxAniso << std::endl;
+    glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAniso);
+
+    // float maxAniso = 0.0f;
+    // glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &maxAniso);
+    // std::cout << "Max anisotropy: " << maxAniso << std::endl;
+    // glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_ANISOTROPY, maxAniso);
 
 // Log(3)
     stbi_image_free(data);

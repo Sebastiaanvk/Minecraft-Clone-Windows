@@ -12,12 +12,11 @@ void framebuffer_size_callback(GLFWwindow* , int width, int height)
 
 void Renderer::render(World& world, Camera& camera, GameUIData gameData){
     getRendererUIData();
-    CustomImGui::renderStart(camera.getUIData(), world.getUIData(), gameData, getRendererUIData());
-
+    
     //Chunk rendering starts here:
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    
     // Calculate the view and projection matrices
     glm::mat4 view;
     view = camera.getViewMatrix();
@@ -25,7 +24,7 @@ void Renderer::render(World& world, Camera& camera, GameUIData gameData){
     glfwGetFramebufferSize(window, &width, &height);
     glm::mat4 projection;
     projection = glm::perspective(glm::radians(camera.getFov()),  (float)width / (float)height, renderSettings.projectionNearDistance, renderSettings.projectionFarDistance);
-
+    
     // Explanation: The perspective matrix uses the fov as the fovY.
     // tan(fovY/2) is the y of the top of the intersection of the projection plane (z=-1 or near) with the frustum.
     // For example, the right side of this intersection is then at x = tan(fovX/2)= width/height * tan(fovY/2)
@@ -34,11 +33,11 @@ void Renderer::render(World& world, Camera& camera, GameUIData gameData){
     float fovX = 2.0f*glm::degrees(atan(getAspectRatio()*tan(glm::radians(camera.getFov())/2.0f)));
     world.frustumCull(renderSettings.projectionNearDistance,renderSettings.projectionFarDistance,fovX,fovY);
     // END_TIMING(frustumCull)
-
+    
     // START_TIMING(renderChunksN)
     chunkRenderer.renderChunks(world, view, projection);
     // END_TIMING(renderChunksN)
-
+    
     // Highlight the selected cube.
     if( world.hasBlockTargeted() && !world.playerIsUnderwater()){
         uiRenderer.renderHighlightedCube(world, view, projection);
@@ -46,12 +45,16 @@ void Renderer::render(World& world, Camera& camera, GameUIData gameData){
     if(world.playerIsUnderwater()){
         uiRenderer.renderUnderwater();
     }
-
+    
     // Render UI
     uiRenderer.renderHotbar(world);
     uiRenderer.renderCrosshair();
-
+    
+    
+    glDisable(GL_FRAMEBUFFER_SRGB);
+    CustomImGui::renderStart(camera.getUIData(), world.getUIData(), gameData, getRendererUIData());
     CustomImGui::renderEnd();
+    glEnable(GL_FRAMEBUFFER_SRGB);
 
     glfwSwapBuffers(window);
 }
@@ -98,6 +101,8 @@ bool Renderer::init(int width, int height){
     glEnable(GL_DEPTH_TEST);  
     // Only render triangles going counter clockwise.
     glEnable(GL_CULL_FACE);
+    // For Gamma Correction:
+    glEnable(GL_FRAMEBUFFER_SRGB);
 
     CustomImGui::setup(window);
 

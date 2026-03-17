@@ -12,6 +12,53 @@ But then I ran into another problem, namely that the ambient occlusion acts diff
 Will research a bit how to solve this.
 Super annoying.
 
+Yeah, I fixed it. Apparently there's a very standard method for solving this in voxel engines:
+You compare occlusion[0]+occlusion[2] and occlusion[1]+occlusion[3] and then you cut the face through the brightest pair.
+<img src="assets\media\ambient occlusion face split fixed.png" width="900" >
+
+
+
+<img src="assets\media\ambient occlusion 17-3-2026.gif" width="900" >
+Looks much better now!
+
+
+## Anisotropic filtering
+I dont really like how you get these wave patterns when the blocks are far away and the grass becomes lines of single pixels.
+
+<img src="assets\media\before anisotropic filtering 17-3-2026.gif" width="900" >
+
+Ok, wait actually adding that didnt solve it. 
+Anisotropic filtering is for textures that are very parallel to the looking direction.
+
+These waves just come from for example the sides of the grass dirt blocks.
+The grass strip becomes like 1 or 2 pixels high and then you get these weird wavy patterns.
+I checked in the normal minecraft, and it actually has the same problem as well, but the landscapes are very different and the viewing distance is different.
+I think I can just leave it be for now.
+
+## Gamma Correction
+I want to add gamma correction, because apparently thats good for rendering light.
+Not sure if the textures Im using right now need to be corrected as well.
+
+Gamma Correction is a technique where you scale the brightness of things in a way thats more natural to the human eye.
+For example, when you double the number of photons, people dont experience something as twice as bright, its more like a logarithmic relation.
+So we do all the brightness calculations normally and in the end we scale it.
+
+So apparently the way to go is to do all the colours to the power 2.2, do all the linear lighting mathematics and then in the end we do the colours to the power (1/2.2).
+I also wanted a flag to turn gamma correction on and off.
+Opengl has some standard settings to convert the colours to and from the linear ligth space.
+My idea for the flag is to have everything setup for the Gamma Correction and if the flag is false, we convert the colours back in the fragment shader.
+This way we can have the Gamma Correction flag and it only slows down when we turn Gamma Correction off.
+
+Ok, I added the Gamma Correction, even though there is no flag yet.
+
+<img src="assets\media\Before Gamma Correction 17-3-2026.png" width="400" >
+<img src="assets\media\Gamma Correction without changing textures.png" width="400" >
+<img src="assets\media\Gamma Correction scaled textures no tints.png" width="400" >
+
+Well, we got the Gamma Correction working!
+Couple of issues: I need to recalibrate all the tints of the leaves and the water and the ambient occlusion.
+Dear ImGui is getting gamma'd as well :(.
+
 ## 16/3/2026
 I'll move the frustum culling to the render.
 That way, the frustum culling is done each frame instead of each game tick.
@@ -254,7 +301,7 @@ World:
 - World is split into chunks
 - I have an enumeration called BlockType with the types of blocks in my world, such as dirt, stone, cobblestone, different types of wool
 - The player can fly around the world and the world gets generated infinitely.
-- the chunk generation and the mesh creation happens in different threads than the main thread.
+- the chunk generation and the mesh creation happen in different threads than the main thread.
 - Right now the world only consists of dirt and grass dirt
 - I use Perlin noise for the height of the land.
 - The player has the ability to destroy and place different kinds of blocks

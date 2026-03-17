@@ -325,14 +325,14 @@ const std::array<std::array<int,4>,6> blockSidesIndices = {{
 }};
 
 // These are very arbitrary. Will need to test.
-// const std::array<uint8_t,6> occlusions = {
-//     255,175,150,      // diagonal neighbor not opaque
-//     225,200,150       // diagonal neighbor opaque.
-// };
 const std::array<uint8_t,6> occlusions = {
-    255,0,0,      // diagonal neighbor not opaque
-    0,0,0       // diagonal neighbor opaque.
+    255,225,150,      // diagonal neighbor not opaque
+    225,200,150       // diagonal neighbor opaque.
 };
+// const std::array<uint8_t,6> occlusions = {
+//     255,0,0,      // diagonal neighbor not opaque
+//     0,0,0       // diagonal neighbor opaque.
+// };
 
 // The cornerOffset give the corner of the cube and the orientation is the orientation of the face: 0:x,1:y,2:z.
 uint8_t Chunk::calcOcclusion(const LocInt& loc,const LocInt& cornerOffset, int orientation, const std::array<Chunk*,8>& nbChunks){
@@ -515,9 +515,14 @@ void Chunk::update_mesh(std::array<Chunk*,8> nbChunks){
 
 void Chunk::addSolidFaceToMesh(const ChunkMeshElt& face){
     // Triangles counter-clockwise
+    bool switchDiagonal = face.occlusion[1]+face.occlusion[3]>face.occlusion[0]+face.occlusion[4];
     for(int i=0;i<6;i++){
         SolidVBOElt vboElt;
-        int corner = cornerOrder[i];
+        int corner;
+        if(switchDiagonal)
+            corner = cornerOrder[i];
+        else
+            corner = cornerOrder2[i];
         
         vboElt.pos[0] = face.corners[corner].x;
         vboElt.pos[1] = face.corners[corner].y;

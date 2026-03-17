@@ -80,6 +80,7 @@ private:
     void setBlockIdNbsIfEmpty(const LocInt& loc,BlockID id,std::array<Chunk*,8> nbs);
 
     const int cornerOrder[6] = {0,1,3,1,2,3};
+    const int cornerOrder2[6] = {0,1,2,2,3,0};
     const glm::vec2 uvDiff[4] = {{0,1},{1,1},{1,0},{0,0}};
     void addSolidFaceToMesh(const ChunkMeshElt& face);
     void addCutoutFaceToMesh(const CutoutMeshElt& face);

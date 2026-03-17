@@ -7,6 +7,7 @@ in float occlusion;
 
 uniform sampler2DArray textureArray;
 uniform bool ambientOcclusionFlag;
+uniform bool gammaCorrectionFlag;
   
 void main()
 {
