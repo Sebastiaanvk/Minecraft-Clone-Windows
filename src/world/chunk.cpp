@@ -282,7 +282,7 @@ BlockID Chunk::getBlockIdNBs(const LocInt& loc,const std::array<Chunk*,8>& nbs) 
 // inline const LocInt dirs[] = {{1,0,0},{-1,0,0},{0,1,0},{0,-1,0},{0,0,1},{0,0,-1}};
 
 
-//The corners are counter-clockwise, starting at the left bottom looking outward.
+//The corners are counter-clockwise, starting at the left bottom looking inward.
 const std::array<std::array<LocInt,4>,6> blockSides = {{
     {{{1,0,0},{1,0,1},{1,1,1},{1,1,0}}},
     {{{0,0,1},{0,0,0},{0,1,0},{0,1,1}}},
@@ -297,21 +297,21 @@ const std::array<LocInt,8> cubeCorners = {{
     {0,1,0},{1,1,0},{1,1,1},{0,1,1}
 }};
 
-const std::array<LocInt,8> cubeCornersDiagonals = {{
-    {-1,-1,-1},{1,-1,-1},{1,-1,1},{-1,-1,1},
-    {-1,1,-1},{1,1,-1},{1,1,1},{-1,1,1}
-}};
+// const std::array<LocInt,8> cubeCornersDiagonals = {{
+//     {-1,-1,-1},{1,-1,-1},{1,-1,1},{-1,-1,1},
+//     {-1,1,-1},{1,1,-1},{1,1,1},{-1,1,1}
+// }};
 
-const LocInt cubeCornersAdjacent[8][3] = {
-    {{-1,0,0},{0,-1,0},{0,0,-1}},
-    {{1,0,0},{0,-1,0},{0,0,-1}},
-    {{1,0,0},{0,-1,0},{0,0,1}},
-    {{-1,0,0},{0,-1,0},{0,0,1}},
-    {{-1,0,0},{0,1,0},{0,0,-1}},
-    {{1,0,0},{0,1,0},{0,0,-1}},
-    {{1,0,0},{0,1,0},{0,0,1}},
-    {{-1,0,0},{0,1,0},{0,0,1}}
-};
+// const LocInt cubeCornersAdjacent[8][3] = {
+//     {{-1,0,0},{0,-1,0},{0,0,-1}},
+//     {{1,0,0},{0,-1,0},{0,0,-1}},
+//     {{1,0,0},{0,-1,0},{0,0,1}},
+//     {{-1,0,0},{0,-1,0},{0,0,1}},
+//     {{-1,0,0},{0,1,0},{0,0,-1}},
+//     {{1,0,0},{0,1,0},{0,0,-1}},
+//     {{1,0,0},{0,1,0},{0,0,1}},
+//     {{-1,0,0},{0,1,0},{0,0,1}}
+// };
 
 // The ith element of this array are the four corners of the face in direction dirs[i]
 // going counter clockwise looking from the inside of the cube.
@@ -325,10 +325,51 @@ const std::array<std::array<int,4>,6> blockSidesIndices = {{
 }};
 
 // These are very arbitrary. Will need to test.
+// const std::array<uint8_t,6> occlusions = {
+//     255,175,150,      // diagonal neighbor not opaque
+//     225,200,150       // diagonal neighbor opaque.
+// };
 const std::array<uint8_t,6> occlusions = {
-    255,175,150,      // diagonal neighbor not opaque
-    225,200,150       // diagonal neighbor opaque.
+    255,0,0,      // diagonal neighbor not opaque
+    0,0,0       // diagonal neighbor opaque.
 };
+
+// The cornerOffset give the corner of the cube and the orientation is the orientation of the face: 0:x,1:y,2:z.
+uint8_t Chunk::calcOcclusion(const LocInt& loc,const LocInt& cornerOffset, int orientation, const std::array<Chunk*,8>& nbChunks){
+    int opaqueNbs = 0;
+    LocInt diag = {0,0,0};
+    if(orientation!=0){
+        if(cornerOffset.x==0){
+            opaqueNbs += BlockRegistry::isOpaque(getBlockIdNBs({loc.x-1,loc.y,loc.z},nbChunks));
+            diag.x -=1;
+        } else {
+            opaqueNbs += BlockRegistry::isOpaque(getBlockIdNBs({loc.x+1,loc.y,loc.z},nbChunks));
+            diag.x +=1;
+        }
+    }
+    if(orientation!=1){
+        if(cornerOffset.y==0){
+            opaqueNbs += BlockRegistry::isOpaque(getBlockIdNBs({loc.x,loc.y-1,loc.z},nbChunks));
+            diag.y -= 1;
+        } else {
+            opaqueNbs += BlockRegistry::isOpaque(getBlockIdNBs({loc.x,loc.y+1,loc.z},nbChunks));
+            diag.y += 1;
+        }
+    }
+    if(orientation!=2){
+        if(cornerOffset.z==0){
+            opaqueNbs += BlockRegistry::isOpaque(getBlockIdNBs({loc.x,loc.y,loc.z-1},nbChunks));
+            diag.z -= 1;
+        } else {
+            opaqueNbs += BlockRegistry::isOpaque(getBlockIdNBs({loc.x,loc.y,loc.z+1},nbChunks));
+            diag.z += 1;
+        }
+    }
+    if(BlockRegistry::isOpaque(getBlockIdNBs(loc+diag,nbChunks))){
+        opaqueNbs += 3;
+    }
+    return occlusions[opaqueNbs];
+}
 
 const std::array<std::array<LocInt,4>,4> diagonals = {{
     {{{0,0,0},{1,0,1},{1,1,1},{0,1,0}}},
@@ -337,18 +378,6 @@ const std::array<std::array<LocInt,4>,4> diagonals = {{
     {{{0,0,1},{1,0,0},{1,1,0},{0,1,1}}}
 }};
 
-uint8_t Chunk::calcOcclusion(const LocInt& loc,int cornerIndex, const std::array<Chunk*,8>& nbChunks){
-    int opaqueNbs = -1;
-    for(int j=0;j<3;j++){
-        if(BlockRegistry::isOpaque(getBlockIdNBs(loc+cubeCornersAdjacent[cornerIndex][j],nbChunks))){
-            opaqueNbs += 1;
-        }
-    }
-    if(BlockRegistry::isOpaque(getBlockIdNBs(loc+cubeCornersDiagonals[cornerIndex],nbChunks))){
-        opaqueNbs += 3;
-    }
-    return occlusions[opaqueNbs];
-}
 
 void Chunk::update_mesh(std::array<Chunk*,8> nbChunks){
     // Ok this function goes against all object oriented principles, but I really needed to optimize as much as possible.
@@ -397,16 +426,16 @@ void Chunk::update_mesh(std::array<Chunk*,8> nbChunks){
                     ChunkMeshElt meshElt;
                     // We had to change the order, because we are now rendering the face of the neighbor instead of the current cube.
                     meshElt.corners[0] = realLoc + blockSides[i][1];
-                    meshElt.occlusion[0] = calcOcclusion(loc,blockSidesIndices[i][1],nbChunks) ;
+                    meshElt.occlusion[0] = calcOcclusion(loc,blockSides[i][1],i/2,nbChunks) ;
 
                     meshElt.corners[1] = realLoc + blockSides[i][0];
-                    meshElt.occlusion[1] = calcOcclusion(loc,blockSidesIndices[i][0],nbChunks) ;
+                    meshElt.occlusion[1] = calcOcclusion(loc,blockSides[i][0],i/2,nbChunks) ;
 
                     meshElt.corners[2] = realLoc + blockSides[i][3];
-                    meshElt.occlusion[2] = calcOcclusion(loc,blockSidesIndices[i][3],nbChunks) ;
+                    meshElt.occlusion[2] = calcOcclusion(loc,blockSides[i][3],i/2,nbChunks) ;
 
                     meshElt.corners[3] = realLoc + blockSides[i][2];
-                    meshElt.occlusion[3] = calcOcclusion(loc,blockSidesIndices[i][2],nbChunks) ;
+                    meshElt.occlusion[3] = calcOcclusion(loc,blockSides[i][2],i/2,nbChunks) ;
 
                     meshElt.blockType = nbBlockID;
                     // meshElt.blockType = blockId;

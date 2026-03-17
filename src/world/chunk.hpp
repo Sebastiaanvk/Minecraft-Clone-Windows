@@ -76,7 +76,7 @@ private:
     int highestY = 0;
     int highestYBorder = 0;
     BlockID getBlockIdNBs(const LocInt& loc,const std::array<Chunk*,8>& nbs) const;
-    uint8_t calcOcclusion(const LocInt& loc,int cornerIndex,const std::array<Chunk*,8>& nbChunks);
+    uint8_t calcOcclusion(const LocInt& loc,const LocInt& cornerOffset, int orientation, const std::array<Chunk*,8>& nbChunks);
     void setBlockIdNbsIfEmpty(const LocInt& loc,BlockID id,std::array<Chunk*,8> nbs);
 
     const int cornerOrder[6] = {0,1,3,1,2,3};

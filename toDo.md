@@ -1,15 +1,7 @@
 # Todo list
 
-
 ## Nu aan werken:
-We need to add all eight neighbors to the create mesh,(for ambient occlusion)
-So also check that they are all done creating the trees and everything.
-For each corner, we want to find the cubes we should check.
-There are four cubes, of which one belong the the opaque block we are checking.
-So my idea is to count the number of direct neghbors and also the diagonal neighbor.
-Then we have 6 options: 1,2 or 3 direct opaques and 0 or 1 diagonal opaque.
-So I guess we make 
-We should make a function that takes the relative location and 8 neighboring chunks and return the blockID of the relative locations.
+I made a mistake in ambient occlusion!
 
 
 
@@ -418,3 +410,12 @@ Important.
 
 Generate terrain can be done way more efficiently. Hmm usually 800us and sometimes suddenly almost 20000us. Huge problem!
 Maybe in another thread? Yes for sure. -->
+
+<!-- We need to add all eight neighbors to the create mesh,(for ambient occlusion)
+So also check that they are all done creating the trees and everything.
+For each corner, we want to find the cubes we should check.
+There are four cubes, of which one belong the the opaque block we are checking.
+So my idea is to count the number of direct neghbors and also the diagonal neighbor.
+Then we have 6 options: 1,2 or 3 direct opaques and 0 or 1 diagonal opaque.
+So I guess we make 
+We should make a function that takes the relative location and 8 neighboring chunks and return the blockID of the relative locations. -->

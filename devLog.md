@@ -1,4 +1,17 @@
 # DevLog
+## 17/3/2026
+Ok actually I made a mistake in calculating the ambient occlusion.
+The blocks to check dont just depend on the corner of the cube, but also on the orientation.
+This is very obvious of course, but I thought I handled that properly, but the 'diagonal' neighbor to check is actually manhattan distance two from the block and not manhattan distance 3...
+Ok so I went ahead and fixed that.
+
+But then I ran into another problem, namely that the ambient occlusion acts differently depending on where the face gets split into two triangles to render.
+
+<img src="assets\media\ambient occlusion face split wrong.png" width="900" >
+
+Will research a bit how to solve this.
+Super annoying.
+
 ## 16/3/2026
 I'll move the frustum culling to the render.
 That way, the frustum culling is done each frame instead of each game tick.
