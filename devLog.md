@@ -59,6 +59,9 @@ Well, we got the Gamma Correction working!
 Couple of issues: I need to recalibrate all the tints of the leaves and the water and the ambient occlusion.
 Dear ImGui is getting gamma'd as well :(.
 
+Ok I fixed ImGui and I scaled the tints by pow 2.2, so that they all look good now!
+And also I added a flag to turn off Gamma Correction.
+
 ## 16/3/2026
 I'll move the frustum culling to the render.
 That way, the frustum culling is done each frame instead of each game tick.

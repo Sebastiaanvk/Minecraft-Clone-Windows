@@ -10,10 +10,16 @@ inline const FaceType faceTypeArr[] = {FaceType::Side,FaceType::Side,FaceType::T
 inline const FaceType faceTypeArrIngoing[] = {FaceType::Side,FaceType::Side,FaceType::Bot,FaceType::Top,FaceType::Side,FaceType::Side};
 
 // I will formalize this later on:
-inline const uint8_t waterTint[3] = {0,128,190};
-inline const uint8_t underwaterTint[3] = {0+10,128+10,190+10};
-inline const uint8_t leavesTint[3] = {140,210,70};
-inline const uint8_t grassTint[3] = {140,210,70};
+// inline const uint8_t waterTint[3] = {0,128,190};
+inline const uint8_t waterTint[3] = {0,56,133};
+// inline const uint8_t underwaterTint[3] = {0+10,128+10,190+10};
+inline const uint8_t underwaterTint[3] = {0,66,149};
+// inline const uint8_t leavesTint[3] = {140,210,70};
+inline const uint8_t leavesTint[3] = {68,166,15};
+// inline const uint8_t grassTint[3] = {140,210,70};
+inline const uint8_t grassTint[3] = {68,166,15};
+// inline const uint8_t grassDirtTint[3] = {180,240,100};
+inline const uint8_t grassDirtTint[3] = {118,222,32};
 
 enum class BlockID : std::uint8_t {
     Air,

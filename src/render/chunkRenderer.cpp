@@ -107,6 +107,7 @@ void ChunkRenderer::renderChunks(World& world, glm::mat4& view, glm::mat4& proje
     glUniformMatrix4fv(viewLocChunksSolid, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(projectionLocChunksSolid, 1, GL_FALSE, glm::value_ptr(projection));
     solidChunkShaderProgram.setBool("ambientOcclusionFlag",ambientOcclusionFlag);
+    solidChunkShaderProgram.setBool("gammaCorrectionFlag",gammaCorrectionFlag);
     for(int i=0; i<maxTerrainRenders&& i<chunksToRender.size(); i++){
         ChunkID chunkID = chunksToRender[i];
         glBindVertexArray(solidMeshes[chunkID].VAO);
@@ -118,6 +119,7 @@ void ChunkRenderer::renderChunks(World& world, glm::mat4& view, glm::mat4& proje
     cutoutChunkShaderProgram.use();
     glUniformMatrix4fv(viewLocChunksCutout, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(projectionLocChunksCutout, 1, GL_FALSE, glm::value_ptr(projection));
+    cutoutChunkShaderProgram.setBool("gammaCorrectionFlag",gammaCorrectionFlag);
     for(int i=0; i<maxVegetationRenders&& i<chunksToRender.size(); i++){
         ChunkID chunkID = chunksToRender[i];
         glBindVertexArray(cutoutMeshes[chunkID].VAO);
@@ -131,6 +133,7 @@ void ChunkRenderer::renderChunks(World& world, glm::mat4& view, glm::mat4& proje
     translucentChunkShaderProgram.use();
     glUniformMatrix4fv(viewLocChunksTranslucent, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(projectionLocChunksTranslucent, 1, GL_FALSE, glm::value_ptr(projection));
+    translucentChunkShaderProgram.setBool("gammaCorrectionFlag",gammaCorrectionFlag);
     for(int i = std::min(maxWaterRenders,(int)chunksToRender.size())-1;i>=0; i--){
         ChunkID chunkID = chunksToRender[i];
         glBindVertexArray(translucentMeshes[chunkID].VAO);

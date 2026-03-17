@@ -54,7 +54,7 @@ public:
         int maxVegetationRenders = 1600; 
 
         bool ambientOcclusion = true;
-        bool gammaCorrection = false;
+        bool gammaCorrection = true;
     };
     RenderSettings renderSettings;
 

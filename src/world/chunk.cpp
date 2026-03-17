@@ -444,7 +444,8 @@ void Chunk::update_mesh(std::array<Chunk*,8> nbChunks){
                     //Fix this for general cases!!!!
                     // Also the color was kind of arbitrary
                     if(meshElt.faceType==FaceType::Top && meshElt.blockType==BlockID::Grass_Dirt){
-                        meshElt.tint[0] = 180,meshElt.tint[1] = 255-15,meshElt.tint[2] = 100;
+                        meshElt.tint[0] = grassDirtTint[0],meshElt.tint[1] = grassDirtTint[1],meshElt.tint[2] = grassDirtTint[2];
+                        // meshElt.tint[0] = 180,meshElt.tint[1] = 255-15,meshElt.tint[2] = 100;
                     } else {
                         meshElt.tint[0] = 255,meshElt.tint[1] = 255,meshElt.tint[2] = 255;
                     }

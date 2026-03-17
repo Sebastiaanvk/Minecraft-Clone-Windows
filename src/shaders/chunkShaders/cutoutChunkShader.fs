@@ -10,9 +10,19 @@ uniform bool gammaCorrectionFlag;
   
 void main()
 {
-    FragColor = fragTint*texture(textureArray,TexCoord);
-    // FragColor = texture(textureAtlas,TexCoord);
-    if(FragColor.a<0.5f){
+    vec4 texColour = texture(textureArray,TexCoord);
+    if(texColour.a<0.5f){
         discard;
     }
+    if(!gammaCorrectionFlag){
+        texColour = pow(texColour,vec4(1.0/2.2,1.0/2.2,1.0/2.2,1.0));
+    }
+    FragColor = fragTint*texColour;
+    if(!gammaCorrectionFlag){
+        FragColor = pow(FragColor,vec4(2.2,2.2,2.2,1.0));
+    }
+    // FragColor = texture(textureAtlas,TexCoord);
+    // if(FragColor.a<0.5f){
+    //     discard;
+    // }
 }
