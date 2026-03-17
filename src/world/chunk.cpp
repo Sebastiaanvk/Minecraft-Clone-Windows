@@ -325,9 +325,14 @@ const std::array<std::array<int,4>,6> blockSidesIndices = {{
 }};
 
 // These are very arbitrary. Will need to test.
+// const std::array<uint8_t,6> occlusions = {
+//     255,225,150,      // diagonal neighbor not opaque
+//     225,200,150       // diagonal neighbor opaque.
+// };
+// The values with gamma correction
 const std::array<uint8_t,6> occlusions = {
-    255,225,150,      // diagonal neighbor not opaque
-    225,200,150       // diagonal neighbor opaque.
+    255,194,79,      // diagonal neighbor not opaque
+    194,149,79       // diagonal neighbor opaque.
 };
 // const std::array<uint8_t,6> occlusions = {
 //     255,0,0,      // diagonal neighbor not opaque
