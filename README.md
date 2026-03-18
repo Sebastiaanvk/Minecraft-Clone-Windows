@@ -1,4 +1,8 @@
 # Minecraft Clone in C++ and OpenGL
+<img src="assets\media\demo shorter 18-3-2026.gif" width="1000" >
+
+<img src="assets\media\picture 18-3-2026.png" width="700" ><img src="assets\media\underwater 18-3-2026.png" width="700" >
+
 This is my project where I try to make a clone of Minecraft.
 The code is in C++ and I use OpenGL and GLFW to render triangles using the GPU.
 I use no framework or engine and I try to use external libraries as little as possible.
@@ -15,7 +19,7 @@ I've also experienced that as of 2026, the free LLM's are pretty useless when it
 They know the relevant terms, but they are absolutely bluffing when it comes to the intricacies.
 
 # DevLog
-[Check out the DevLog!](devlog.md)
+[Check out the DevLog!](devLog.md)
 
 I started the devlog in March 2026, but at that point I already spent a lot of time learning about OpenGl, setting up the architecture, getting chunk rendering working, optimizing the calculation of the chunk meshes, etc.
 
