@@ -18,6 +18,10 @@ Pretty much I treat it as a Teaching Assistant at university.
 I've also experienced that as of 2026, the free LLM's are pretty useless when it comes to the mathematics behind graphics rendering.
 They know the relevant terms, but they are absolutely bluffing when it comes to the intricacies.
 
+I spent a lot of time optimizing the code for world generation and mesh calculation.
+These are both done asynchronously.
+I'm pretty happy with how smooth generating new chunks currently is.
+
 # DevLog
 [Check out the DevLog!](devLog.md)
 
