@@ -28,6 +28,10 @@ Physics.
 - Optional: Texture array instead of texture atlas.
 - Optional: tick delay voor muis ingedrukt houden, maar geen delay voor muis spammen!
 - Optional: Fix the mipmaps for the transparent textures.
+- Sand under water
+- different blocks in chunk generation
+- biomes
+- Check if there's a tree already adjacent.
 
 
 And then for the raytracing, we simply need to check whether its not an air block.

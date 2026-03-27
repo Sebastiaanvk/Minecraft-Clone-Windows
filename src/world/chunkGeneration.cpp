@@ -13,6 +13,7 @@ float poppyChance = 0.003f;
 float dandelionChance = 0.003f;
 float shortGrassChance = 0.01f;
 float treeChance = 0.001f;
+// float treeChance = 0.1f;
 
 float tubeCoralChance = 0.003f;
 float brainCoralChance = 0.003f;
@@ -24,8 +25,7 @@ FastNoiseLite noises[nrNoises];
 
 // Ok I got these two functions from chatgpt
 // Apparently they are very efficient for converting a seed + x + z coordinate into a psuedo random float int [0.0,1.0]
-static uint64_t splitmix64(uint64_t z)
-{
+static uint64_t splitmix64(uint64_t z){
     z += 0x9e3779b97f4a7c15ULL;
     z = (z ^ (z >> 30)) * 0xbf58476d1ce4e5b9ULL;
     z = (z ^ (z >> 27)) * 0x94d049bb133111ebULL;
@@ -33,8 +33,7 @@ static uint64_t splitmix64(uint64_t z)
     return z;
 }
 // Also copied from chatgpt. 
-double random2D(int x, int z, uint64_t seed)
-{
+double random2D(int x, int z, uint64_t seed){
     uint64_t combined = seed;
     combined ^= (uint64_t)x * 0x9e3779b97f4a7c15ULL;
     combined ^= (uint64_t)z * 0xbf58476d1ce4e5b9ULL;
