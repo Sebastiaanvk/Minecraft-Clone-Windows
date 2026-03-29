@@ -1,4 +1,12 @@
 # DevLog
+## 29/3/2026
+Ok I didnt work on the project for 1.5 weeks.
+Today I want to add object collision, even when in flying mode.
+For that, I first had to change the logic that decides the new player location.
+Now the World class actually has the vector that says how much the player moves.
+
+
+
 ## 17/3/2026
 Ok actually I made a mistake in calculating the ambient occlusion.
 The blocks to check dont just depend on the corner of the cube, but also on the orientation.

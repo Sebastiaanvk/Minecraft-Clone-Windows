@@ -1,7 +1,31 @@
 # Todo list
 
 ## Nu aan werken:
-I made a mistake in ambient occlusion!
+Object collision:
+Add a flag for turning it on and off in flying mode.
+Box around the player, with the camera at about 3/4 of the height.
+So we have a 0.5x2x0.5 box?
+Ok just looked it up and apparently its a 0.6x1.8x0.6 box.
+Apparently, the camera is at 1.62 high. 
+Hmm, I want this a ratio of the height of the hitbox.
+Oh right, its at 9/10 of 1.8.
+
+Parameters: hitbox side(0.6), hitbox height(1.8), camera ratio level(0.9).
+
+Ok,so how do we check?
+1x1x1 cubes is easy enough.
+My idea: we check the dx,dy,dz of the step and we move in that direction if possible and otherwise we go to the max.
+Ok but do we just check the vertices?
+I think so. We can do the vertex check and once we have smaller hitboxes, we can change the algorithm.
+
+
+We need to change the way that we check the movement.
+I think we should get a vector that sets the offset.
+So we have the forward direction, we have the 
+
+Alright, different strategies:
+- We just check each direction like before and then let the player add up all the dx, dy and dz.
+- We let the world class get the forward from the player, maybe the world can get the the vectors that are up, to the right and to the left, already calculated with the speed and tickTime.
 
 
 

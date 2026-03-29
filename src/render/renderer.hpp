@@ -49,9 +49,9 @@ public:
         float crossHairLength = 0.05f; //These ratios are with respect to the height of the window.
         float crossHairWidth = 0.005f;
 
-        int maxTerrainRenders = 2000;
-        int maxWaterRenders = 2000;
-        int maxVegetationRenders = 1600; 
+        int maxTerrainRenders = 1600;
+        int maxWaterRenders = 1500;
+        int maxVegetationRenders = 1400; 
 
         bool ambientOcclusion = true;
         bool gammaCorrection = true;

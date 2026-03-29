@@ -10,9 +10,9 @@ Player::Player()
     forward = yawPitchToVector(yaw, pitch);
 }
 
-void Player::storePos(){
-    lastPos = pos;
-}
+// void Player::storePos(){
+//     lastPos = pos;
+// }
 
 void Player::rotate(float dx, float dy){
 
@@ -34,40 +34,55 @@ void Player::rotate(float dx, float dy){
     forward = glm::normalize(direction);
 }
 
-void Player::move_forward(float deltaTime){
+// void Player::move_forward(float deltaTime){
+//     float delta = deltaTime * playerSpeed;
+//     glm::vec3 horDir = glm::normalize(glm::vec3(forward.x,0,forward.z));
+//     pos += delta*horDir;
+
+// }
+
+// void Player::move_backward(float deltaTime){
+//     float delta = deltaTime * playerSpeed;
+//     glm::vec3 horDir = glm::normalize(glm::vec3(forward.x,0,forward.z));
+//     pos -= delta*horDir;
+
+// }
+
+// void Player::move_left(float deltaTime){
+//     float delta = deltaTime * playerSpeed;
+//     pos += glm::normalize(glm::cross(forward, UP)) * delta;
+
+// }
+// void Player::move_right(float deltaTime){
+//     float delta = deltaTime * playerSpeed;
+//     pos -= glm::normalize(glm::cross(forward, UP)) * delta;
+
+// }
+
+// void Player::move_up(float deltaTime){
+//     float delta = deltaTime * playerSpeed;
+//     pos += UP * delta;
+// }
+
+// void Player::move_down(float deltaTime){
+//     float delta = deltaTime * playerSpeed;
+//     pos -= UP * delta;
+// }
+
+LocFloat Player::getUpVelocity(float deltaTime) const{
+    float delta = deltaTime * playerSpeed;
+    return UP * delta;
+}
+LocFloat Player::getForwardVelocity(float deltaTime) const{
     float delta = deltaTime * playerSpeed;
     glm::vec3 horDir = glm::normalize(glm::vec3(forward.x,0,forward.z));
-    pos += delta*horDir;
-
+    return delta*horDir;
 }
-
-void Player::move_backward(float deltaTime){
+LocFloat Player::getRightVelocity(float deltaTime) const{
     float delta = deltaTime * playerSpeed;
-    glm::vec3 horDir = glm::normalize(glm::vec3(forward.x,0,forward.z));
-    pos -= delta*horDir;
-
+    return glm::normalize(glm::cross(UP, forward)) * delta; // Double check whether this gives the right orientation.
 }
 
-void Player::move_left(float deltaTime){
-    float delta = deltaTime * playerSpeed;
-    pos += glm::normalize(glm::cross(forward, UP)) * delta;
-
-}
-void Player::move_right(float deltaTime){
-    float delta = deltaTime * playerSpeed;
-    pos -= glm::normalize(glm::cross(forward, UP)) * delta;
-
-}
-
-void Player::move_up(float deltaTime){
-    float delta = deltaTime * playerSpeed;
-    pos += UP * delta;
-}
-
-void Player::move_down(float deltaTime){
-    float delta = deltaTime * playerSpeed;
-    pos -= UP * delta;
-}
 std::string Player::playerLocAsString(){
     std::string statsStr = "Player stats: ";
     statsStr += "Player position: "+ std::to_string(pos.x) +  ", " + std::to_string(pos.y) + ", "+ std::to_string(pos.z); 
@@ -78,6 +93,11 @@ std::string Player::playerLocAsString(){
 
 LocFloat Player::getPos() const{
     return pos;
+}
+
+void Player::setPos(const LocFloat& newPos ){
+    lastPos = pos;
+    pos = newPos;
 }
 
 LocFloat Player::getInterpolatedPos(float alpha) const{

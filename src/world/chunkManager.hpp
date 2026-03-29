@@ -67,7 +67,7 @@ private:
     std::unordered_map<ChunkID, std::unique_ptr<Chunk>> chunks;
     void addChunk(const ChunkID& chunkID);    
 
-    int renderDistance = 40;
+    int renderDistance = 30;
     int treeGenerationDistance = renderDistance+1;
     int chunkGenerationDistance = renderDistance+2; // Needs to be higher than the renderDistance or the game breaks!
 

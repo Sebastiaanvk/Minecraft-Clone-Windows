@@ -16,17 +16,24 @@ struct InventorySlot {
 class Player{
 public:
     Player();
-    void storePos();
+    // void storePos();
     void rotate(float dx, float dy);
-    void move_forward(float deltaTime);
-    void move_backward(float deltaTime);
-    void move_left(float deltaTime);
-    void move_right(float deltaTime);
-    void move_up(float deltatime);
-    void move_down(float deltatime);
+    // void move_forward(float deltaTime);
+    // void move_backward(float deltaTime);
+    // void move_left(float deltaTime);
+    // void move_right(float deltaTime);
+    // void move_up(float deltatime);
+    // void move_down(float deltatime);
+
+    LocFloat getUpVelocity(float deltaTime) const;
+    LocFloat getForwardVelocity(float deltaTime) const;
+    LocFloat getRightVelocity(float deltaTime) const;
+
     std::string playerLocAsString();
 
     LocFloat getPos() const;
+
+    void setPos(const LocFloat& newPos);
     LocFloat getInterpolatedPos(float alpha) const;
     LocInt getBlockLoc() const;
     bool blockIntersects(const LocInt& loc );
@@ -39,6 +46,8 @@ public:
     PlayerUIData getUIData();
     bool placeableBlockSelected();
     BlockID getSelectedBlock();
+
+
 
     const std::array<InventorySlot,9>& getHotbar() const;
 

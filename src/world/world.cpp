@@ -94,29 +94,40 @@ void World::frustumCull(float renderDistanceNear, float renderDistanceFar, float
 
 
 void World::updatePlayerLocation(Input_Handler& input_handler){
-    player.storePos(); // For interpolation of location between ticks.
-
+    // player.storePos(); // For interpolation of location between ticks.
+    LocFloat playerPos = player.getPos();
+    LocFloat moveVector = glm::vec3(0,0,0);
     if(input_handler.key_down(Key::FORWARD)){
-        player.move_forward(tickTimeLength);
+        // player.move_forward(tickTimeLength);
+        moveVector += player.getForwardVelocity(tickTimeLength);
     }
 
     if(input_handler.key_down(Key::BACKWARD)){
-        player.move_backward(tickTimeLength);
+        // player.move_backward(tickTimeLength);
+        moveVector -= player.getForwardVelocity(tickTimeLength);
     }
 
     if(input_handler.key_down(Key::LEFT)){
-        player.move_left(tickTimeLength);
+        // player.move_left(tickTimeLength);
+        moveVector -= player.getRightVelocity(tickTimeLength);
     }
 
     if(input_handler.key_down(Key::RIGHT)){
-        player.move_right(tickTimeLength);
+        // player.move_right(tickTimeLength);
+        moveVector += player.getRightVelocity(tickTimeLength);
     }
     if(input_handler.key_down(Key::SPACE)){
-        player.move_up(tickTimeLength);
+        // player.move_up(tickTimeLength);
+        moveVector += player.getUpVelocity(tickTimeLength);
     }
     if(input_handler.key_down(Key::LEFT_SHIFT)){
-        player.move_down(tickTimeLength);
+        // player.move_down(tickTimeLength);
+        moveVector -= player.getUpVelocity(tickTimeLength);
     }
+    player.setPos(playerPos+moveVector);
+
+
+
 }
 
 
