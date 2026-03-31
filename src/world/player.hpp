@@ -16,7 +16,7 @@ struct InventorySlot {
 class Player{
 public:
     Player();
-    // void storePos();
+    void storePos();
     void rotate(float dx, float dy);
     // void move_forward(float deltaTime);
     // void move_backward(float deltaTime);
@@ -28,14 +28,33 @@ public:
     LocFloat getUpVelocity(float deltaTime) const;
     LocFloat getForwardVelocity(float deltaTime) const;
     LocFloat getRightVelocity(float deltaTime) const;
+    Hitbox getHitbox() const;
+    Hitbox getHitboxOffset(const LocFloat& offset) const;
 
     std::string playerLocAsString();
 
     LocFloat getPos() const;
+    LocFloat getCameraPos() const;
 
     void setPos(const LocFloat& newPos);
+    void movePosDX(float dx);
+    void movePosDY(float dy);
+    void movePosDZ(float dz);
+
+    void setPosX(float x);
+    void setPosY(float y);
+    void setPosZ(float z);
+
+
+    void moveSideX(bool forward);
+    void moveSideY(bool forward);
+    void moveSideZ(bool forward);
+
+
     LocFloat getInterpolatedPos(float alpha) const;
+    LocFloat getInterpolatedCameraPos(float alpha) const;
     LocInt getBlockLoc() const;
+    LocInt getCameraBlockLoc() const;
     bool blockIntersects(const LocInt& loc );
     LocFloat getForwardDir() const;
     float getYaw() const;
@@ -61,6 +80,12 @@ private:
     float rotationSensitivity = 0.1f;
 
     int hotbarSelection = 0;
+
+    float hitBoxHeight = 1.8f;
+    float hitBoxWidth = 0.6f;
+    float cameraHeightRatio = 0.9f;
+
+    float sideOffset = 0.001; // When hitting the side of a solid block.
 
     // LocFloat pos = glm::vec3(0.0f,128.0f, 0.0f);
     LocFloat pos = glm::vec3(0.0f,200.000f-0.0001f, 0.0f);

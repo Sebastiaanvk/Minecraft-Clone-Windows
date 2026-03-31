@@ -22,18 +22,18 @@ void World::update(Input_Handler& input_handler){
     tick += 1;
     updatePlayerLocation(input_handler);
     
-    START_TIMING(generateTerrain)
+    // START_TIMING(generateTerrain)
     chunkManager.generateTerrainsAsync(player.getBlockLoc() );
-    END_TIMING(generateTerrain)
-    START_TIMING(generateTrees)
+    // END_TIMING(generateTerrain)
+    // START_TIMING(generateTrees)
     chunkManager.generateTreesAsync(player.getBlockLoc());
-    END_TIMING(generateTrees)
+    // END_TIMING(generateTrees)
     // START_TIMING(generateFrustumCull)
     // frustumCull();
     // END_TIMING(generateFrustumCull)
-    START_TIMING(calculateMeshesAsync)
+    // START_TIMING(calculateMeshesAsync)
     chunkManager.calculateMeshesAsync(player.getBlockLoc());
-    END_TIMING(calculateMeshesAsync)
+    // END_TIMING(calculateMeshesAsync)
 
     if(input_handler.key_down(Key::LEFT_MOUSE_BUTTON)){
         deleteTarget();
@@ -46,13 +46,13 @@ void World::update(Input_Handler& input_handler){
     } else if( scrollDiff<-0.1f){
         player.changeHotbarSelection(false);
     }
-
+// Why this before the placing and deleting?
     calculatePlayerTarget();
     // chunkManager.generateChunks(player.getBlockLoc() );
 
-    START_TIMING(calcMeshes)
+    // START_TIMING(calcMeshes)
     chunkManager.calculateMeshes(player.getBlockLoc());
-    END_TIMING(calcMeshes)
+    // END_TIMING(calcMeshes)
 }
 
 
@@ -94,8 +94,7 @@ void World::frustumCull(float renderDistanceNear, float renderDistanceFar, float
 
 
 void World::updatePlayerLocation(Input_Handler& input_handler){
-    // player.storePos(); // For interpolation of location between ticks.
-    LocFloat playerPos = player.getPos();
+    player.storePos(); // For interpolation of location between ticks.
     LocFloat moveVector = glm::vec3(0,0,0);
     if(input_handler.key_down(Key::FORWARD)){
         // player.move_forward(tickTimeLength);
@@ -124,9 +123,34 @@ void World::updatePlayerLocation(Input_Handler& input_handler){
         // player.move_down(tickTimeLength);
         moveVector -= player.getUpVelocity(tickTimeLength);
     }
-    player.setPos(playerPos+moveVector);
+    // Hitbox hitbox = player.getHitbox();
 
+    if(objectCollision){
+        float dx = moveVector.x;
+        if(!chunkManager.intersectsWithSolid(player.getHitboxOffset({dx,0,0}))){
+            player.movePosDX(dx);
+        } else {
+            player.moveSideX(dx>0);
+        }
 
+        float dy = moveVector.y;
+        if(!chunkManager.intersectsWithSolid(player.getHitboxOffset({0,dy,0}))){
+            player.movePosDY(dy);
+        } else {
+            player.moveSideY(dy>0);
+        }
+
+        float dz = moveVector.z;
+        if(!chunkManager.intersectsWithSolid(player.getHitboxOffset({0,0,dz}))){
+            player.movePosDZ(dz);
+        } else {
+            player.moveSideZ(dz>0);
+        }
+
+    } else {
+        LocFloat playerPos = player.getPos();
+        player.setPos(playerPos+moveVector);
+    }
 
 }
 
@@ -144,7 +168,7 @@ void World::calculatePlayerTarget() {
     
     */
     float maxReach = 12;
-    LocFloat pos = player.getPos();
+    LocFloat pos = player.getCameraPos();
     LocFloat forward = player.getForwardDir();
 
     float distSolidX = 20*maxReach;
@@ -311,8 +335,10 @@ WorldUIData World::getUIData(){
     uiData.tick = tick;
     uiData.ticksBetweenBlockManipulationP = &ticksBetweenBlockManipulation;
     uiData.tickTimeLengthP = &tickTimeLength;
+    uiData.objectCollisionP = &objectCollision;
     return uiData;
 }
+
 RenderableInventory World::getRenderableInventory() const{
     RenderableInventory renderableInventory;
 
@@ -333,7 +359,7 @@ LocInt World::getTargetedBlock() const{
 }
 
 bool World::playerIsUnderwater() const {
-    return chunkManager.isUnderwater(player.getBlockLoc());
+    return chunkManager.isUnderwater(player.getCameraBlockLoc());
 }
 
 int World::getHotbarSelection() const{

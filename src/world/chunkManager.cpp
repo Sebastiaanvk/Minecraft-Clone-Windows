@@ -362,6 +362,23 @@ bool ChunkManager::isOpaque(const LocInt& loc) const {
     return false;
 }
 
+bool ChunkManager::intersectsWithSolid(const Hitbox& hitbox) const{
+    for(int i=0; i<8; i++){
+        glm::vec3 vertex = hitbox.corner;
+        if(i&1)
+            vertex += glm::vec3(hitbox.xWidth,0,0);
+        if(i&2)
+            vertex += glm::vec3(0,hitbox.yWidth,0);
+        if(i&4)
+            vertex += glm::vec3(0,0,hitbox.zWidth);
+        
+        if(isSolid(posToBlockLoc(vertex))){
+            return true;
+        }
+    }
+    return false;
+}
+
 
 bool ChunkManager::notAir(const LocInt& loc) const{
     ChunkID chunkID = getChunkID(loc);

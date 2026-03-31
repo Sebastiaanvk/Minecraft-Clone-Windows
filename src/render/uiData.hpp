@@ -22,6 +22,7 @@ struct WorldUIData {
     int tick;
     int* ticksBetweenBlockManipulationP;
     float* tickTimeLengthP;
+    bool* objectCollisionP;
 };
 
 

@@ -44,9 +44,9 @@ void Game::run(){
         timeAccumulator += deltaTime;
         while(timeAccumulator>=world.tickTimeLength){
             if(!paused){
-                START_TIMING(worldUpdate)
+                // START_TIMING(worldUpdate)
                 world.update(input_handler);        
-                END_TIMING(worldUpdate)
+                // END_TIMING(worldUpdate)
             }
             timeAccumulator -= world.tickTimeLength;
         }

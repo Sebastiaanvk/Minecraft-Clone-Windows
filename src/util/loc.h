@@ -167,4 +167,12 @@ inline glm::vec3 yawPitchToVector(float yaw, float pitch){
 }
 
 
+struct Hitbox{
+    LocFloat corner;
+    float xWidth;
+    float yWidth;
+    float zWidth;
+};
+
+
 #endif //LOC_H

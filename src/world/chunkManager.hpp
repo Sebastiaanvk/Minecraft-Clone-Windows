@@ -22,6 +22,9 @@ public:
     BlockID checkBlock(const LocInt& loc) const;
     bool isSolid(const LocInt& loc) const;
     bool isOpaque(const LocInt& loc) const;
+
+    bool intersectsWithSolid(const Hitbox& hitbox) const;
+
     bool notAir(const LocInt& loc) const;
     bool isUnderwater(const LocInt& loc) const;
     void placeBlock(const LocInt& loc,const BlockID& blockId);
@@ -42,6 +45,7 @@ public:
     void calculateMeshesAsync(const LocInt& loc);
     void calculateMeshes(const LocInt& loc,int distance);
     void calculateMeshes(const LocInt& loc);
+
     
     std::queue<std::shared_ptr<RenderableChunkMesh>> toRenderableChunkQueue( const LocInt& loc);
 

@@ -30,13 +30,14 @@ void CustomImGui::renderStart(CameraUIData cameraUIData, WorldUIData worldUIData
         ImGui::Begin("Game Data", &showGameData);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
         if(gameUIData.paused)
             ImGui::Text("Game is paused!");
-        else
+        else 
             ImGui::Text("Game is unpaused!");
         ImGui::Text("Frame rate:%.1f",gameUIData.frameRate);
         if (ImGui::CollapsingHeader("Camera",ImGuiTreeNodeFlags_DefaultOpen)){
             ImGui::SliderFloat("Camera fov (degrees)",cameraUIData.fovP,1.0f,179.0f);
         }
         if (ImGui::CollapsingHeader("Player",ImGuiTreeNodeFlags_DefaultOpen)){
+            ImGui::Checkbox("Object Collision",worldUIData.objectCollisionP);
             ImGui::Text("Player location(xyz): %f,%f,%f",worldUIData.playerData.pos.x,worldUIData.playerData.pos.y,worldUIData.playerData.pos.z);
             ImGui::Text("Looking direction(xyz): %f,%f,%f",worldUIData.playerData.forwardDirection.x,worldUIData.playerData.forwardDirection.y,worldUIData.playerData.forwardDirection.z);
             ImGui::SliderFloat("Movement Speed",worldUIData.playerData.playerSpeedP,1.0f,100.0f);

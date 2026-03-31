@@ -1,9 +1,20 @@
 # DevLog
-## 29/3/2026
-Ok I didnt work on the project for 1.5 weeks.
+## 31/3/2026
+Ok I didnt work on the project for 2 weeks, cause I was busy with other stuff.
 Today I want to add object collision, even when in flying mode.
 For that, I first had to change the logic that decides the new player location.
 Now the World class actually has the vector that says how much the player moves.
+
+We have have a hitbox around the player and we try moving int the dx,dy,dz direction respectively and if we hit a solid block, we move the player back so the hitbox aligns with the side of the block.
+
+
+There were some bugs, because of rounding errors, but I fixed that by adding a small offset.
+Now it's working!
+I will add normal movement later.
+
+Also, I change the position and hitbox of the player, now the location of the player is the center bottom of the hitbox.
+And the camera is at 90% height of the hitbox. 
+I had to change some other stuff as well, for example, checking whether the player is in water -> checking whether the camera is in the water.
 
 
 

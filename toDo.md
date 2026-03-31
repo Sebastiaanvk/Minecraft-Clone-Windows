@@ -28,6 +28,13 @@ Alright, different strategies:
 - We let the world class get the forward from the player, maybe the world can get the the vectors that are up, to the right and to the left, already calculated with the speed and tickTime.
 
 
+Alright, so we have the dx, dy, dz.
+Idea: we check how far we can move in the x direction, y direction and z direction after each other.
+
+
+Ok, we need to set the player location to the bottom center of the hitbox and the camera should be at 0.9 times the height of the hitbox.
+
+
 
 ### Other 
 Important: Adding an unloading distance for the chunks and the meshes!
@@ -41,21 +48,18 @@ After we change the block targeting algorithm, we can also change the hitbox of 
 
 Physics.
 
-- Bug when pausing and moving mouse too far!
-- Optional (Optimization): Frustum culling!!! Only render chunks that are in view of the camera.
-- Optional (Optimization): Add a vegetation and translucent render distance.
+- Add fog.
+- Bug when pausing and moving mouse too far (Related to frustum culling)!
 - Optional (Optimization): water blocks only both sides when theplayer is underwater.(Short term optimization)
 - Optional (Optimization): Change the renderQueue function to give, for example, raw pointers, and to maybe preserve information better. Like we can actually check if we move to a new chunk and then remove the exact ones or something. Hmmm not sure if that works though. lets see.
 - Optional (Cleaner Code): De hotbar texture naar de texture class sturen voor consistentie.
-- Optional (Cleaner Code): De rendercode mooi encapsulaten zodat de main render functie Heel overzichtelijk wordt.
-- Optional: Fix mipmap shizzzle
-- Optional: Texture array instead of texture atlas.
 - Optional: tick delay voor muis ingedrukt houden, maar geen delay voor muis spammen!
 - Optional: Fix the mipmaps for the transparent textures.
 - Sand under water
 - different blocks in chunk generation
 - biomes
 - Check if there's a tree already adjacent.
+- Flying speed doesnt speed up when going diagonally.
 
 
 And then for the raytracing, we simply need to check whether its not an air block.

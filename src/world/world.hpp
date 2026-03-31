@@ -54,7 +54,7 @@ private:
     int tick = 0;
     int ticksBetweenBlockManipulation = 6;
 
-    bool objectCollision = false;
+    bool objectCollision = true;
 
     ChunkManager::FrustumCullingPars frustumCullingPars;
 };
